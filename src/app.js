@@ -140,7 +140,7 @@ function wireEvents() {
     const info = state.imageMap[currentStep().id];
     if (!info) {
       els.stepImage.hidden = true;
-      els.imageFallback.hidden = false;
+      els.imageFallback.hidden = true;
       els.imageCredit.hidden = true;
       return;
     }
@@ -151,7 +151,7 @@ function wireEvents() {
 
   els.stepImage.addEventListener("error", () => {
     els.stepImage.hidden = true;
-    els.imageFallback.hidden = false;
+    els.imageFallback.hidden = true;
     els.imageCredit.hidden = true;
   });
 }
@@ -268,7 +268,7 @@ function renderStepImage() {
   if (!imageInfo) {
     els.stepImage.removeAttribute("src");
     els.stepImage.hidden = true;
-    els.imageFallback.hidden = false;
+    els.imageFallback.hidden = true;
     els.imageCredit.hidden = true;
     return;
   }
