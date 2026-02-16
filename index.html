@@ -1,1 +1,98 @@
-...
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
+    <meta name="description" content="M0B1Li7Y: a fast, offline-capable 12-minute mobility routine." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>M0B1Li7Y</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <h1>M0B1Li7Y</h1>
+        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+      </header>
+
+      <main>
+        <section id="routine-view" class="view active" aria-label="Routine">
+          <h2 class="routine-title">M0B1Li7Y +</h2>
+          <p class="routine-subtitle">Total time: ~12 minutes</p>
+
+          <div class="step-card">
+            <p class="step-progress" id="step-progress">Step 1 of 12</p>
+            <h3 id="step-name">Arm circles</h3>
+            <p id="step-cue" class="step-cue">Keep shoulders relaxed and smooth.</p>
+
+            <div class="media-frame" id="media-frame">
+              <img id="step-image" alt="" loading="lazy" />
+              <div id="image-fallback" class="image-fallback" hidden>🧍 Mobility demo unavailable offline</div>
+            </div>
+            <p class="image-credit" id="image-credit" hidden>
+              Illustration credit:
+              <a id="image-credit-link" target="_blank" rel="noopener noreferrer">Bend</a>
+            </p>
+
+            <div class="timer" id="timer">00:30</div>
+            <div id="untimed-hint" class="untimed-hint" hidden>Untimed set — tap Done when finished.</div>
+          </div>
+
+          <div class="controls-row primary-controls">
+            <button id="back-btn" class="control-btn">Back</button>
+            <button id="pause-btn" class="control-btn">Pause</button>
+            <button id="next-btn" class="control-btn">Next</button>
+          </div>
+          <div class="controls-row">
+            <button id="start-btn" class="control-btn emphasized">Start routine</button>
+            <button id="done-btn" class="control-btn" hidden>Done</button>
+          </div>
+
+          <div class="walk-picker" id="walk-picker" hidden>
+            <p>Choose walk duration</p>
+            <div class="walk-options">
+              <button data-mins="3">3 min</button>
+              <button data-mins="4">4 min</button>
+              <button data-mins="5">5 min</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="history-view" class="view" aria-label="History" hidden>
+          <h2>History (last 7 days)</h2>
+          <p id="streak">Streak: 0 days</p>
+          <ul id="history-list"></ul>
+        </section>
+
+        <section id="settings-view" class="view" aria-label="Settings" hidden>
+          <h2>Settings</h2>
+          <label><input type="checkbox" id="sound-enabled" checked /> Sound cues</label>
+          <label><input type="checkbox" id="haptics-enabled" checked /> Haptic cues</label>
+          <label>
+            Default walk duration
+            <select id="default-walk-duration">
+              <option value="3">3 minutes</option>
+              <option value="4">4 minutes</option>
+              <option value="5">5 minutes</option>
+            </select>
+          </label>
+          <label>
+            <input type="checkbox" id="remote-image-caching" /> ENABLE_REMOTE_IMAGE_CACHING
+          </label>
+          <p class="setting-note">Remote image caching is off by default. Routine remains fully usable offline without images.</p>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Primary">
+        <button data-view="routine-view" class="nav-btn active">Routine</button>
+        <button data-view="history-view" class="nav-btn">History</button>
+        <button data-view="settings-view" class="nav-btn">Settings</button>
+      </nav>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "M0B1Li7Y",
+  "short_name": "M0B1Li7Y",
+  "description": "Offline-capable 12-minute mobility routine with timers and minimal taps.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
