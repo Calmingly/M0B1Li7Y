@@ -7,7 +7,7 @@ Mobile-first progressive web app for a guided mobility routine (`M0B1Li7Y +`) th
 - 12-step routine including untimed push-up set and user-selectable walk duration
 - Pause/resume, next/back, and transition cues (sound + haptics)
 - History for last 7 days with streak count
-- Settings for cues, walk duration, and remote image caching feature flag
+- Settings for cues, walk duration, and optional offline image caching
 - Bend routine imagery fetched at runtime with local TTL cache and graceful fallback
 - Installable PWA with service worker and app shell caching
 

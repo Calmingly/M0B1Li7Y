@@ -44,6 +44,9 @@ const els = {
   timer: document.getElementById("timer"),
   untimedHint: document.getElementById("untimed-hint"),
   startBtn: document.getElementById("start-btn"),
+  startControls: document.getElementById("start-controls"),
+  runControls: document.getElementById("run-controls"),
+  doneControls: document.getElementById("done-controls"),
   pauseBtn: document.getElementById("pause-btn"),
   backBtn: document.getElementById("back-btn"),
   nextBtn: document.getElementById("next-btn"),
@@ -159,6 +162,7 @@ function startRoutine() {
   state.isPaused = false;
   startTicking();
   renderStep();
+  updateControlLayout(currentStep());
 }
 
 function startTicking() {
@@ -184,7 +188,7 @@ function stopTicking() {
 function togglePause() {
   if (!state.isRunning) return;
   state.isPaused = !state.isPaused;
-  els.pauseBtn.textContent = state.isPaused ? "Resume" : "Pause";
+  updateControlLayout(currentStep());
 }
 
 function goToStep(nextIndex) {
@@ -210,6 +214,35 @@ function currentStep() {
   return ROUTINE_STEPS[state.stepIndex];
 }
 
+function updateControlLayout(step) {
+  const isUntimed = step.durationSec === null;
+  const notStarted = !state.isRunning && !state.startedAt && state.stepIndex === 0;
+
+  els.startControls.hidden = !notStarted;
+  els.runControls.hidden = notStarted;
+
+  if (notStarted) {
+    els.pauseBtn.textContent = "Pause";
+    els.pauseBtn.disabled = true;
+    els.backBtn.disabled = true;
+    els.nextBtn.disabled = false;
+    els.doneControls.hidden = true;
+    return;
+  }
+
+  els.pauseBtn.disabled = !state.isRunning;
+  els.backBtn.disabled = state.stepIndex === 0;
+  els.nextBtn.disabled = state.stepIndex === ROUTINE_STEPS.length - 1 || isUntimed;
+
+  if (state.isRunning) {
+    els.pauseBtn.textContent = state.isPaused ? "Resume" : "Pause";
+    els.doneControls.hidden = !isUntimed;
+  } else {
+    els.pauseBtn.textContent = "Pause";
+    els.doneControls.hidden = true;
+  }
+}
+
 function renderStep() {
   const step = currentStep();
   els.stepProgress.textContent = `Step ${state.stepIndex + 1} of ${ROUTINE_STEPS.length}`;
@@ -221,11 +254,13 @@ function renderStep() {
   els.doneBtn.hidden = !untimed;
 
   els.walkPicker.hidden = step.id !== "walk";
+  els.walkOptions.forEach((button) => {
+    button.disabled = step.id !== "walk";
+  });
+
   renderTimer();
   renderStepImage();
-
-  els.backBtn.disabled = state.stepIndex === 0;
-  els.nextBtn.disabled = state.stepIndex === ROUTINE_STEPS.length - 1;
+  updateControlLayout(step);
 }
 
 function renderStepImage() {
@@ -297,7 +332,6 @@ function finishRoutine() {
   stopTicking();
   state.isRunning = false;
   state.isPaused = false;
-  els.pauseBtn.textContent = "Pause";
 
   if (state.startedAt) {
     const durationSec = Math.round((Date.now() - state.startedAt) / 1000);

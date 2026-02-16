@@ -41,14 +41,18 @@
             <div id="untimed-hint" class="untimed-hint" hidden>Untimed set — tap Done when finished.</div>
           </div>
 
-          <div class="controls-row primary-controls">
+          <div class="controls-row start-controls" id="start-controls">
+            <button id="start-btn" class="control-btn emphasized">Start routine</button>
+          </div>
+
+          <div class="controls-row primary-controls" id="run-controls" hidden>
             <button id="back-btn" class="control-btn">Back</button>
-            <button id="pause-btn" class="control-btn">Pause</button>
+            <button id="pause-btn" class="control-btn emphasized">Pause</button>
             <button id="next-btn" class="control-btn">Next</button>
           </div>
-          <div class="controls-row">
-            <button id="start-btn" class="control-btn emphasized">Start routine</button>
-            <button id="done-btn" class="control-btn" hidden>Done</button>
+
+          <div class="controls-row done-controls" id="done-controls" hidden>
+            <button id="done-btn" class="control-btn emphasized" hidden>Done</button>
           </div>
 
           <div class="walk-picker" id="walk-picker" hidden>
@@ -62,34 +66,49 @@
         </section>
 
         <section id="history-view" class="view" aria-label="History" hidden>
-          <h2>History (last 7 days)</h2>
-          <p id="streak">Streak: 0 days</p>
-          <ul id="history-list"></ul>
+          <div class="section-card">
+            <h2>History (last 7 days)</h2>
+            <p id="streak">Streak: 0 days</p>
+            <ul id="history-list"></ul>
+          </div>
         </section>
 
         <section id="settings-view" class="view" aria-label="Settings" hidden>
-          <h2>Settings</h2>
-          <label><input type="checkbox" id="sound-enabled" checked /> Sound cues</label>
-          <label><input type="checkbox" id="haptics-enabled" checked /> Haptic cues</label>
-          <label>
-            Default walk duration
-            <select id="default-walk-duration">
-              <option value="3">3 minutes</option>
-              <option value="4">4 minutes</option>
-              <option value="5">5 minutes</option>
-            </select>
-          </label>
-          <label>
-            <input type="checkbox" id="remote-image-caching" /> ENABLE_REMOTE_IMAGE_CACHING
-          </label>
-          <p class="setting-note">Remote image caching is off by default. Routine remains fully usable offline without images.</p>
+          <div class="section-card">
+            <h2>Settings</h2>
+            <fieldset class="settings-group">
+              <legend>Cues</legend>
+              <label><input type="checkbox" id="sound-enabled" checked /> Sound cues</label>
+              <label><input type="checkbox" id="haptics-enabled" checked /> Haptic cues</label>
+            </fieldset>
+
+            <fieldset class="settings-group">
+              <legend>Routine defaults</legend>
+              <label>
+                Default walk duration
+                <select id="default-walk-duration">
+                  <option value="3">3 minutes</option>
+                  <option value="4">4 minutes</option>
+                  <option value="5">5 minutes</option>
+                </select>
+              </label>
+            </fieldset>
+
+            <fieldset class="settings-group">
+              <legend>Images</legend>
+              <label>
+                <input type="checkbox" id="remote-image-caching" /> Cache exercise images for offline use
+              </label>
+              <p class="setting-note">Keeps images available after first load but uses extra device storage.</p>
+            </fieldset>
+          </div>
         </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Primary">
-        <button data-view="routine-view" class="nav-btn active">Routine</button>
-        <button data-view="history-view" class="nav-btn">History</button>
-        <button data-view="settings-view" class="nav-btn">Settings</button>
+        <button data-view="routine-view" class="nav-btn active"><span class="nav-icon">🧘</span><span>Routine</span></button>
+        <button data-view="history-view" class="nav-btn"><span class="nav-icon">📈</span><span>History</span></button>
+        <button data-view="settings-view" class="nav-btn"><span class="nav-icon">⚙️</span><span>Settings</span></button>
       </nav>
     </div>
 
