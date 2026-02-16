@@ -81,9 +81,22 @@ function init() {
 function wireEvents() {
   els.startBtn.addEventListener("click", startRoutine);
   els.pauseBtn.addEventListener("click", togglePause);
-  els.backBtn.addEventListener("click", () => goToStep(state.stepIndex - 1));
-  els.nextBtn.addEventListener("click", () => goToStep(state.stepIndex + 1));
-  els.doneBtn.addEventListener("click", () => goToStep(state.stepIndex + 1));
+
+  els.backBtn.addEventListener("click", () => {
+    if (state.isRunning && !state.isPaused) transitionCue();
+    goToStep(state.stepIndex - 1);
+  });
+
+  els.nextBtn.addEventListener("click", () => {
+    if (state.isRunning && !state.isPaused) transitionCue();
+    goToStep(state.stepIndex + 1);
+  });
+
+  els.doneBtn.addEventListener("click", () => {
+    if (state.isRunning && !state.isPaused) transitionCue();
+    goToStep(state.stepIndex + 1);
+  });
+
   els.muteToggle.addEventListener("click", toggleMute);
 
   els.navButtons.forEach((btn) => btn.addEventListener("click", () => switchView(btn.dataset.view)));
@@ -103,23 +116,40 @@ function wireEvents() {
     saveSettings();
     syncMuteIcon();
   });
+
   els.hapticsEnabled.addEventListener("change", () => {
     state.settings.hapticsEnabled = els.hapticsEnabled.checked;
     saveSettings();
   });
+
   els.defaultWalkDuration.addEventListener("change", () => {
     state.settings.defaultWalkDuration = Number(els.defaultWalkDuration.value);
     saveSettings();
   });
+
   els.remoteImageCaching.addEventListener("change", () => {
     state.settings.enableRemoteImageCaching = els.remoteImageCaching.checked;
     saveSettings();
     notifyServiceWorkerSettings();
   });
 
+  els.stepImage.addEventListener("load", () => {
+    const info = state.imageMap[currentStep().id];
+    if (!info) {
+      els.stepImage.hidden = true;
+      els.imageFallback.hidden = false;
+      els.imageCredit.hidden = true;
+      return;
+    }
+    els.stepImage.hidden = false;
+    els.imageFallback.hidden = true;
+    els.imageCredit.hidden = false;
+  });
+
   els.stepImage.addEventListener("error", () => {
     els.stepImage.hidden = true;
     els.imageFallback.hidden = false;
+    els.imageCredit.hidden = true;
   });
 }
 
@@ -135,7 +165,6 @@ function startTicking() {
   stopTicking();
   state.timerRef = setInterval(() => {
     if (!state.isRunning || state.isPaused) return;
-    const step = currentStep();
     if (typeof state.remainingSec !== "number") return;
 
     state.remainingSec -= 1;
@@ -167,13 +196,13 @@ function goToStep(nextIndex) {
 
   state.stepIndex = nextIndex;
   const step = currentStep();
+
   if (step.durationSec === "walk") {
     state.remainingSec = state.settings.defaultWalkDuration * 60;
   } else {
     state.remainingSec = step.durationSec;
   }
 
-  if (state.isRunning && !state.isPaused) transitionCue();
   renderStep();
 }
 
@@ -202,19 +231,22 @@ function renderStep() {
 function renderStepImage() {
   const imageInfo = state.imageMap[currentStep().id];
   if (!imageInfo) {
+    els.stepImage.removeAttribute("src");
     els.stepImage.hidden = true;
     els.imageFallback.hidden = false;
     els.imageCredit.hidden = true;
     return;
   }
 
-  els.stepImage.hidden = false;
-  els.imageFallback.hidden = true;
-  els.stepImage.src = imageInfo.url;
   els.stepImage.alt = imageInfo.alt;
   els.imageCreditLink.href = imageInfo.sourceUrl;
   els.imageCreditLink.textContent = imageInfo.sourceName;
-  els.imageCredit.hidden = false;
+
+  // Keep credit hidden until image load succeeds.
+  els.imageCredit.hidden = true;
+  els.imageFallback.hidden = true;
+  els.stepImage.hidden = false;
+  els.stepImage.src = imageInfo.url;
 }
 
 function renderTimer() {
@@ -266,6 +298,7 @@ function finishRoutine() {
   state.isRunning = false;
   state.isPaused = false;
   els.pauseBtn.textContent = "Pause";
+
   if (state.startedAt) {
     const durationSec = Math.round((Date.now() - state.startedAt) / 1000);
     const history = loadHistory();
@@ -317,6 +350,7 @@ function renderHistory() {
 
   const recent = history.filter((item) => new Date(item.completedAt) >= threshold);
   els.historyList.innerHTML = "";
+
   if (recent.length === 0) {
     const li = document.createElement("li");
     li.textContent = "No completions yet.";
@@ -347,6 +381,7 @@ function computeStreak(history) {
     streak += 1;
     date.setDate(date.getDate() - 1);
   }
+
   return streak;
 }
 
