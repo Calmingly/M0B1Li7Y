@@ -17,33 +17,34 @@ const IMAGE_FILE_BY_STEP = {
 <<<<<<< ours
   trunkRotations: "trunkrotations.gif",
   sideBends: "sidebends.gif",
-  legSwingsLeft: "legswingsleft.gif",
-  legSwingsRight: "legswingsright.gif",
+  legSwingsLeft: "legswings.gif",
+  legSwingsRight: "legswings.gif",
   kneesToChest: "kneestochest.gif",
-  figureFourLeft: "figurefourleft.gif",
-  figureFourRight: "figurefourright.gif",
-  childPose: "childpose.gif",
+  figureFourLeft: "lyingfigurefour.gif",
+  figureFourRight: "lyingfigurefour.gif",
+  childPose: "childspose.gif",
   postureReset: "posturereset.gif",
   pushUps: "pushups.gif",
   walk: "walk.gif"
+
 =======
 const CACHE_KEY = "m0b1li7y.routineImages.localGif.v5";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
 const IMAGE_CANDIDATES_BY_STEP = {
-  armCircles: ["armcircles.gif", "ArmCircles.gif"],
-  trunkRotations: ["trunkrotations.gif", "TrunkRotation.gif"],
-  sideBends: ["sidebends.gif", "SideBend.gif"],
-  legSwingsLeft: ["legswingsleft.gif", "legswings.gif", "LegSwings.gif"],
-  legSwingsRight: ["legswingsright.gif", "legswings.gif", "LegSwings.gif"],
+  armCircles: ["armcircles.gif"],
+  trunkRotations: ["trunkrotations.gif"],
+  sideBends: ["sidebends.gif"],
+  legSwingsLeft: ["legswings.gif"],
+  legSwingsRight: ["legswings.gif"],
   kneesToChest: ["kneestochest.gif", "KneesToChest.gif"],
-  figureFourLeft: ["figurefourleft.gif", "lyingfigurefour.gif", "LyingFigureFour.gif"],
-  figureFourRight: ["figurefourright.gif", "lyingfigurefour.gif", "LyingFigureFour.gif"],
-  childPose: ["childpose.gif", "childspose.gif", "ChildsPose.gif"],
-  postureReset: ["posturereset.gif", "overheadreach.gif", "OverheadReach.gif"],
-  pushUps: ["pushups.gif", "sidebend-seated.gif", "SideBend-Seated.gif"],
-  walk: ["walk.gif", "toetouchtwist.gif", "ToeTouchTwist.gif"]
+  figureFourLeft: ["lyingfigurefour.gif"],
+  figureFourRight: ["lyingfigurefour.gif"],
+  childPose: ["childspose.gif"],
+  postureReset: ["overheadreach.gif"],
+  pushUps: ["sidebend-seated.gif"],
+  walk: ["toetouchtwist.gif"]
 >>>>>>> theirs
 =======
 =======
