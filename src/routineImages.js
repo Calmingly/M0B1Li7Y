@@ -1,4 +1,4 @@
-const CACHE_KEY = "m0b1li7y.routineImages.localPng.v1";
+const CACHE_KEY = "m0b1li7y.routineImages.localPng.v2";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
