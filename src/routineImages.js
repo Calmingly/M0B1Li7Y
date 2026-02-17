@@ -1,20 +1,21 @@
-const CACHE_KEY = "m0b1li7y.routineImages.localGif.v1";
+const CACHE_KEY = "m0b1li7y.routineImages.localGif.v3";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
-const STEP_IDS = [
-  "armCircles",
-  "trunkRotations",
-  "sideBends",
-  "legSwingsLeft",
-  "legSwingsRight",
-  "kneesToChest",
-  "figureFourLeft",
-  "figureFourRight",
-  "childPose",
-  "postureReset",
-  "pushUps",
-  "walk"
-];
+
+const IMAGE_FILE_BY_STEP = {
+  armCircles: "armcircles.gif",
+  trunkRotations: "trunkrotations.gif",
+  sideBends: "sidebends.gif",
+  legSwingsLeft: "legswingsleft.gif",
+  legSwingsRight: "legswingsright.gif",
+  kneesToChest: "kneestochest.gif",
+  figureFourLeft: "figurefourleft.gif",
+  figureFourRight: "figurefourright.gif",
+  childPose: "childpose.gif",
+  postureReset: "posturereset.gif",
+  pushUps: "pushups.gif",
+  walk: "walk.gif"
+};
 
 function readCachedImageMap() {
   try {
@@ -39,70 +40,28 @@ function persistImageMap(imageMap) {
   }
 }
 
-function toKebabCase(stepId) {
-  return stepId
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
-}
-
-function buildCandidates(stepId) {
-  const kebab = toKebabCase(stepId);
-  const compact = stepId.toLowerCase();
-
-  return Array.from(
-    new Set([
-      `${LOCAL_MEDIA_DIR}/${stepId}.gif`,
-      `${LOCAL_MEDIA_DIR}/${kebab}.gif`,
-      `${LOCAL_MEDIA_DIR}/${compact}.gif`,
-      `${LOCAL_MEDIA_DIR}/${stepId}.webp`,
-      `${LOCAL_MEDIA_DIR}/${kebab}.webp`,
-      `${LOCAL_MEDIA_DIR}/${compact}.webp`
+function buildStaticImageMap() {
+  return Object.fromEntries(
+    Object.entries(IMAGE_FILE_BY_STEP).map(([stepId, filename]) => [
+      stepId,
+      `${LOCAL_MEDIA_DIR}/${filename}`
     ])
   );
-}
-
-async function resourceExists(url) {
-  try {
-    const response = await fetch(url, { method: "GET", cache: "no-store" });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-async function discoverLocalGifMap() {
-  const found = {};
-
-  for (const stepId of STEP_IDS) {
-    const candidates = buildCandidates(stepId);
-
-    for (const candidate of candidates) {
-      // eslint-disable-next-line no-await-in-loop
-      const exists = await resourceExists(candidate);
-      if (!exists) continue;
-
-      found[stepId] = candidate;
-      break;
-    }
-  }
-
-  return found;
 }
 
 export async function loadRoutineImages() {
   const cached = readCachedImageMap();
   if (cached) return buildImageInfoMap(cached);
 
-  const discovered = await discoverLocalGifMap();
-  persistImageMap(discovered);
-  return buildImageInfoMap(discovered);
+  const imageMap = buildStaticImageMap();
+  persistImageMap(imageMap);
+  return buildImageInfoMap(imageMap);
 }
 
 function buildImageInfoMap(urlMap) {
   const map = {};
 
-  for (const stepId of STEP_IDS) {
+  for (const stepId of Object.keys(IMAGE_FILE_BY_STEP)) {
     const url = urlMap?.[stepId];
     if (!url) continue;
 
