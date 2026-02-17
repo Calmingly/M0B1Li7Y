@@ -66,6 +66,7 @@ const els = {
   defaultWalkDuration: document.getElementById("default-walk-duration"),
   remoteImageCaching: document.getElementById("remote-image-caching"),
   themeSelect: document.getElementById("theme-select"),
+  themeSwatch: document.getElementById("theme-swatch"),
   navButtons: Array.from(document.querySelectorAll(".nav-btn")),
   views: Array.from(document.querySelectorAll(".view")),
   walkOptions: Array.from(document.querySelectorAll(".walk-options button"))
@@ -380,6 +381,7 @@ function hydrateSettingsUI() {
   els.defaultWalkDuration.value = String(state.settings.defaultWalkDuration);
   els.remoteImageCaching.checked = state.settings.enableRemoteImageCaching;
   if (els.themeSelect) els.themeSelect.value = state.settings.theme || "default";
+  if (els.themeSwatch) updateThemeSwatch();
   syncMuteIcon();
 }
 
@@ -391,6 +393,14 @@ function applyTheme(theme) {
   if (theme === "blue") html.classList.add("theme-blue");
   if (theme === "emerald") html.classList.add("theme-emerald");
   if (theme === "rose") html.classList.add("theme-rose");
+  updateThemeSwatch();
+}
+
+function updateThemeSwatch() {
+  if (!els.themeSwatch) return;
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+  // If variable is empty, fallback to transparent
+  els.themeSwatch.style.backgroundColor = accent || "transparent";
 }
 
 function loadHistory() {

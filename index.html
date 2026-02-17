@@ -106,12 +106,15 @@
               <legend>Theme</legend>
               <label>
                 Theme
-                <select id="theme-select">
-                  <option value="default">Default</option>
-                  <option value="blue">Blue</option>
-                  <option value="emerald">Emerald</option>
-                  <option value="rose">Rose</option>
-                </select>
+                <div class="theme-picker">
+                  <select id="theme-select">
+                    <option value="default">Default</option>
+                    <option value="blue">Blue</option>
+                    <option value="emerald">Emerald</option>
+                    <option value="rose">Rose</option>
+                  </select>
+                  <span id="theme-swatch" aria-hidden="true" title="Theme preview"></span>
+                </div>
               </label>
               <p class="setting-note">Choose a color accent for the app.</p>
             </fieldset>
