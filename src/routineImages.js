@@ -17,7 +17,6 @@ const IMAGE_FILE_BY_STEP = {
   walk: "toetouchtwist.png"
 };
 
-
 function readCachedImageMap() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
