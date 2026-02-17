@@ -1,6 +1,10 @@
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 const CACHE_KEY = "m0b1li7y.routineImages.localGif.v3";
+=======
+const CACHE_KEY = "m0b1li7y.routineImages.localGif.v7";
+>>>>>>> theirs
 =======
 const CACHE_KEY = "m0b1li7y.routineImages.localGif.v7";
 >>>>>>> theirs
@@ -9,6 +13,7 @@ const LOCAL_MEDIA_DIR = "./img";
 
 const IMAGE_FILE_BY_STEP = {
   armCircles: "armcircles.gif",
+<<<<<<< ours
 <<<<<<< ours
   trunkRotations: "trunkrotations.gif",
   sideBends: "sidebends.gif",
@@ -41,6 +46,8 @@ const IMAGE_CANDIDATES_BY_STEP = {
   walk: ["walk.gif", "toetouchtwist.gif", "ToeTouchTwist.gif"]
 >>>>>>> theirs
 =======
+=======
+>>>>>>> theirs
   trunkRotations: "trunkrotation.gif",
   sideBends: "sidebend.gif",
   legSwingsLeft: "legswings.gif",
@@ -52,6 +59,9 @@ const IMAGE_CANDIDATES_BY_STEP = {
   postureReset: "overheadreach.gif",
   pushUps: "sidebend-seated.gif",
   walk: "toetouchtwist.gif"
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 };
 
@@ -80,6 +90,9 @@ function persistImageMap(imageMap) {
 
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 function buildStaticImageMap() {
@@ -88,6 +101,7 @@ function buildStaticImageMap() {
       stepId,
       `${LOCAL_MEDIA_DIR}/${filename}`
     ])
+<<<<<<< ours
 <<<<<<< ours
   );
 }
@@ -99,6 +113,8 @@ async function discoverImageMap() {
       const url = await findFirstExistingImageUrl(filenames);
       return [stepId, url];
     })
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
   );
@@ -117,6 +133,7 @@ async function findFirstExistingImageUrl(filenames) {
 }
 
 <<<<<<< ours
+<<<<<<< ours
 async function resourceExists(url) {
   try {
     const response = await fetch(url, { method: "GET", cache: "no-store" });
@@ -129,15 +146,21 @@ async function resourceExists(url) {
 >>>>>>> theirs
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
 export async function loadRoutineImages() {
   const cached = readCachedImageMap();
   if (cached) return buildImageInfoMap(cached);
 
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
   const imageMap = buildStaticImageMap();
 =======
   const imageMap = await discoverImageMap();
+>>>>>>> theirs
+=======
+  const imageMap = buildStaticImageMap();
 >>>>>>> theirs
 =======
   const imageMap = buildStaticImageMap();
@@ -151,9 +174,13 @@ function buildImageInfoMap(urlMap) {
 
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
   for (const stepId of Object.keys(IMAGE_FILE_BY_STEP)) {
 =======
   for (const stepId of Object.keys(IMAGE_CANDIDATES_BY_STEP)) {
+>>>>>>> theirs
+=======
+  for (const stepId of Object.keys(IMAGE_FILE_BY_STEP)) {
 >>>>>>> theirs
 =======
   for (const stepId of Object.keys(IMAGE_FILE_BY_STEP)) {
