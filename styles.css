@@ -297,3 +297,9 @@ input:focus-visible {
   --accent-strong: #059669;
   --ring: #34d399;
 }
+
+.theme-rose {
+  --accent: #f472b6;
+  --accent-strong: #db2777;
+  --ring: #fb7185;
+}

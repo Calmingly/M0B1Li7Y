@@ -140,6 +140,11 @@ function wireEvents() {
   });
 
   if (els.themeSelect) {
+    // Live preview as user navigates options, persist on change
+    els.themeSelect.addEventListener("input", () => {
+      applyTheme(els.themeSelect.value);
+    });
+
     els.themeSelect.addEventListener("change", () => {
       state.settings.theme = els.themeSelect.value;
       saveSettings();
@@ -380,10 +385,12 @@ function hydrateSettingsUI() {
 
 function applyTheme(theme) {
   const html = document.documentElement;
-  html.classList.remove("theme-blue", "theme-emerald");
+  // remove all known theme classes then add the selected one
+  html.classList.remove("theme-blue", "theme-emerald", "theme-rose");
   if (!theme || theme === "default") return;
   if (theme === "blue") html.classList.add("theme-blue");
   if (theme === "emerald") html.classList.add("theme-emerald");
+  if (theme === "rose") html.classList.add("theme-rose");
 }
 
 function loadHistory() {
