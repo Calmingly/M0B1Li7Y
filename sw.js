@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v1";
+const VERSION = "m0b1li7y-v2";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const CORE_ASSETS = [
