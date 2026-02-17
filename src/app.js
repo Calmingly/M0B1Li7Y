@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
   hapticsEnabled: true,
   defaultWalkDuration: 4,
   enableRemoteImageCaching: false
+  ,theme: "default"
 };
 
 const ROUTINE_STEPS = [
@@ -64,6 +65,7 @@ const els = {
   hapticsEnabled: document.getElementById("haptics-enabled"),
   defaultWalkDuration: document.getElementById("default-walk-duration"),
   remoteImageCaching: document.getElementById("remote-image-caching"),
+  themeSelect: document.getElementById("theme-select"),
   navButtons: Array.from(document.querySelectorAll(".nav-btn")),
   views: Array.from(document.querySelectorAll(".view")),
   walkOptions: Array.from(document.querySelectorAll(".walk-options button"))
@@ -71,6 +73,7 @@ const els = {
 
 function init() {
   hydrateSettingsUI();
+  applyTheme(state.settings.theme);
   wireEvents();
   renderStep();
   renderHistory();
@@ -135,6 +138,14 @@ function wireEvents() {
     saveSettings();
     notifyServiceWorkerSettings();
   });
+
+  if (els.themeSelect) {
+    els.themeSelect.addEventListener("change", () => {
+      state.settings.theme = els.themeSelect.value;
+      saveSettings();
+      applyTheme(state.settings.theme);
+    });
+  }
 
   els.stepImage.addEventListener("load", () => {
     const info = state.imageMap[currentStep().id];
@@ -363,7 +374,16 @@ function hydrateSettingsUI() {
   els.hapticsEnabled.checked = state.settings.hapticsEnabled;
   els.defaultWalkDuration.value = String(state.settings.defaultWalkDuration);
   els.remoteImageCaching.checked = state.settings.enableRemoteImageCaching;
+  if (els.themeSelect) els.themeSelect.value = state.settings.theme || "default";
   syncMuteIcon();
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  html.classList.remove("theme-blue", "theme-emerald");
+  if (!theme || theme === "default") return;
+  if (theme === "blue") html.classList.add("theme-blue");
+  if (theme === "emerald") html.classList.add("theme-emerald");
 }
 
 function loadHistory() {
