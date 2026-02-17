@@ -146,7 +146,7 @@ function wireEvents() {
     }
     els.stepImage.hidden = false;
     els.imageFallback.hidden = true;
-    els.imageCredit.hidden = false;
+    els.imageCredit.hidden = true;
   });
 
   els.stepImage.addEventListener("error", () => {
@@ -274,10 +274,7 @@ function renderStepImage() {
   }
 
   els.stepImage.alt = imageInfo.alt;
-  els.imageCreditLink.href = imageInfo.sourceUrl;
-  els.imageCreditLink.textContent = imageInfo.sourceName;
-
-  // Keep credit hidden until image load succeeds.
+  // Image credit text intentionally hidden in UI.
   els.imageCredit.hidden = true;
   els.imageFallback.hidden = true;
   els.stepImage.hidden = false;
