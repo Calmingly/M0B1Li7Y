@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#0f172a" />
     <meta name="description" content="M0B1Li7Y: a fast, offline-capable 12-minute mobility routine." />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
@@ -13,157 +13,206 @@
   </head>
   <body>
     <div class="app-shell">
-      <header class="app-header app-header--compact">
-        <div class="brand">
-          <div class="logo">🟠</div>
-          <div class="title-wrap">
-            <h1>M0B1Li7Y</h1>
-            <small class="tagline">12-minute mobility</small>
-          </div>
+      <header class="app-header">
+        <div class="header-brand">
+          <h1 class="header-title">💪 M0B1Li7Y</h1>
+          <p class="header-subtitle">Daily Mobility</p>
         </div>
-        <div class="header-actions">
-          <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
-        </div>
+        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
       </header>
 
       <div id="update-banner" class="update-banner" hidden aria-live="polite">
-        <span>New version available</span>
+        <span>✨ New version available</span>
         <div class="update-actions">
-          <button id="reload-btn" class="control-btn emphasized">Reload</button>
+          <button id="reload-btn" class="control-btn control-btn--primary">Reload</button>
           <button id="dismiss-update" class="control-btn">Later</button>
         </div>
       </div>
 
-      <main>
+      <main class="main-content">
+        <!-- ROUTINE VIEW -->
         <section id="routine-view" class="view active" aria-label="Routine">
-          <div class="hero">
-            <div class="media-frame media-frame--large" id="media-frame">
+          <!-- Progress Ring -->
+          <div class="progress-container">
+            <div class="progress-ring-wrapper">
+              <svg class="progress-ring" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" class="progress-ring-bg"></circle>
+                <circle cx="50" cy="50" r="45" class="progress-ring-fg" id="progress-ring"></circle>
+              </svg>
+              <div class="progress-text">
+                <div class="timer large-timer" id="timer">00:30</div>
+                <p class="step-progress" id="step-progress">Step 1 of 12</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Card with Image -->
+          <div class="hero-card">
+            <div class="media-frame media-frame--hero" id="media-frame">
               <img id="step-image" alt="" loading="lazy" />
               <div id="image-fallback" class="image-fallback" hidden aria-hidden="true"></div>
             </div>
+            <div class="card-overlay">
+              <h2 id="step-name" class="hero-title">Arm circles</h2>
+              <p id="step-cue" class="hero-cue">Keep shoulders relaxed and smooth.</p>
+            </div>
+          </div>
 
-            <div class="hero-overlay">
-              <div class="hero-meta">
-                <p class="step-progress" id="step-progress">Step 1 of 12</p>
-                <h3 id="step-name">Arm circles</h3>
-                <p id="step-cue" class="step-cue">Keep shoulders relaxed and smooth.</p>
+          <!-- Info Cards Grid -->
+          <div class="cards-grid">
+            <div class="info-card info-card--blue">
+              <div class="card-icon">⏱️</div>
+              <div class="card-content">
+                <p class="card-label">Duration</p>
+                <p class="card-value">~12 min</p>
               </div>
-              <div class="hero-controls">
-                <div class="timer hero-timer" id="timer">00:30</div>
-                <div id="untimed-hint" class="untimed-hint" hidden>Untimed set — tap Done when finished.</div>
+            </div>
+            <div class="info-card info-card--green">
+              <div class="card-icon">🧘</div>
+              <div class="card-content">
+                <p class="card-label">Type</p>
+                <p class="card-value">Mobility</p>
               </div>
             </div>
           </div>
 
-          <div class="bottom-sheet" aria-hidden="false">
-            <div class="sheet-handle" aria-hidden="true"></div>
-            <div class="sheet-body">
-              <div class="sheet-top">
-                <p class="image-credit" id="image-credit" hidden>
-                  Illustration credit:
-                  <a id="image-credit-link" target="_blank" rel="noopener noreferrer">Bend</a>
-                </p>
-              </div>
+          <!-- Untimed hint -->
+          <div id="untimed-hint" class="untimed-hint" hidden>
+            <span class="hint-icon">✋</span> Tap Done when finished
+          </div>
 
-              <div class="sheet-content">
-                <p class="routine-subtitle">Total time: ~12 minutes</p>
-
-                <div class="controls-row start-controls" id="start-controls">
-                  <button id="start-btn" class="control-btn emphasized">Start</button>
-                </div>
-
-                <div class="controls-row primary-controls" id="run-controls" hidden>
-                  <button id="back-btn" class="control-btn">Back</button>
-                  <button id="pause-btn" class="control-btn emphasized">Pause</button>
-                  <button id="next-btn" class="control-btn">Next</button>
-                </div>
-
-                <div class="controls-row done-controls" id="done-controls" hidden>
-                  <button id="done-btn" class="control-btn emphasized" hidden>Done</button>
-                </div>
-
-                <div class="walk-picker" id="walk-picker" hidden>
-                  <p>Choose walk duration</p>
-                  <div class="walk-options">
-                    <button data-mins="3">3 min</button>
-                    <button data-mins="4">4 min</button>
-                    <button data-mins="5">5 min</button>
-                  </div>
-                </div>
-              </div>
+          <!-- Walk Picker -->
+          <div class="walk-picker" id="walk-picker" hidden>
+            <h3 class="walk-title">Choose walk duration</h3>
+            <div class="walk-options">
+              <button data-mins="3" class="walk-btn">🚶 3 min</button>
+              <button data-mins="4" class="walk-btn">🚶 4 min</button>
+              <button data-mins="5" class="walk-btn">🚶 5 min</button>
             </div>
           </div>
+
+          <!-- Control Buttons -->
+          <div class="button-grid">
+            <div class="start-controls controls-section" id="start-controls">
+              <button id="start-btn" class="control-btn control-btn--primary control-btn--large">
+                <span class="btn-icon">▶️</span> Start Routine
+              </button>
+            </div>
+
+            <div class="primary-controls controls-section" id="run-controls" hidden>
+              <button id="back-btn" class="control-btn control-btn--secondary">
+                <span>⬅️</span>
+              </button>
+              <button id="pause-btn" class="control-btn control-btn--primary control-btn--flex">
+                <span class="btn-icon">⏸️</span> Pause
+              </button>
+              <button id="next-btn" class="control-btn control-btn--secondary">
+                <span>➡️</span>
+              </button>
+            </div>
+
+            <div class="done-controls controls-section" id="done-controls" hidden>
+              <button id="done-btn" class="control-btn control-btn--primary control-btn--large" hidden>
+                <span class="btn-icon">✅</span> Done
+              </button>
+            </div>
+          </div>
+
+          <p class="image-credit" id="image-credit" hidden>
+            Illustrations by
+            <a id="image-credit-link" target="_blank" rel="noopener noreferrer">Bend</a>
+          </p>
         </section>
 
+        <!-- HISTORY VIEW -->
         <section id="history-view" class="view" aria-label="History" hidden>
-          <div class="section-card">
-            <h2>History (last 7 days)</h2>
-            <p id="streak">Streak: 0 days</p>
-            <ul id="history-list"></ul>
+          <div class="section-header">
+            <h2 class="section-title">📊 History</h2>
+            <p id="streak" class="streak-badge">Streak: 0 days</p>
+          </div>
+          <div class="history-card">
+            <ul id="history-list" class="history-list"></ul>
           </div>
         </section>
 
+        <!-- SETTINGS VIEW -->
         <section id="settings-view" class="view" aria-label="Settings" hidden>
-          <div class="section-card">
-            <h2>Settings</h2>
-            <fieldset class="settings-group">
-              <legend>Cues</legend>
-              <label><input type="checkbox" id="sound-enabled" checked /> Sound cues</label>
-              <label><input type="checkbox" id="haptics-enabled" checked /> Haptic cues</label>
-            </fieldset>
-
-            <fieldset class="settings-group">
-              <legend>Routine defaults</legend>
-              <label>
-                Default walk duration
-                <select id="default-walk-duration">
-                  <option value="3">3 minutes</option>
-                  <option value="4">4 minutes</option>
-                  <option value="5">5 minutes</option>
-                </select>
-              </label>
-            </fieldset>
-
-            <fieldset class="settings-group">
-              <legend>Images</legend>
-              <label>
-                <input type="checkbox" id="remote-image-caching" /> Cache exercise images for offline use
-              </label>
-              <p class="setting-note">Keeps images available after first load but uses extra device storage.</p>
-            </fieldset>
-
-                <fieldset class="settings-group">
-                  <legend>Developer</legend>
-                  <label>
-                    <input type="checkbox" id="disable-sw" /> Disable service worker (bypass cache)
-                  </label>
-                  <p class="setting-note">Enable this to unregister the service worker for testing. Requires reload to re-enable.</p>
-                </fieldset>
-
-            <fieldset class="settings-group">
-              <legend>Theme</legend>
-              <label>
-                Theme
-                <div class="theme-picker">
-                  <select id="theme-select">
-                    <option value="default">Default</option>
-                    <option value="blue">Blue</option>
-                    <option value="emerald">Emerald</option>
-                    <option value="rose">Rose</option>
-                  </select>
-                  <span id="theme-swatch" aria-hidden="true" title="Theme preview"></span>
-                </div>
-              </label>
-              <p class="setting-note">Choose a color accent for the app.</p>
-            </fieldset>
+          <div class="section-header">
+            <h2 class="section-title">⚙️ Settings</h2>
           </div>
+
+          <fieldset class="settings-group">
+            <legend class="settings-legend">🔊 Cues</legend>
+            <label class="checkbox-label">
+              <input type="checkbox" id="sound-enabled" checked />
+              <span>Sound cues</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="haptics-enabled" checked />
+              <span>Haptic cues</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="settings-group">
+            <legend class="settings-legend">🚶 Routine defaults</legend>
+            <label class="select-label">
+              Default walk duration
+              <select id="default-walk-duration">
+                <option value="3">3 minutes</option>
+                <option value="4">4 minutes</option>
+                <option value="5">5 minutes</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="settings-group">
+            <legend class="settings-legend">🖼️ Images</legend>
+            <label class="checkbox-label">
+              <input type="checkbox" id="remote-image-caching" />
+              <span>Cache exercise images for offline use</span>
+            </label>
+            <p class="setting-note">Keeps images available after first load but uses extra device storage.</p>
+          </fieldset>
+
+          <fieldset class="settings-group">
+            <legend class="settings-legend">🎨 Theme</legend>
+            <label class="select-label">
+              Theme
+              <select id="theme-select">
+                <option value="default">Default</option>
+                <option value="blue">Blue</option>
+                <option value="emerald">Emerald</option>
+                <option value="rose">Rose</option>
+              </select>
+            </label>
+            <span id="theme-swatch" class="theme-swatch" aria-hidden="true" title="Theme preview"></span>
+          </fieldset>
+
+          <fieldset class="settings-group">
+            <legend class="settings-legend">👨‍💻 Developer</legend>
+            <label class="checkbox-label">
+              <input type="checkbox" id="disable-sw" />
+              <span>Disable service worker (bypass cache)</span>
+            </label>
+            <p class="setting-note">Enable this to unregister the service worker for testing.</p>
+          </fieldset>
         </section>
       </main>
 
+      <!-- Bottom Navigation -->
       <nav class="bottom-nav" aria-label="Primary">
-        <button data-view="routine-view" class="nav-btn active"><span class="nav-icon">🧘</span><span>Routine</span></button>
-        <button data-view="history-view" class="nav-btn"><span class="nav-icon">📈</span><span>History</span></button>
-        <button data-view="settings-view" class="nav-btn"><span class="nav-icon">⚙️</span><span>Settings</span></button>
+        <button data-view="routine-view" class="nav-btn active" title="Routine">
+          <span class="nav-icon">🧘</span>
+          <span class="nav-label">Routine</span>
+        </button>
+        <button data-view="history-view" class="nav-btn" title="History">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">History</span>
+        </button>
+        <button data-view="settings-view" class="nav-btn" title="Settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
       </nav>
       <div id="update-toast" class="toast" hidden aria-live="polite"></div>
     </div>
