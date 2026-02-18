@@ -66,9 +66,6 @@ const els = {
   imageFallback: document.getElementById("image-fallback"),
   imageCredit: document.getElementById("image-credit"),
   imageCreditLink: document.getElementById("image-credit-link"),
-  debugPanel: document.getElementById("debug-panel"),
-  debugOutput: document.getElementById("debug-output"),
-  debugShowBtn: document.getElementById("debug-show-btn"),
   historyList: document.getElementById("history-list"),
   streak: document.getElementById("streak"),
   soundEnabled: document.getElementById("sound-enabled"),
@@ -203,46 +200,6 @@ function wireEvents() {
     els.imageFallback.hidden = true;
     els.imageCredit.hidden = true;
   });
-
-  // Debug panel toggle (temporary)
-  if (els.debugShowBtn) {
-    els.debugShowBtn.addEventListener("click", async () => {
-      if (!els.debugOutput) return;
-      const showing = !els.debugOutput.hidden;
-      if (showing) {
-        els.debugOutput.hidden = true;
-        els.debugPanel.setAttribute('hidden', '');
-        els.debugShowBtn.textContent = 'Show';
-      } else {
-        els.debugPanel.removeAttribute('hidden');
-        els.debugOutput.hidden = false;
-        els.debugShowBtn.textContent = 'Hide';
-        await renderDebugPanel();
-      }
-    });
-  }
-}
-
-async function getSWState() {
-  if (!('serviceWorker' in navigator)) return [];
-  try {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    return regs.map((r) => ({ scope: r.scope, waiting: !!r.waiting, installing: !!r.installing, active: !!r.active }));
-  } catch (e) {
-    return [{ error: String(e) }];
-  }
-}
-
-async function renderDebugPanel() {
-  try {
-    if (!els.debugOutput) return;
-    const errors = JSON.parse(localStorage.getItem('m0b1li7y.errors') || '[]');
-    const sw = await getSWState();
-    const out = { errors: errors.slice(0, 20), serviceWorkers: sw };
-    els.debugOutput.textContent = JSON.stringify(out, null, 2);
-  } catch (e) {
-    if (els.debugOutput) els.debugOutput.textContent = `Failed to render debug: ${e}`;
-  }
 }
 
 function startRoutine() {
