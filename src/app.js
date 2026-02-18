@@ -372,7 +372,7 @@ function toggleMute() {
 }
 
 function syncMuteIcon() {
-  els.muteToggle.textContent = state.settings.soundEnabled ? "🔊" : "🔇";
+  els.muteToggle.textContent = state.settings.soundEnabled ? "SND" : "MUT";
 }
 
 function finishRoutine() {

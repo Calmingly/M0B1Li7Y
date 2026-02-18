@@ -15,10 +15,10 @@
     <div class="app-shell">
       <header class="app-header">
         <div class="header-brand">
-          <h1 class="header-title">💪 M0B1Li7Y</h1>
+          <h1 class="header-title">M0B1Li7Y</h1>
           <p class="header-subtitle">Daily Mobility</p>
         </div>
-        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">SND</button>
       </header>
 
       <main class="main-content">
@@ -53,14 +53,14 @@
           <!-- Info Cards Grid -->
           <div class="cards-grid">
             <div class="info-card info-card--blue">
-              <div class="card-icon">⏱️</div>
+              <div class="card-icon">T</div>
               <div class="card-content">
                 <p class="card-label">Duration</p>
                 <p class="card-value">~12 min</p>
               </div>
             </div>
             <div class="info-card info-card--green">
-              <div class="card-icon">🧘</div>
+              <div class="card-icon">M</div>
               <div class="card-content">
                 <p class="card-label">Type</p>
                 <p class="card-value">Mobility</p>
@@ -70,43 +70,33 @@
 
           <!-- Untimed hint -->
           <div id="untimed-hint" class="untimed-hint" hidden>
-            <span class="hint-icon">✋</span> Tap Done when finished
+            <span class="hint-icon">•</span> Tap Done when finished
           </div>
 
           <!-- Walk Picker -->
           <div class="walk-picker" id="walk-picker" hidden>
             <h3 class="walk-title">Choose walk duration</h3>
             <div class="walk-options">
-              <button data-mins="3" class="walk-btn">🚶 3 min</button>
-              <button data-mins="4" class="walk-btn">🚶 4 min</button>
-              <button data-mins="5" class="walk-btn">🚶 5 min</button>
+              <button data-mins="3" class="walk-btn">3 min</button>
+              <button data-mins="4" class="walk-btn">4 min</button>
+              <button data-mins="5" class="walk-btn">5 min</button>
             </div>
           </div>
 
           <!-- Control Buttons -->
           <div class="button-grid">
             <div class="start-controls controls-section" id="start-controls">
-              <button id="start-btn" class="control-btn control-btn--primary control-btn--large">
-                <span class="btn-icon">▶️</span> Start Routine
-              </button>
+              <button id="start-btn" class="control-btn control-btn--primary control-btn--large">Start</button>
             </div>
 
             <div class="primary-controls controls-section" id="run-controls" hidden>
-              <button id="back-btn" class="control-btn control-btn--secondary">
-                <span>⬅️</span>
-              </button>
-              <button id="pause-btn" class="control-btn control-btn--primary control-btn--flex">
-                <span class="btn-icon">⏸️</span> Pause
-              </button>
-              <button id="next-btn" class="control-btn control-btn--secondary">
-                <span>➡️</span>
-              </button>
+              <button id="back-btn" class="control-btn control-btn--secondary">Back</button>
+              <button id="pause-btn" class="control-btn control-btn--primary control-btn--flex">Pause</button>
+              <button id="next-btn" class="control-btn control-btn--secondary">Next</button>
             </div>
 
             <div class="done-controls controls-section" id="done-controls" hidden>
-              <button id="done-btn" class="control-btn control-btn--primary control-btn--large" hidden>
-                <span class="btn-icon">✅</span> Done
-              </button>
+              <button id="done-btn" class="control-btn control-btn--primary control-btn--large" hidden>Done</button>
             </div>
           </div>
 
@@ -194,15 +184,15 @@
       <!-- Bottom Navigation -->
       <nav class="bottom-nav" aria-label="Primary">
         <button data-view="routine-view" class="nav-btn active" title="Routine">
-          <span class="nav-icon">🧘</span>
+          <span class="nav-icon">R</span>
           <span class="nav-label">Routine</span>
         </button>
         <button data-view="history-view" class="nav-btn" title="History">
-          <span class="nav-icon">📊</span>
+          <span class="nav-icon">H</span>
           <span class="nav-label">History</span>
         </button>
         <button data-view="settings-view" class="nav-btn" title="Settings">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon">S</span>
           <span class="nav-label">Settings</span>
         </button>
       </nav>
