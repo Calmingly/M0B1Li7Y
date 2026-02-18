@@ -1,4 +1,4 @@
-const CACHE_KEY = "m0b1li7y.routineImages.demoOnly.v5";
+const CACHE_KEY = "m0b1li7y.routineImages.demoOnly.v6";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
@@ -6,11 +6,9 @@ const IMAGE_FILE_BY_STEP = {
   armCircles: "armcircles.png",
   trunkRotations: "trunkrotation.png",
   sideBends: "sidebends.png",
-  legSwingsLeft: "legswings.png",
-  legSwingsRight: "legswings.png",
+  legSwings: "legswings.png",
   kneesToChest: "kneestochest.png",
-  figureFourLeft: "lyingfigurefour.png",
-  figureFourRight: "lyingfigurefour.png",
+  figureFour: "lyingfigurefour.png",
   childPose: "childspose.png",
   postureReset: "overheadreach.png",
   plank: "plank.png",
