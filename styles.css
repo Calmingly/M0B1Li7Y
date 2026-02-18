@@ -202,16 +202,14 @@ body {
 
 .media-frame--hero {
   width: 100%;
-  aspect-ratio: 16 / 10;
   border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--card-bg-strong) 80%, #d1d5db 20%);
+  background: transparent;
 }
 
 #step-image {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
+  height: auto;
+  display: block;
   filter: saturate(0.62) contrast(0.92) brightness(0.84);
 }
 
