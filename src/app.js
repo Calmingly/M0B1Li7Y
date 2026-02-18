@@ -279,7 +279,7 @@ function updateControlLayout(step) {
 
   els.pauseBtn.disabled = !state.isRunning;
   els.backBtn.disabled = state.stepIndex === 0;
-  els.nextBtn.disabled = state.stepIndex === ROUTINE_STEPS.length - 1 || isUntimed;
+  els.nextBtn.disabled = state.stepIndex === ROUTINE_STEPS.length - 1;
 
   if (state.isRunning) {
     els.pauseBtn.textContent = state.isPaused ? "Resume" : "Pause";
