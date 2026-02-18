@@ -88,6 +88,24 @@ body {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+.icon-btn--sound {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+.sound-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .icon-btn:active {
   background: color-mix(in srgb, var(--card-bg) 74%, white 5%);
 }
@@ -571,13 +589,22 @@ body {
 }
 
 .nav-icon {
-  font-size: 0.68rem;
   width: 1.2rem;
   height: 1.2rem;
   border: 1px solid rgba(255,255,255,0.22);
   border-radius: 999px;
   display: grid;
   place-items: center;
+}
+
+.nav-icon svg {
+  width: 0.78rem;
+  height: 0.78rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-label {

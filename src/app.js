@@ -373,7 +373,17 @@ function toggleMute() {
 }
 
 function syncMuteIcon() {
-  els.muteToggle.textContent = state.settings.soundEnabled ? "SND" : "MUT";
+  const soundOnIcon = els.muteToggle.querySelector(".sound-icon--on");
+  const soundOffIcon = els.muteToggle.querySelector(".sound-icon--off");
+
+  if (soundOnIcon) soundOnIcon.hidden = !state.settings.soundEnabled;
+  if (soundOffIcon) soundOffIcon.hidden = state.settings.soundEnabled;
+
+  els.muteToggle.setAttribute("aria-pressed", String(state.settings.soundEnabled));
+  els.muteToggle.setAttribute(
+    "aria-label",
+    state.settings.soundEnabled ? "Sound on" : "Sound off"
+  );
 }
 
 function finishRoutine() {

@@ -18,7 +18,18 @@
           <h1 class="header-title">M0B1Li7Y</h1>
           <p class="header-subtitle">Daily Mobility</p>
         </div>
-        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">SND</button>
+        <button id="mute-toggle" class="icon-btn icon-btn--sound" aria-label="Sound on" aria-pressed="true">
+          <svg class="sound-icon sound-icon--on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 10v4h4l5 4V6L7 10H3z"></path>
+            <path d="M16 9a4 4 0 0 1 0 6"></path>
+            <path d="M18.8 6.2a8 8 0 0 1 0 11.6"></path>
+          </svg>
+          <svg class="sound-icon sound-icon--off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+            <path d="M3 10v4h4l5 4V6L7 10H3z"></path>
+            <path d="M16 8l5 8"></path>
+            <path d="M21 8l-5 8"></path>
+          </svg>
+        </button>
       </header>
 
       <main class="main-content">
@@ -184,15 +195,42 @@
       <!-- Bottom Navigation -->
       <nav class="bottom-nav" aria-label="Primary">
         <button data-view="routine-view" class="nav-btn active" title="Routine">
-          <span class="nav-icon">🧘</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="5" r="2.2"></circle>
+              <path d="M12 8.5l-2.5 3 2.1 2.2"></path>
+              <path d="M12 8.5l3.8 3.7"></path>
+              <path d="M9.1 14.1L5.3 16"></path>
+              <path d="M14.5 13.2L18.7 16"></path>
+            </svg>
+          </span>
           <span class="nav-label">Routine</span>
         </button>
         <button data-view="history-view" class="nav-btn" title="History">
-          <span class="nav-icon">📈</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 18V8"></path>
+              <path d="M10 18V5"></path>
+              <path d="M15 18v-7"></path>
+              <path d="M20 18v-4"></path>
+            </svg>
+          </span>
           <span class="nav-label">History</span>
         </button>
         <button data-view="settings-view" class="nav-btn" title="Settings">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="2.6"></circle>
+              <path d="M12 3.5v2.3"></path>
+              <path d="M12 18.2v2.3"></path>
+              <path d="M4.8 12h2.3"></path>
+              <path d="M16.9 12h2.3"></path>
+              <path d="M6.7 6.7l1.6 1.6"></path>
+              <path d="M15.7 15.7l1.6 1.6"></path>
+              <path d="M17.3 6.7l-1.6 1.6"></path>
+              <path d="M8.3 15.7l-1.6 1.6"></path>
+            </svg>
+          </span>
           <span class="nav-label">Settings</span>
         </button>
       </nav>
