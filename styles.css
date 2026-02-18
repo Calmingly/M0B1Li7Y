@@ -214,12 +214,12 @@ body {
 
 .card-overlay {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(180deg, transparent, rgba(9, 14, 28, 0.92));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.62), transparent);
   padding: 0.72rem 0.82rem;
-  color: white;
+  color: #0f172a;
 }
 
 .hero-title {
@@ -231,7 +231,7 @@ body {
 .hero-cue {
   margin: 0;
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.74);
+  color: rgba(15, 23, 42, 0.86);
 }
 
 /* CARDS GRID */
