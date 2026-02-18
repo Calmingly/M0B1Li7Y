@@ -1,10 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Figure four right demo">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#11263a"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f273d"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
   <rect width="1200" height="900" fill="url(#bg)"/>
-  <circle cx="600" cy="280" r="62" fill="#ecfeff" opacity="0.9"/>
-  <rect x="520" y="350" width="160" height="190" rx="80" fill="#ecfeff" opacity="0.9"/>
-  <path d="M640 560 L690 640 L610 640" fill="none" stroke="#67e8f9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <line x1="580" y1="560" x2="500" y2="650" stroke="#67e8f9" stroke-width="16" stroke-linecap="round"/>
-  <text x="600" y="740" text-anchor="middle" fill="#e0f7ff" font-size="62" font-family="Inter, Arial, sans-serif" font-weight="700">Figure Four Right</text>
-  <text x="600" y="804" text-anchor="middle" fill="#67e8f9" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+  <ellipse cx="600" cy="790" rx="230" ry="24" fill="#0d1d2f" opacity="0.5"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="600" cy="230" r="46" fill="#f5cdb7" stroke="#d39b83" stroke-width="5"/>
+    <path d="M600 278 L600 502" stroke="#ecfeff" stroke-width="22"/>
+    <path d="M600 318 L540 360 L500 430" stroke="#f5cdb7" stroke-width="16"/>
+    <path d="M600 318 L660 360 L700 430" stroke="#f5cdb7" stroke-width="16"/>
+    <path d="M600 502 L648 680" stroke="#ecfeff" stroke-width="18"/>
+    <path d="M600 502 L530 614" stroke="#67e8f9" stroke-width="18"/>
+    <path d="M530 614 L640 614" stroke="#67e8f9" stroke-width="16"/>
+  </g>
+  <text x="600" y="842" text-anchor="middle" fill="#cffafe" font-size="54" font-family="Inter, Arial, sans-serif" font-weight="700">Figure Four Right</text>
 </svg>
