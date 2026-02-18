@@ -20,17 +20,17 @@ DEFAULT_SETTINGS.disableServiceWorker = false;
 const LOW_WARNING_SEC = 8;
 
 const ROUTINE_STEPS = [
-  { id: "armCircles", name: "Arm circles", cue: "Smooth shoulder circles.", durationSec: 30 },
-  { id: "counterPushups", name: "Counter pushups", cue: "Complete 10–15 reps.", durationSec: null },
-  { id: "legSwings", name: "Leg swings", cue: "Switch sides halfway and keep control.", durationSec: 30 },
-  { id: "trunkRotations", name: "Trunk rotations", cue: "Rotate gently side to side.", durationSec: 30 },
-  { id: "postureReset", name: "Posture reset", cue: "Stand tall, ribs down, shoulders relaxed.", durationSec: 30 },
-  { id: "sideBends", name: "Side bends", cue: "Reach and lengthen through the side body.", durationSec: 30 },
+  { id: "armCircles", name: "Arm Circles", cue: "Smooth shoulder circles.", durationSec: 30 },
+  { id: "counterPushups", name: "Counter Pushups", cue: "Complete 10–15 reps.", durationSec: null },
+  { id: "legSwings", name: "Leg Swings", cue: "Switch sides halfway and keep control.", durationSec: 30 },
+  { id: "trunkRotations", name: "Trunk Rotations", cue: "Rotate gently side to side.", durationSec: 30 },
+  { id: "postureReset", name: "Posture Reset", cue: "Stand tall, ribs down, shoulders relaxed.", durationSec: 30 },
+  { id: "sideBends", name: "Side Bends", cue: "Reach and lengthen through the side body.", durationSec: 30 },
   { id: "plank", name: "Plank", cue: "Brace core and keep a straight line.", durationSec: 60 },
-  { id: "kneesToChest", name: "Knees to chest", cue: "Alternate legs with steady posture.", durationSec: 30 },
-  { id: "figureFour", name: "Figure four", cue: "Switch sides halfway and avoid knee pressure.", durationSec: 30 },
-  { id: "childPose", name: "Child pose", cue: "Relax neck and breathe deeply.", durationSec: 45 },
-  { id: "briskWalk", name: "Brisk walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "briskWalk" }
+  { id: "kneesToChest", name: "Knees To Chest", cue: "Alternate legs with steady posture.", durationSec: 30 },
+  { id: "figureFour", name: "Figure Four", cue: "Switch sides halfway and avoid knee pressure.", durationSec: 30 },
+  { id: "childPose", name: "Child Pose", cue: "Relax neck and breathe deeply.", durationSec: 45 },
+  { id: "briskWalk", name: "Brisk Walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "briskWalk" }
 ];
 
 const state = {
