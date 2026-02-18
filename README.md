@@ -2,6 +2,8 @@
 
 Mobile-first progressive web app for a guided mobility routine (`M0B1Li7Y +`) that works offline after first load.
 
+> **Latest updates:** Hero + bottom-sheet UI redesign, timer-low warning, in-app update flow, error logging.
+
 ## Features
 - One-tap start with step-by-step timer flow
 - 12-step routine including untimed push-up set and user-selectable walk duration
