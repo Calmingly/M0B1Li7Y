@@ -612,12 +612,3 @@ function notifyServiceWorkerSettings() {
 }
 
 init();
-    type: "SETTINGS_UPDATE",
-    payload: {
-      appVersion: APP_VERSION,
-      enableRemoteImageCaching: state.settings.enableRemoteImageCaching
-    }
-  });
-}
-
-init();
