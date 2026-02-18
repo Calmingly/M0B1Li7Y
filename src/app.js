@@ -83,6 +83,13 @@ function init() {
   renderStep();
   renderHistory();
   registerServiceWorker();
+  // If we previously requested an update and reloaded, show a small confirmation.
+  try {
+    if (sessionStorage.getItem("m0b1li7y.showUpdateToast") === "1") {
+      sessionStorage.removeItem("m0b1li7y.showUpdateToast");
+      showToast("App updated");
+    }
+  } catch {}
   loadRoutineImages().then((imageMap) => {
     state.imageMap = imageMap;
     renderStepImage();
@@ -525,6 +532,15 @@ function promptUpdate(registration) {
 function notifyServiceWorkerSettings() {
   if (!navigator.serviceWorker?.controller) return;
   navigator.serviceWorker.controller.postMessage({
+    type: "SETTINGS_UPDATE",
+    payload: {
+      appVersion: APP_VERSION,
+      enableRemoteImageCaching: state.settings.enableRemoteImageCaching
+    }
+  });
+}
+
+init();
     type: "SETTINGS_UPDATE",
     payload: {
       appVersion: APP_VERSION,

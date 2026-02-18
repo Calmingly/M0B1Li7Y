@@ -72,6 +72,31 @@ body {
 .update-banner[hidden] { display: none; }
 .update-actions { display: inline-flex; gap: .5rem; align-items: center; }
 
+/* Toast shown after the app updates */
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  background: rgba(17,24,39,0.95);
+  color: white;
+  padding: .6rem .9rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.4);
+  font-weight: 600;
+  font-size: .95rem;
+  z-index: 60;
+  transition: opacity .18s ease, transform .18s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.toast[hidden] { display: none; }
+
 main { padding: var(--space-4); }
 .routine-title {
   margin: var(--space-1) 0;
