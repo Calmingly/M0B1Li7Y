@@ -1,21 +1,21 @@
-const CACHE_KEY = "m0b1li7y.routineImages.humanGif.v4";
+const CACHE_KEY = "m0b1li7y.routineImages.demoOnly.v5";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
 const IMAGE_FILE_BY_STEP = {
-  armCircles: "armcircles.gif",
-  trunkRotations: "trunkrotation.gif",
-  sideBends: "sidebend.gif",
-  legSwingsLeft: "legswings.gif",
-  legSwingsRight: "legswings.gif",
-  kneesToChest: "kneestochest.gif",
-  figureFourLeft: "lyingfigurefour.gif",
-  figureFourRight: "lyingfigurefour.gif",
-  childPose: "childspose.gif",
-  postureReset: "overheadreach.gif",
+  armCircles: "demo-arm-circles.svg",
+  trunkRotations: "demo-trunk-rotations.svg",
+  sideBends: "demo-side-bends.svg",
+  legSwingsLeft: "demo-leg-swings-left.svg",
+  legSwingsRight: "demo-leg-swings-right.svg",
+  kneesToChest: "demo-knees-to-chest.svg",
+  figureFourLeft: "demo-figure-four-left.svg",
+  figureFourRight: "demo-figure-four-right.svg",
+  childPose: "demo-child-pose.svg",
+  postureReset: "demo-posture-reset.svg",
   plank: "demo-plank.svg",
-  pushUps: "sidebend-seated.gif",
-  walk: "toetouchtwist.gif"
+  pushUps: "demo-push-ups.svg",
+  walk: "demo-walk.svg"
 };
 
 function readCachedImageMap() {

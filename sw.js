@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v5";
+const VERSION = "m0b1li7y-v6";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const CORE_ASSETS = [
@@ -9,17 +9,6 @@ const CORE_ASSETS = [
   "./src/routineImages.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
-  "./img/armcircles.gif",
-  "./img/trunkrotation.gif",
-  "./img/sidebend.gif",
-  "./img/legswings.gif",
-  "./img/kneestochest.gif",
-  "./img/lyingfigurefour.gif",
-  "./img/childspose.gif",
-  "./img/overheadreach.gif",
-  "./img/sidebend-seated.gif",
-  "./img/toetouchtwist.gif",
-  "./img/demo-plank.svg",
   "./img/demo-arm-circles.svg",
   "./img/demo-trunk-rotations.svg",
   "./img/demo-side-bends.svg",
@@ -30,6 +19,7 @@ const CORE_ASSETS = [
   "./img/demo-figure-four-right.svg",
   "./img/demo-child-pose.svg",
   "./img/demo-posture-reset.svg",
+  "./img/demo-plank.svg",
   "./img/demo-push-ups.svg",
   "./img/demo-walk.svg"
 ];
