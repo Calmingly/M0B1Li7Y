@@ -58,6 +58,20 @@ body {
 .app-header .title-wrap { display: flex; flex-direction: column; gap: 4px; }
 .app-header .tagline { color: var(--muted); font-size: .85rem; margin: 0; }
 
+.update-banner {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 var(--space-4) var(--space-3);
+  padding: .6rem .8rem;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 14%, transparent), color-mix(in oklab, var(--card) 85%, transparent));
+  border-radius: .6rem;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+}
+.update-banner[hidden] { display: none; }
+.update-actions { display: inline-flex; gap: .5rem; align-items: center; }
+
 main { padding: var(--space-4); }
 .routine-title {
   margin: var(--space-1) 0;

@@ -471,10 +471,55 @@ function switchView(viewId) {
 
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
+
   navigator.serviceWorker
     .register("./sw.js")
-    .then(() => notifyServiceWorkerSettings())
+    .then((registration) => {
+      notifyServiceWorkerSettings();
+
+      // If there's already a waiting worker, prompt the user to reload.
+      if (registration.waiting) promptUpdate(registration);
+
+      // Listen for updates found (new SW installing).
+      registration.addEventListener("updatefound", () => {
+        const installing = registration.installing;
+        if (!installing) return;
+        installing.addEventListener("statechange", () => {
+          if (installing.state === "installed" && navigator.serviceWorker.controller) {
+            promptUpdate(registration);
+          }
+        });
+      });
+
+      // When the new SW becomes active, reload to use the new assets.
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
+      });
+    })
     .catch(() => undefined);
+}
+
+function promptUpdate(registration) {
+  const banner = document.getElementById("update-banner");
+  if (!banner) return;
+  banner.hidden = false;
+
+  const reloadBtn = document.getElementById("reload-btn");
+  const dismissBtn = document.getElementById("dismiss-update");
+
+  const doReload = () => {
+    // Ask the waiting service worker to skip waiting, if present.
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: "SKIP_WAITING" });
+    } else {
+      window.location.reload();
+    }
+  };
+
+  reloadBtn.onclick = doReload;
+  dismissBtn.onclick = () => {
+    banner.hidden = true;
+  };
 }
 
 function notifyServiceWorkerSettings() {
