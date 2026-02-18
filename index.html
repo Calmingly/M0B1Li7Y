@@ -217,6 +217,15 @@
       <div id="update-toast" class="toast" hidden aria-live="polite"></div>
     </div>
 
+    <!-- Temporary debug panel (toggle to view client errors and SW registrations) -->
+    <div id="debug-panel" class="debug-panel" hidden aria-live="polite">
+      <div class="debug-header">
+        <strong>Debug</strong>
+        <button id="debug-show-btn" class="control-btn">Show</button>
+      </div>
+      <pre id="debug-output" class="debug-output" hidden></pre>
+    </div>
+
     <script type="module" src="./src/app.js"></script>
   </body>
 </html>
