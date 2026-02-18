@@ -30,6 +30,7 @@ const ROUTINE_STEPS = [
   { id: "figureFourRight", name: "Figure four right", cue: "Move slow and avoid knee pressure.", durationSec: 30 },
   { id: "childPose", name: "Child pose", cue: "Relax neck and breathe deeply.", durationSec: 45 },
   { id: "postureReset", name: "Posture reset", cue: "Stand tall, ribs down, shoulders relaxed.", durationSec: 30 },
+  { id: "plank", name: "Plank", cue: "Brace core and keep a straight line.", durationSec: 60 },
   { id: "pushUps", name: "Wall or counter push ups", cue: "Complete 10–15 reps.", durationSec: null },
   { id: "walk", name: "Walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "walk" }
 ];

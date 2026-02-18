@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Arm circles demo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="600" cy="280" r="62" fill="#dbeafe" opacity="0.9"/>
+  <rect x="520" y="350" width="160" height="210" rx="80" fill="#dbeafe" opacity="0.9"/>
+  <circle cx="430" cy="430" r="55" fill="none" stroke="#93c5fd" stroke-width="16"/>
+  <circle cx="770" cy="430" r="55" fill="none" stroke="#93c5fd" stroke-width="16"/>
+  <text x="600" y="740" text-anchor="middle" fill="#e2e8f0" font-size="74" font-family="Inter, Arial, sans-serif" font-weight="700">Arm Circles</text>
+  <text x="600" y="804" text-anchor="middle" fill="#93c5fd" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+</svg>

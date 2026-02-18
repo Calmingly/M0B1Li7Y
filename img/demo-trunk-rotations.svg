@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Trunk rotations demo">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#10231f"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="600" cy="280" r="62" fill="#ecfeff" opacity="0.9"/>
+  <rect x="520" y="350" width="160" height="210" rx="80" fill="#ecfeff" opacity="0.9"/>
+  <path d="M500 430 Q600 360 700 430" fill="none" stroke="#5eead4" stroke-width="16"/>
+  <path d="M500 470 Q600 540 700 470" fill="none" stroke="#5eead4" stroke-width="16"/>
+  <text x="600" y="740" text-anchor="middle" fill="#ecfeff" font-size="74" font-family="Inter, Arial, sans-serif" font-weight="700">Trunk Rotations</text>
+  <text x="600" y="804" text-anchor="middle" fill="#5eead4" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Figure four right demo">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#11263a"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="600" cy="280" r="62" fill="#ecfeff" opacity="0.9"/>
+  <rect x="520" y="350" width="160" height="190" rx="80" fill="#ecfeff" opacity="0.9"/>
+  <path d="M640 560 L690 640 L610 640" fill="none" stroke="#67e8f9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="580" y1="560" x2="500" y2="650" stroke="#67e8f9" stroke-width="16" stroke-linecap="round"/>
+  <text x="600" y="740" text-anchor="middle" fill="#e0f7ff" font-size="62" font-family="Inter, Arial, sans-serif" font-weight="700">Figure Four Right</text>
+  <text x="600" y="804" text-anchor="middle" fill="#67e8f9" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+</svg>

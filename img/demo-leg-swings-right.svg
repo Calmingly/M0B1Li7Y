@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Leg swings right demo">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#052e2b"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect x="820" y="250" width="22" height="360" rx="11" fill="#99f6e4"/>
+  <circle cx="600" cy="280" r="62" fill="#ecfeff" opacity="0.9"/>
+  <rect x="520" y="350" width="160" height="190" rx="80" fill="#ecfeff" opacity="0.9"/>
+  <line x1="560" y1="540" x2="440" y2="640" stroke="#2dd4bf" stroke-width="18" stroke-linecap="round"/>
+  <line x1="600" y1="540" x2="680" y2="650" stroke="#99f6e4" stroke-width="18" stroke-linecap="round"/>
+  <text x="600" y="740" text-anchor="middle" fill="#ecfeff" font-size="66" font-family="Inter, Arial, sans-serif" font-weight="700">Leg Swings Right</text>
+  <text x="600" y="804" text-anchor="middle" fill="#5eead4" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+</svg>

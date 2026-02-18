@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Push ups demo">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#201c10"/><stop offset="100%" stop-color="#a16207"/></linearGradient></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect x="330" y="560" width="560" height="24" rx="12" fill="#fef3c7" opacity="0.9"/>
+  <circle cx="900" cy="560" r="34" fill="#fcd34d"/>
+  <line x1="360" y1="560" x2="340" y2="620" stroke="#fef3c7" stroke-width="14" stroke-linecap="round"/>
+  <line x1="820" y1="560" x2="840" y2="620" stroke="#fef3c7" stroke-width="14" stroke-linecap="round"/>
+  <text x="600" y="740" text-anchor="middle" fill="#fef3c7" font-size="74" font-family="Inter, Arial, sans-serif" font-weight="700">Push Ups</text>
+  <text x="600" y="804" text-anchor="middle" fill="#fcd34d" font-size="34" font-family="Inter, Arial, sans-serif">Demo</text>
+</svg>
