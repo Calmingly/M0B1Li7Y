@@ -423,7 +423,6 @@ function applyTheme(theme) {
   const html = document.documentElement;
   // remove all known theme classes then add the selected one
   html.classList.remove("theme-blue", "theme-emerald", "theme-rose");
-  if (!theme || theme === "default") return;
   if (theme === "blue") html.classList.add("theme-blue");
   if (theme === "emerald") html.classList.add("theme-emerald");
   if (theme === "rose") html.classList.add("theme-rose");
@@ -508,16 +507,13 @@ function registerServiceWorker() {
     .then((registration) => {
       notifyServiceWorkerSettings();
 
-      // If there's already a waiting worker, prompt the user to reload.
-      if (registration.waiting) promptUpdate(registration);
-
       // Listen for updates found (new SW installing).
       registration.addEventListener("updatefound", () => {
         const installing = registration.installing;
         if (!installing) return;
         installing.addEventListener("statechange", () => {
           if (installing.state === "installed" && navigator.serviceWorker.controller) {
-            promptUpdate(registration);
+            // New service worker is ready in the background.
           }
         });
       });
@@ -575,35 +571,6 @@ function persistError(entry) {
   } catch (e) {
     // ignore
   }
-}
-
-function promptUpdate(registration) {
-  const banner = document.getElementById("update-banner");
-  if (!banner) return;
-
-  const reloadBtn = document.getElementById("reload-btn");
-  const dismissBtn = document.getElementById("dismiss-update");
-
-  if (!reloadBtn || !dismissBtn) {
-    console.warn("Update banner buttons not found in DOM");
-    return;
-  }
-
-  banner.hidden = false;
-
-  const doReload = () => {
-    // Ask the waiting service worker to skip waiting, if present.
-    if (registration.waiting) {
-      registration.waiting.postMessage({ type: "SKIP_WAITING" });
-    } else {
-      window.location.reload();
-    }
-  };
-
-  reloadBtn.addEventListener("click", doReload);
-  dismissBtn.addEventListener("click", () => {
-    banner.hidden = true;
-  });
 }
 
 function notifyServiceWorkerSettings() {

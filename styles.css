@@ -1,17 +1,26 @@
 :root {
-  /* Samsung Health inspired colors - bold and vibrant */
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark: #1e40af;
-  --secondary: #10b981;
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dark: #1d4ed8;
+  --secondary: #14b8a6;
+  --secondary-light: #2dd4bf;
+  --bg: #0b1225;
+  --bg-light: #14203b;
+  --card-bg: #1c2847;
+  --card-bg-strong: #23345f;
+  --surface: rgba(255,255,255,0.06);
+  --text: #eff6ff;
+  --text-muted: #b6c2dd;
+  --header-glow: rgba(59,130,246,0.22);
+  --header-glow-2: rgba(20,184,166,0.18);
+  --chip-gradient: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  --cta-gradient: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+  --cta-shadow: rgba(59,130,246,0.3);
+  --timer-gradient: linear-gradient(90deg, var(--primary-light), var(--secondary-light));
+  --nav-active: linear-gradient(135deg, color-mix(in srgb, var(--primary) 24%, transparent), color-mix(in srgb, var(--secondary) 24%, transparent));
+  --streak-gradient: linear-gradient(135deg, var(--secondary), var(--primary));
   --accent-danger: #ef4444;
   --accent-warning: #f59e0b;
-  
-  --bg: #0f172a;
-  --bg-light: #1e293b;
-  --card-bg: #1e293b;
-  --text: #f1f5f9;
-  --text-muted: #cbd5e1;
   
   --space-xs: 0.4rem;
   --space-sm: 0.8rem;
@@ -42,7 +51,7 @@ body {
 /* HEADER */
 .app-header {
   padding: 1rem var(--space-md);
-  background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(16,185,129,0.1));
+  background: linear-gradient(135deg, var(--header-glow), var(--header-glow-2));
   border-bottom: 1px solid rgba(255,255,255,0.05);
   display: flex;
   justify-content: space-between;
@@ -54,7 +63,7 @@ body {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: var(--timer-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -76,24 +85,6 @@ body {
 }
 
 .icon-btn:active { transform: scale(0.9); }
-
-/* UPDATE BANNER */
-.update-banner {
-  margin: 0 var(--space-md) var(--space-sm);
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(16,185,129,0.15));
-  border: 1px solid rgba(59,130,246,0.3);
-  border-radius: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.update-actions {
-  display: flex;
-  gap: 0.6rem;
-}
 
 /* MAIN CONTENT */
 .main-content {
@@ -156,7 +147,7 @@ body {
 .large-timer {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: var(--timer-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -240,11 +231,11 @@ body {
 }
 
 .info-card--blue {
-  background: linear-gradient(135deg, #1e40af, #2563eb);
+  background: var(--chip-gradient);
 }
 
 .info-card--green {
-  background: linear-gradient(135deg, #065f46, #10b981);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 55%, #042f2e), var(--secondary-light));
 }
 
 .card-icon {
@@ -312,7 +303,7 @@ body {
 
 .walk-btn {
   padding: var(--space-md);
-  background: linear-gradient(135deg, #1e40af, #2563eb);
+  background: var(--cta-gradient);
   border: none;
   border-radius: 0.8rem;
   color: white;
@@ -324,7 +315,7 @@ body {
 
 .walk-btn:active {
   transform: scale(0.95);
-  box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+  box-shadow: 0 4px 12px var(--cta-shadow);
 }
 
 /* BUTTONS */
@@ -371,14 +362,14 @@ body {
 }
 
 .control-btn--primary {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  background: var(--cta-gradient);
   color: white;
-  box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+  box-shadow: 0 8px 20px var(--cta-shadow);
 }
 
 .control-btn--primary:active {
   transform: scale(0.98);
-  box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--cta-shadow) 75%, transparent);
 }
 
 .control-btn--secondary {
@@ -419,7 +410,7 @@ body {
 }
 
 .streak-badge {
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  background: var(--streak-gradient);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 999px;
@@ -429,7 +420,7 @@ body {
 }
 
 .history-card {
-  background: var(--card-bg);
+  background: var(--card-bg-strong);
   border-radius: 1rem;
   padding: var(--space-md);
   border: 1px solid rgba(255,255,255,0.1);
@@ -446,8 +437,8 @@ body {
 
 .history-list li {
   padding: var(--space-md);
-  background: rgba(37,99,235,0.1);
-  border: 1px solid rgba(37,99,235,0.2);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
   border-radius: 0.8rem;
   font-size: 0.95rem;
   transition: all 0.2s ease;
@@ -572,9 +563,9 @@ body {
 }
 
 .nav-btn.active {
-  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(16,185,129,0.2));
+  background: var(--nav-active);
   color: var(--text);
-  box-shadow: 0 0 20px rgba(37,99,235,0.2);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .nav-icon {
@@ -592,13 +583,13 @@ body {
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--secondary), color-mix(in srgb, var(--secondary) 80%, #022c22));
   color: white;
   padding: 0.8rem 1.2rem;
   border-radius: 999px;
   font-weight: 600;
   z-index: 50;
-  box-shadow: 0 12px 32px rgba(16,185,129,0.3);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--secondary) 42%, transparent);
   animation: toastSlide 0.3s ease-out;
 }
 
@@ -615,20 +606,65 @@ body {
 /* THEME OVERRIDES */
 .theme-blue {
   --primary: #0ea5e9;
-  --primary-light: #38bdf8;
-  --primary-dark: #0284c7;
+  --primary-light: #67e8f9;
+  --primary-dark: #0369a1;
+  --secondary: #22d3ee;
+  --secondary-light: #67e8f9;
+  --bg: #082032;
+  --bg-light: #0f2f46;
+  --card-bg: #123b56;
+  --card-bg-strong: #164a6d;
+  --text: #e6fbff;
+  --text-muted: #a9d6e2;
+  --header-glow: rgba(34,211,238,0.26);
+  --header-glow-2: rgba(14,165,233,0.2);
+  --chip-gradient: linear-gradient(135deg, #0c4a6e, var(--primary));
+  --cta-gradient: linear-gradient(135deg, #155e75, var(--primary-light));
+  --cta-shadow: rgba(14,165,233,0.35);
+  --timer-gradient: linear-gradient(90deg, #67e8f9, #22d3ee);
+  --streak-gradient: linear-gradient(135deg, #22d3ee, #0ea5e9);
 }
 
 .theme-emerald {
   --primary: #10b981;
-  --primary-light: #34d399;
-  --primary-dark: #059669;
+  --primary-light: #6ee7b7;
+  --primary-dark: #047857;
+  --secondary: #84cc16;
+  --secondary-light: #bef264;
+  --bg: #06231a;
+  --bg-light: #0c3528;
+  --card-bg: #114734;
+  --card-bg-strong: #165740;
+  --text: #e9fff4;
+  --text-muted: #b7e3cb;
+  --header-glow: rgba(16,185,129,0.25);
+  --header-glow-2: rgba(132,204,22,0.22);
+  --chip-gradient: linear-gradient(135deg, #065f46, var(--primary));
+  --cta-gradient: linear-gradient(135deg, #047857, #34d399);
+  --cta-shadow: rgba(16,185,129,0.34);
+  --timer-gradient: linear-gradient(90deg, #6ee7b7, #bef264);
+  --streak-gradient: linear-gradient(135deg, #84cc16, #10b981);
 }
 
 .theme-rose {
-  --primary: #f472b6;
-  --primary-light: #f472b6;
-  --primary-dark: #db2777;
+  --primary: #fb7185;
+  --primary-light: #f9a8d4;
+  --primary-dark: #be185d;
+  --secondary: #a78bfa;
+  --secondary-light: #c4b5fd;
+  --bg: #2a1023;
+  --bg-light: #3a1631;
+  --card-bg: #4a1d3e;
+  --card-bg-strong: #592549;
+  --text: #fff0f7;
+  --text-muted: #e6bdd1;
+  --header-glow: rgba(251,113,133,0.24);
+  --header-glow-2: rgba(167,139,250,0.24);
+  --chip-gradient: linear-gradient(135deg, #9d174d, #fb7185);
+  --cta-gradient: linear-gradient(135deg, #be185d, #f9a8d4);
+  --cta-shadow: rgba(251,113,133,0.35);
+  --timer-gradient: linear-gradient(90deg, #fda4af, #c4b5fd);
+  --streak-gradient: linear-gradient(135deg, #a78bfa, #fb7185);
 }
 
 /* ANIMATIONS */
