@@ -431,10 +431,20 @@ function hydrateSettingsUI() {
 function applyTheme(theme) {
   const html = document.documentElement;
   // remove all known theme classes then add the selected one
-  html.classList.remove("theme-blue", "theme-emerald", "theme-rose");
+  html.classList.remove(
+    "theme-blue",
+    "theme-emerald",
+    "theme-rose",
+    "theme-sunset",
+    "theme-midnight",
+    "theme-slate"
+  );
   if (theme === "blue") html.classList.add("theme-blue");
   if (theme === "emerald") html.classList.add("theme-emerald");
   if (theme === "rose") html.classList.add("theme-rose");
+  if (theme === "sunset") html.classList.add("theme-sunset");
+  if (theme === "midnight") html.classList.add("theme-midnight");
+  if (theme === "slate") html.classList.add("theme-slate");
   updateThemeSwatch();
 }
 
