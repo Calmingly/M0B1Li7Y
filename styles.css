@@ -89,16 +89,16 @@ body {
 }
 
 .icon-btn--sound {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.8rem;
+  height: 2.8rem;
   padding: 0;
   display: grid;
   place-items: center;
 }
 
 .sound-icon {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.31rem;
+  height: 1.31rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -199,15 +199,17 @@ body {
 }
 
 .media-frame--hero {
-  width: 50%;
+  width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 0.9rem;
+  display: grid;
+  place-items: center;
 }
 
 #step-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 50%;
+  max-height: 50%;
+  object-fit: contain;
   filter: saturate(0.62) contrast(0.92) brightness(0.84);
 }
 
@@ -265,16 +267,24 @@ body {
 }
 
 .card-icon {
-  font-size: 0.7rem;
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
   background: rgba(255,255,255,0.16);
   border: 1px solid rgba(255,255,255,0.22);
-  font-weight: 700;
   flex-shrink: 0;
+}
+
+.card-icon svg {
+  width: 0.98rem;
+  height: 0.98rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .card-content {
@@ -589,8 +599,8 @@ body {
 }
 
 .nav-icon {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border: 1px solid rgba(255,255,255,0.22);
   border-radius: 999px;
   display: grid;
@@ -598,8 +608,8 @@ body {
 }
 
 .nav-icon svg {
-  width: 0.78rem;
-  height: 0.78rem;
+  width: 0.98rem;
+  height: 0.98rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
