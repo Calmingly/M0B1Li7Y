@@ -580,10 +580,16 @@ function persistError(entry) {
 function promptUpdate(registration) {
   const banner = document.getElementById("update-banner");
   if (!banner) return;
-  banner.hidden = false;
 
   const reloadBtn = document.getElementById("reload-btn");
   const dismissBtn = document.getElementById("dismiss-update");
+
+  if (!reloadBtn || !dismissBtn) {
+    console.warn("Update banner buttons not found in DOM");
+    return;
+  }
+
+  banner.hidden = false;
 
   const doReload = () => {
     // Ask the waiting service worker to skip waiting, if present.
@@ -594,10 +600,10 @@ function promptUpdate(registration) {
     }
   };
 
-  reloadBtn.onclick = doReload;
-  dismissBtn.onclick = () => {
+  reloadBtn.addEventListener("click", doReload);
+  dismissBtn.addEventListener("click", () => {
     banner.hidden = true;
-  };
+  });
 }
 
 function notifyServiceWorkerSettings() {
