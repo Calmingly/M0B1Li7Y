@@ -1,4 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rounded background -->
   <rect width="512" height="512" rx="104" fill="#0ea5e9"/>
-  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="72" font-family="Arial, sans-serif" font-weight="700" fill="white">M0B1Li7Y</text>
+  
+  <!-- Minimalist figure in motion - stretching/mobility pose -->
+  <g transform="translate(256, 256)">
+    <!-- Head -->
+    <circle cx="0" cy="-50" r="18" fill="white"/>
+    
+    <!-- Body - curved spine for dynamic feel -->
+    <path d="M 0 -30 Q 25 -10 35 20" stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+    
+    <!-- Left arm reaching up -->
+    <path d="M -5 -20 L -60 -80" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
+    
+    <!-- Right arm extending -->
+    <path d="M 5 -15 L 65 10" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
+    
+    <!-- Left leg -->
+    <path d="M 15 35 L 25 85" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
+    
+    <!-- Right leg -->
+    <path d="M -15 30 L -35 80" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
+  </g>
 </svg>
