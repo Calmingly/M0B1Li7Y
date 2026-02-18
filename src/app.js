@@ -31,8 +31,8 @@ const ROUTINE_STEPS = [
   { id: "childPose", name: "Child pose", cue: "Relax neck and breathe deeply.", durationSec: 45 },
   { id: "postureReset", name: "Posture reset", cue: "Stand tall, ribs down, shoulders relaxed.", durationSec: 30 },
   { id: "plank", name: "Plank", cue: "Brace core and keep a straight line.", durationSec: 60 },
-  { id: "pushUps", name: "Wall or counter push ups", cue: "Complete 10–15 reps.", durationSec: null },
-  { id: "walk", name: "Walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "walk" }
+  { id: "counterPushups", name: "Counter pushups", cue: "Complete 10–15 reps.", durationSec: null },
+  { id: "briskWalk", name: "Brisk walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "briskWalk" }
 ];
 
 const state = {
@@ -128,7 +128,7 @@ function wireEvents() {
     btn.addEventListener("click", () => {
       state.settings.defaultWalkDuration = Number(btn.dataset.mins);
       saveSettings();
-      if (currentStep().id === "walk") {
+      if (currentStep().id === "briskWalk") {
         state.remainingSec = state.settings.defaultWalkDuration * 60;
         renderStep();
       }
@@ -248,7 +248,7 @@ function goToStep(nextIndex) {
   state.stepIndex = nextIndex;
   const step = currentStep();
 
-  if (step.durationSec === "walk") {
+  if (step.durationSec === "briskWalk") {
     state.remainingSec = state.settings.defaultWalkDuration * 60;
   } else {
     state.remainingSec = step.durationSec;
@@ -300,9 +300,9 @@ function renderStep() {
   els.untimedHint.hidden = !untimed;
   els.doneBtn.hidden = !untimed;
 
-  els.walkPicker.hidden = step.id !== "walk";
+  els.walkPicker.hidden = step.id !== "briskWalk";
   els.walkOptions.forEach((button) => {
-    button.disabled = step.id !== "walk";
+    button.disabled = step.id !== "briskWalk";
   });
 
   renderTimer();
