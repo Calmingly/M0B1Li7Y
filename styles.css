@@ -41,6 +41,53 @@ body {
   grid-template-rows: auto 1fr auto;
 }
 
+/* Bend-like hero + bottom-sheet layout */
+.hero {
+  position: relative;
+  width: 100%;
+  height: min(56vh, 560px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+.media-frame--large { width: 100%; height: 100%; border-radius: 1rem; }
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  pointer-events: none;
+}
+.hero-meta { color: white; text-shadow: 0 6px 18px rgba(0,0,0,0.45); pointer-events: auto; }
+.hero-meta .step-progress { color: rgba(255,255,255,0.9); }
+.hero-meta h3 { margin: .2rem 0 .4rem; font-size: 1.4rem; }
+.hero-controls { display:flex; gap: .8rem; align-items:center; pointer-events: auto; }
+.hero-timer { background: rgba(0,0,0,0.45); padding: .5rem .8rem; border-radius: .6rem; color: white; font-size: 1.4rem; font-weight: 800; }
+
+.bottom-sheet {
+  margin-top: -2rem;
+  padding: 0 var(--space-4) var(--space-4);
+}
+.sheet-handle { width: 42px; height: 6px; background: rgba(0,0,0,0.12); margin: .6rem auto; border-radius: 99px; }
+.sheet-body { background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.86)); border-radius: 1rem; padding: .8rem; box-shadow: 0 20px 40px rgba(2,6,23,0.08); }
+.sheet-content { padding: .6rem 0; }
+.sheet-top { display:flex; justify-content:space-between; align-items:center; }
+
+/* Compact header */
+.app-header--compact { padding: .6rem .9rem; background: transparent; align-items: center; }
+.app-header--compact .brand { display:flex; gap:.6rem; align-items:center; }
+.logo { width:36px; height:36px; border-radius:9px; background: linear-gradient(135deg,var(--accent),var(--accent-strong)); display:grid; place-items:center; color:white; font-weight:700; }
+
+/* Make primary controls larger and rounded like Bend */
+.control-btn { border-radius: 999px; padding: .8rem 1rem; }
+.control-btn.emphasized { padding: .9rem 1.2rem; }
+
+/* Hide original bottom nav to favor the sheet UI on small screens */
+.bottom-nav { display: none; }
+
 .app-header {
   position: sticky;
   top: 0;

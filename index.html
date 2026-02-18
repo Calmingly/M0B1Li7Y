@@ -13,13 +13,19 @@
   </head>
   <body>
     <div class="app-shell">
-      <header class="app-header">
-        <div class="title-wrap">
-          <h1>M0B1Li7Y</h1>
-          <small class="tagline">12-minute mobility — quick daily routine</small>
+      <header class="app-header app-header--compact">
+        <div class="brand">
+          <div class="logo">🟠</div>
+          <div class="title-wrap">
+            <h1>M0B1Li7Y</h1>
+            <small class="tagline">12-minute mobility</small>
+          </div>
         </div>
-        <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+        <div class="header-actions">
+          <button id="mute-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+        </div>
       </header>
+
       <div id="update-banner" class="update-banner" hidden aria-live="polite">
         <span>New version available</span>
         <div class="update-actions">
@@ -30,47 +36,61 @@
 
       <main>
         <section id="routine-view" class="view active" aria-label="Routine">
-          <h2 class="routine-title">M0B1Li7Y +</h2>
-          <p class="routine-subtitle">Total time: ~12 minutes</p>
-
-          <div class="step-card">
-            <p class="step-progress" id="step-progress">Step 1 of 12</p>
-            <h3 id="step-name">Arm circles</h3>
-            <p id="step-cue" class="step-cue">Keep shoulders relaxed and smooth.</p>
-
-            <div class="media-frame" id="media-frame">
+          <div class="hero">
+            <div class="media-frame media-frame--large" id="media-frame">
               <img id="step-image" alt="" loading="lazy" />
               <div id="image-fallback" class="image-fallback" hidden aria-hidden="true"></div>
             </div>
-            <p class="image-credit" id="image-credit" hidden>
-              Illustration credit:
-              <a id="image-credit-link" target="_blank" rel="noopener noreferrer">Bend</a>
-            </p>
 
-            <div class="timer" id="timer">00:30</div>
-            <div id="untimed-hint" class="untimed-hint" hidden>Untimed set — tap Done when finished.</div>
+            <div class="hero-overlay">
+              <div class="hero-meta">
+                <p class="step-progress" id="step-progress">Step 1 of 12</p>
+                <h3 id="step-name">Arm circles</h3>
+                <p id="step-cue" class="step-cue">Keep shoulders relaxed and smooth.</p>
+              </div>
+              <div class="hero-controls">
+                <div class="timer hero-timer" id="timer">00:30</div>
+                <div id="untimed-hint" class="untimed-hint" hidden>Untimed set — tap Done when finished.</div>
+              </div>
+            </div>
           </div>
 
-          <div class="controls-row start-controls" id="start-controls">
-            <button id="start-btn" class="control-btn emphasized">Start routine</button>
-          </div>
+          <div class="bottom-sheet" aria-hidden="false">
+            <div class="sheet-handle" aria-hidden="true"></div>
+            <div class="sheet-body">
+              <div class="sheet-top">
+                <p class="image-credit" id="image-credit" hidden>
+                  Illustration credit:
+                  <a id="image-credit-link" target="_blank" rel="noopener noreferrer">Bend</a>
+                </p>
+              </div>
 
-          <div class="controls-row primary-controls" id="run-controls" hidden>
-            <button id="back-btn" class="control-btn">Back</button>
-            <button id="pause-btn" class="control-btn emphasized">Pause</button>
-            <button id="next-btn" class="control-btn">Next</button>
-          </div>
+              <div class="sheet-content">
+                <p class="routine-subtitle">Total time: ~12 minutes</p>
 
-          <div class="controls-row done-controls" id="done-controls" hidden>
-            <button id="done-btn" class="control-btn emphasized" hidden>Done</button>
-          </div>
+                <div class="controls-row start-controls" id="start-controls">
+                  <button id="start-btn" class="control-btn emphasized">Start</button>
+                </div>
 
-          <div class="walk-picker" id="walk-picker" hidden>
-            <p>Choose walk duration</p>
-            <div class="walk-options">
-              <button data-mins="3">3 min</button>
-              <button data-mins="4">4 min</button>
-              <button data-mins="5">5 min</button>
+                <div class="controls-row primary-controls" id="run-controls" hidden>
+                  <button id="back-btn" class="control-btn">Back</button>
+                  <button id="pause-btn" class="control-btn emphasized">Pause</button>
+                  <button id="next-btn" class="control-btn">Next</button>
+                </div>
+
+                <div class="controls-row done-controls" id="done-controls" hidden>
+                  <button id="done-btn" class="control-btn emphasized" hidden>Done</button>
+                </div>
+
+                <div class="walk-picker" id="walk-picker" hidden>
+                  <p>Choose walk duration</p>
+                  <div class="walk-options">
+                    <button data-mins="3">3 min</button>
+                    <button data-mins="4">4 min</button>
+                    <button data-mins="5">5 min</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
