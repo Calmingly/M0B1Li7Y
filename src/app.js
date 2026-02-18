@@ -12,6 +12,10 @@ const DEFAULT_SETTINGS = {
   ,theme: "default"
 };
 
+// Countdown low-warning threshold (seconds). When remaining time is <= this
+// value the UI will visually warn the user.
+const LOW_WARNING_SEC = 8;
+
 const ROUTINE_STEPS = [
   { id: "armCircles", name: "Arm circles", cue: "Smooth shoulder circles.", durationSec: 30 },
   { id: "trunkRotations", name: "Trunk rotations", cue: "Rotate gently side to side.", durationSec: 30 },
@@ -302,10 +306,14 @@ function renderTimer() {
   const step = currentStep();
   if (step.durationSec === null) {
     els.timer.textContent = "—:—";
+    els.timer.classList.remove("low");
     return;
   }
   const seconds = Math.max(0, Number(state.remainingSec || 0));
   els.timer.textContent = formatTime(seconds);
+
+  const isLow = typeof state.remainingSec === "number" && state.remainingSec > 0 && state.remainingSec <= LOW_WARNING_SEC;
+  els.timer.classList.toggle("low", isLow);
 }
 
 function formatTime(totalSec) {
