@@ -3,19 +3,20 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
 const IMAGE_FILE_BY_STEP = {
-  armCircles: "demo-arm-circles.svg",
-  trunkRotations: "demo-trunk-rotations.svg",
-  sideBends: "demo-side-bends.svg",
-  legSwingsLeft: "demo-leg-swings-left.svg",
-  legSwingsRight: "demo-leg-swings-right.svg",
-  kneesToChest: "demo-knees-to-chest.svg",
-  figureFourLeft: "demo-figure-four-left.svg",
-  figureFourRight: "demo-figure-four-right.svg",
-  childPose: "demo-child-pose.svg",
-  postureReset: "demo-posture-reset.svg",
-  plank: "demo-plank.svg",
-  pushUps: "demo-push-ups.svg",
-  walk: "demo-walk.svg"
+  armCircles: "armcircles.png",
+  trunkRotations: "trunkrotation.png",
+  sideBends: "sidebends.png",
+  legSwingsLeft: "legswings.png",
+  legSwingsRight: "legswings.png",
+  kneesToChest: "kneestochest.png",
+  figureFourLeft: "lyingfigurefour.png",
+  figureFourRight: "lyingfigurefour.png",
+  childPose: "childspose.png",
+  postureReset: "overheadreach.png",
+  plank: "plank.png",
+  counterPushups: "counterpushups.png",
+  briskWalk: "briskwalk.png",
+  toeTouchTwist: "toetouchtwist.png"
 };
 
 function readCachedImageMap() {
