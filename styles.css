@@ -302,89 +302,74 @@ body {
 }
 
 .walk-btn {
-  padding: var(--space-md);
+  padding: 0.65rem 0.5rem;
   background: var(--cta-gradient);
-  border: none;
-  border-radius: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 0.65rem;
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
+  transition: transform 0.15s ease, filter 0.2s ease;
+  font-size: 0.82rem;
 }
 
 .walk-btn:active {
-  transform: scale(0.95);
-  box-shadow: 0 4px 12px var(--cta-shadow);
+  transform: scale(0.98);
+  filter: brightness(0.96);
 }
 
 /* BUTTONS */
 .button-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 0.6rem;
   margin-bottom: var(--space-lg);
 }
 
 .controls-section {
   display: flex;
-  gap: var(--space-sm);
+  gap: 0.55rem;
 }
 
 .control-btn {
   flex: 1;
-  padding: 1rem;
-  border: none;
-  border-radius: 0.8rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 0.65rem;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.control-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(255,255,255,0.3), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.control-btn:active::before {
-  opacity: 1;
+  gap: 0.4rem;
 }
 
 .control-btn--primary {
   background: var(--cta-gradient);
   color: white;
-  box-shadow: 0 8px 20px var(--cta-shadow);
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--cta-shadow) 48%, transparent);
 }
 
 .control-btn--primary:active {
-  transform: scale(0.98);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--cta-shadow) 75%, transparent);
+  transform: translateY(1px);
 }
 
 .control-btn--secondary {
-  background: var(--card-bg);
+  background: color-mix(in srgb, var(--card-bg) 92%, black 8%);
   color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.12);
 }
 
 .control-btn--secondary:active {
-  background: rgba(255,255,255,0.05);
+  background: color-mix(in srgb, var(--card-bg) 80%, white 6%);
 }
 
 .control-btn--large {
-  padding: 1.2rem !important;
-  font-size: 1.1rem;
+  padding: 0.8rem 0.9rem !important;
+  font-size: 0.95rem;
 }
 
 .control-btn--flex {
@@ -392,7 +377,7 @@ body {
 }
 
 .btn-icon {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 /* HISTORY VIEW */
@@ -550,31 +535,32 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.8rem;
+  gap: 0.2rem;
+  padding: 0.5rem;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-muted);
   cursor: pointer;
-  border-radius: 0.8rem;
-  transition: all 0.2s ease;
-  font-size: 0.8rem;
+  border-radius: 0.6rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
 .nav-btn.active {
   background: var(--nav-active);
   color: var(--text);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 35%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  box-shadow: none;
 }
 
 .nav-icon {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
 }
 
 .nav-label {
-  font-size: 0.7rem;
-  margin-top: 0.2rem;
+  font-size: 0.64rem;
+  margin-top: 0;
 }
 
 /* TOAST */
