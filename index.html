@@ -132,6 +132,14 @@
               <p class="setting-note">Keeps images available after first load but uses extra device storage.</p>
             </fieldset>
 
+                <fieldset class="settings-group">
+                  <legend>Developer</legend>
+                  <label>
+                    <input type="checkbox" id="disable-sw" /> Disable service worker (bypass cache)
+                  </label>
+                  <p class="setting-note">Enable this to unregister the service worker for testing. Requires reload to re-enable.</p>
+                </fieldset>
+
             <fieldset class="settings-group">
               <legend>Theme</legend>
               <label>
@@ -160,6 +168,6 @@
       <div id="update-toast" class="toast" hidden aria-live="polite"></div>
     </div>
 
-    <script type="module" src="./src/app.js?cb=20260218"></script>
+    <script type="module" src="./src/app.js"></script>
   </body>
 </html>

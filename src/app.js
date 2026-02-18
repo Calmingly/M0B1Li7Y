@@ -12,6 +12,9 @@ const DEFAULT_SETTINGS = {
   ,theme: "default"
 };
 
+// Developer setting: disable service worker to bypass caching during development/testing
+DEFAULT_SETTINGS.disableServiceWorker = false;
+
 // Countdown low-warning threshold (seconds). When remaining time is <= this
 // value the UI will visually warn the user.
 const LOW_WARNING_SEC = 8;
@@ -69,6 +72,7 @@ const els = {
   hapticsEnabled: document.getElementById("haptics-enabled"),
   defaultWalkDuration: document.getElementById("default-walk-duration"),
   remoteImageCaching: document.getElementById("remote-image-caching"),
+  disableSW: document.getElementById("disable-sw"),
   themeSelect: document.getElementById("theme-select"),
   themeSwatch: document.getElementById("theme-swatch"),
   navButtons: Array.from(document.querySelectorAll(".nav-btn")),
@@ -79,6 +83,7 @@ const els = {
 function init() {
   hydrateSettingsUI();
   applyTheme(state.settings.theme);
+  attachErrorHandlers();
   wireEvents();
   renderStep();
   renderHistory();
@@ -150,6 +155,19 @@ function wireEvents() {
     saveSettings();
     notifyServiceWorkerSettings();
   });
+
+  if (els.disableSW) {
+    els.disableSW.addEventListener("change", async () => {
+      state.settings.disableServiceWorker = els.disableSW.checked;
+      saveSettings();
+      if (state.settings.disableServiceWorker) {
+        await unregisterAllServiceWorkers();
+      } else {
+        // Re-register the service worker if user re-enables it
+        registerServiceWorker();
+      }
+    });
+  }
 
   if (els.themeSelect) {
     // Live preview as user navigates options, persist on change
@@ -395,6 +413,7 @@ function hydrateSettingsUI() {
   els.hapticsEnabled.checked = state.settings.hapticsEnabled;
   els.defaultWalkDuration.value = String(state.settings.defaultWalkDuration);
   els.remoteImageCaching.checked = state.settings.enableRemoteImageCaching;
+  if (els.disableSW) els.disableSW.checked = state.settings.disableServiceWorker;
   if (els.themeSelect) els.themeSelect.value = state.settings.theme || "default";
   if (els.themeSwatch) updateThemeSwatch();
   syncMuteIcon();
@@ -478,6 +497,11 @@ function switchView(viewId) {
 
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
+  if (state.settings.disableServiceWorker) {
+    // If user opted to disable SW, ensure any registrations are removed and skip registration
+    unregisterAllServiceWorkers();
+    return;
+  }
 
   navigator.serviceWorker
     .register("./sw.js")
@@ -504,6 +528,53 @@ function registerServiceWorker() {
       });
     })
     .catch(() => undefined);
+}
+
+async function unregisterAllServiceWorkers() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+    // Also try to clear controller so pages don't continue to use a controller
+    if (navigator.serviceWorker.controller) {
+      try {
+        navigator.serviceWorker.controller.postMessage({ type: "CLIENT_UNREGISTER" });
+      } catch {}
+    }
+  } catch (e) {
+    console.warn("Failed to unregister service workers:", e);
+  }
+}
+
+function attachErrorHandlers() {
+  // Capture global errors and unhandled rejections and persist a recent list in localStorage
+  window.addEventListener("error", (ev) => {
+    try {
+      const entry = { type: "error", message: ev.message, filename: ev.filename, lineno: ev.lineno, colno: ev.colno, stack: ev.error?.stack || null, time: new Date().toISOString() };
+      persistError(entry);
+    } catch {}
+  });
+
+  window.addEventListener("unhandledrejection", (ev) => {
+    try {
+      const reason = ev.reason;
+      const entry = { type: "unhandledrejection", message: reason?.message || String(reason), stack: reason?.stack || null, time: new Date().toISOString() };
+      persistError(entry);
+    } catch {}
+  });
+}
+
+function persistError(entry) {
+  try {
+    const raw = localStorage.getItem("m0b1li7y.errors") || "[]";
+    const arr = JSON.parse(raw);
+    arr.unshift(entry);
+    // keep recent 50
+    localStorage.setItem("m0b1li7y.errors", JSON.stringify(arr.slice(0, 50)));
+    console.error("Captured app error:", entry);
+  } catch (e) {
+    // ignore
+  }
 }
 
 function promptUpdate(registration) {
