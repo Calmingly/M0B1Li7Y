@@ -388,7 +388,11 @@ function startTicking() {
     state.remainingSec -= 1;
     if (state.remainingSec <= 0) {
       transitionCue();
-      goToStep(state.stepIndex + 1);
+      const nextIndex = state.stepIndex + 1;
+      if (nextIndex < ROUTINE_STEPS.length) {
+        state.isPaused = true;
+      }
+      goToStep(nextIndex);
       return;
     }
     renderTimer();
