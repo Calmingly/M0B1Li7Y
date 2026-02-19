@@ -419,19 +419,67 @@ body {
 }
 
 .history-list li {
+  margin: 0;
+}
+
+.history-day-btn {
+  width: 100%;
   padding: var(--space-md);
   background: color-mix(in srgb, var(--primary) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
   border-radius: 0.8rem;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
 }
 
-.history-list li:active {
+.history-day-btn:active {
   background: rgba(37,99,235,0.2);
   transform: translateX(4px);
 }
 
+.history-empty {
+  padding: var(--space-md);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-radius: 0.8rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.history-editor {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border-radius: 1rem;
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.history-editor-label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.history-editor-range {
+  width: 100%;
+}
+
+.history-editor-value {
+  margin: var(--space-xs) 0 var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.history-editor-actions {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .milestone-chip {
   margin: var(--space-md) 0 0;
   display: inline-block;

@@ -116,8 +116,18 @@
           </div>
           <p id="goal-nudge" class="history-nudge">Complete your first routine.</p>
           <div class="history-card">
-            <h3 class="history-card-title">Recent sessions</h3>
+            <h3 class="history-card-title">Recent days</h3>
             <ul id="history-list" class="history-list"></ul>
+          </div>
+          <div id="history-editor" class="history-editor" hidden>
+            <h3 id="history-editor-title" class="history-card-title">Edit day</h3>
+            <label class="history-editor-label" for="pieces-completed">Pieces completed</label>
+            <input id="pieces-completed" class="history-editor-range" type="range" min="0" max="11" step="1" value="0" />
+            <p id="pieces-value" class="history-editor-value">0 / 11 pieces</p>
+            <div class="history-editor-actions">
+              <button id="save-day-edit" class="control-btn control-btn--primary">Save</button>
+              <button id="cancel-day-edit" class="control-btn control-btn--secondary">Cancel</button>
+            </div>
           </div>
           <p id="milestone-progress" class="milestone-chip">Next milestone: 5 sessions (0/5)</p>
         </section>

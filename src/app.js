@@ -3,6 +3,7 @@ import { loadRoutineImages } from "./routineImages.js";
 const APP_VERSION = "v1";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
+const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
 
 const DEFAULT_SETTINGS = {
   soundEnabled: true,
@@ -41,7 +42,8 @@ const state = {
   stepIndex: 0,
   remainingSec: ROUTINE_STEPS[0].durationSec,
   timerRef: null,
-  imageMap: {}
+  imageMap: {},
+  selectedHistoryDay: null
 };
 
 const els = {
@@ -71,6 +73,12 @@ const els = {
   minutesWeek: document.getElementById("minutes-week"),
   goalNudge: document.getElementById("goal-nudge"),
   milestoneProgress: document.getElementById("milestone-progress"),
+  historyEditor: document.getElementById("history-editor"),
+  historyEditorTitle: document.getElementById("history-editor-title"),
+  piecesCompleted: document.getElementById("pieces-completed"),
+  piecesValue: document.getElementById("pieces-value"),
+  saveDayEdit: document.getElementById("save-day-edit"),
+  cancelDayEdit: document.getElementById("cancel-day-edit"),
   soundEnabled: document.getElementById("sound-enabled"),
   hapticsEnabled: document.getElementById("haptics-enabled"),
   defaultWalkDuration: document.getElementById("default-walk-duration"),
@@ -124,6 +132,31 @@ function wireEvents() {
   });
 
   els.muteToggle.addEventListener("click", toggleMute);
+
+  if (els.historyList) {
+    els.historyList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const button = target.closest("button[data-day-key]");
+      if (!button) return;
+      openHistoryEditor(button.dataset.dayKey, Number(button.dataset.piecesCompleted || 0));
+    });
+  }
+
+  if (els.piecesCompleted) {
+    els.piecesCompleted.addEventListener("input", () => {
+      const pieces = Number(els.piecesCompleted.value || 0);
+      els.piecesValue.textContent = `${pieces} / ${ROUTINE_STEPS.length} pieces`;
+    });
+  }
+
+  if (els.saveDayEdit) {
+    els.saveDayEdit.addEventListener("click", saveHistoryDayEdit);
+  }
+
+  if (els.cancelDayEdit) {
+    els.cancelDayEdit.addEventListener("click", closeHistoryEditor);
+  }
 
   els.navButtons.forEach((btn) => btn.addEventListener("click", () => switchView(btn.dataset.view)));
   els.walkOptions.forEach((btn) =>
@@ -466,8 +499,21 @@ function loadHistory() {
   }
 }
 
+function loadHistoryDayEdits() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_DAY_EDITS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveHistoryDayEdits(edits) {
+  localStorage.setItem(HISTORY_DAY_EDITS_KEY, JSON.stringify(edits));
+}
+
 function renderHistory() {
   const history = loadHistory();
+  const dayEdits = loadHistoryDayEdits();
   const now = new Date();
   const threshold = new Date(now);
   threshold.setDate(threshold.getDate() - 7);
@@ -481,22 +527,35 @@ function renderHistory() {
   const totalSessions = history.length;
   els.historyList.innerHTML = "";
 
-  const recentSessions = history.slice(0, 3);
+  const daySummaries = summarizeDays(history, dayEdits);
+  const recentDays = daySummaries.slice(0, 7);
 
-  if (recentSessions.length === 0) {
+  if (recentDays.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "Complete your first routine.";
+    li.className = "history-empty";
+    li.textContent = "No days logged yet.";
     els.historyList.append(li);
   } else {
-    recentSessions.forEach((item) => {
+    recentDays.forEach((day) => {
       const li = document.createElement("li");
-      const date = new Date(item.completedAt);
-      li.textContent = `${date.toLocaleDateString()} • ${formatTime(item.durationSec)}`;
+      const button = document.createElement("button");
+      const dateText = formatDayLabel(day.dayKey);
+      const completionState = day.piecesCompleted >= ROUTINE_STEPS.length
+        ? "Complete"
+        : day.piecesCompleted === 0
+          ? "Not done"
+          : "Partial";
+      button.type = "button";
+      button.className = "history-day-btn";
+      button.dataset.dayKey = day.dayKey;
+      button.dataset.piecesCompleted = String(day.piecesCompleted);
+      button.textContent = `${dateText} • ${day.piecesCompleted}/${ROUTINE_STEPS.length} pieces • ${completionState}`;
+      li.append(button);
       els.historyList.append(li);
     });
   }
 
-  const streak = computeStreak(history);
+  const streak = computeStreak(daySummaries);
   els.streak.textContent = `Streak: ${streak} day${streak === 1 ? "" : "s"}`;
   if (els.streakSummary) {
     els.streakSummary.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
@@ -538,6 +597,83 @@ function renderHistory() {
   }
 }
 
+function summarizeDays(history, dayEdits) {
+  const byDay = new Map();
+
+  history.forEach((item) => {
+    const dayKey = toDayKey(item.completedAt);
+    if (!byDay.has(dayKey)) {
+      byDay.set(dayKey, { dayKey, sessions: 0, durationSec: 0 });
+    }
+    const existing = byDay.get(dayKey);
+    existing.sessions += 1;
+    existing.durationSec += Number(item.durationSec) || 0;
+  });
+
+  return Array.from(byDay.values())
+    .map((day) => {
+      const edit = dayEdits[day.dayKey] || {};
+      const defaultPieces = day.sessions > 0 ? ROUTINE_STEPS.length : 0;
+      const piecesCompleted = Number.isFinite(edit.piecesCompleted)
+        ? clampPieces(edit.piecesCompleted)
+        : defaultPieces;
+      return { ...day, piecesCompleted };
+    })
+    .sort((a, b) => (a.dayKey < b.dayKey ? 1 : -1));
+}
+
+function openHistoryEditor(dayKey, piecesCompleted) {
+  state.selectedHistoryDay = dayKey;
+  if (els.historyEditorTitle) {
+    els.historyEditorTitle.textContent = `Edit ${formatDayLabel(dayKey)}`;
+  }
+  if (els.piecesCompleted) {
+    const clamped = clampPieces(piecesCompleted);
+    els.piecesCompleted.max = String(ROUTINE_STEPS.length);
+    els.piecesCompleted.value = String(clamped);
+    els.piecesValue.textContent = `${clamped} / ${ROUTINE_STEPS.length} pieces`;
+  }
+  if (els.historyEditor) {
+    els.historyEditor.hidden = false;
+  }
+}
+
+function closeHistoryEditor() {
+  state.selectedHistoryDay = null;
+  if (els.historyEditor) {
+    els.historyEditor.hidden = true;
+  }
+}
+
+function saveHistoryDayEdit() {
+  if (!state.selectedHistoryDay || !els.piecesCompleted) return;
+  const edits = loadHistoryDayEdits();
+  edits[state.selectedHistoryDay] = {
+    piecesCompleted: clampPieces(Number(els.piecesCompleted.value || 0))
+  };
+  saveHistoryDayEdits(edits);
+  closeHistoryEditor();
+  renderHistory();
+}
+
+function clampPieces(value) {
+  const numeric = Number(value) || 0;
+  return Math.max(0, Math.min(ROUTINE_STEPS.length, Math.round(numeric)));
+}
+
+function toDayKey(input) {
+  return new Date(input).toISOString().slice(0, 10);
+}
+
+function formatDayLabel(dayKey) {
+  const date = new Date(`${dayKey}T00:00:00`);
+  return date.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
+}
+
 function startOfWeekMonday(date) {
   const start = new Date(date);
   const day = start.getDay();
@@ -553,9 +689,11 @@ function weekdaysElapsedThisWeek(date) {
   return day;
 }
 
-function computeStreak(history) {
+function computeStreak(daySummaries) {
   const byDay = new Set(
-    history.map((item) => new Date(item.completedAt).toISOString().slice(0, 10))
+    daySummaries
+      .filter((day) => day.piecesCompleted > 0)
+      .map((day) => day.dayKey)
   );
   let streak = 0;
   const date = new Date();
