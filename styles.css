@@ -328,37 +328,6 @@ body {
   color: color-mix(in srgb, var(--text-muted) 88%, var(--card-bg));
 }
 
-.quick-start-card {
-  margin: 0 auto var(--space-md);
-  width: min(100%, 440px);
-  padding: 0.78rem 0.88rem;
-  border-radius: 0.95rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 88%, black 12%), color-mix(in srgb, var(--card-bg-strong) 84%, black 16%));
-  box-shadow: var(--elevation-1);
-}
-
-.quick-start-kicker {
-  margin: 0;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--text-muted) 86%, var(--card-bg));
-}
-
-.quick-start-main {
-  margin: 0.2rem 0 0;
-  font-size: 1.06rem;
-  font-weight: 720;
-  color: var(--text);
-}
-
-.quick-start-sub {
-  margin: 0.2rem 0 0;
-  font-size: 0.78rem;
-  color: color-mix(in srgb, var(--text-muted) 90%, var(--card-bg));
-}
-
 /* WALK PICKER */
 .walk-picker {
   background: var(--card-bg);

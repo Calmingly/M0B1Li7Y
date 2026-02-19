@@ -75,8 +75,6 @@ const state = {
 const els = {
   stepProgress: document.getElementById("step-progress"),
   stepChip: document.getElementById("step-chip"),
-  quickStartMeta: document.getElementById("quick-start-meta"),
-  quickStartLast: document.getElementById("quick-start-last"),
   stepName: document.getElementById("step-name"),
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
@@ -153,7 +151,6 @@ function init() {
   initializeHistoryEditorChecklist();
   wireEvents();
   renderStep();
-  updateQuickStartCard();
   renderHistory();
   registerServiceWorker();
   // If we previously requested an update and reloaded, show a small confirmation.
@@ -281,7 +278,6 @@ function wireEvents() {
     btn.addEventListener("click", () => {
       state.settings.defaultWalkDuration = Number(btn.dataset.mins);
       saveSettings();
-      updateQuickStartCard();
       if (currentStep().id === "briskWalk") {
         state.remainingSec = state.settings.defaultWalkDuration * 60;
         renderStep();
@@ -303,7 +299,6 @@ function wireEvents() {
   els.defaultWalkDuration.addEventListener("change", () => {
     state.settings.defaultWalkDuration = Number(els.defaultWalkDuration.value);
     saveSettings();
-    updateQuickStartCard();
   });
 
   els.remoteImageCaching.addEventListener("change", () => {
@@ -612,35 +607,8 @@ function finishRoutine() {
   state.startedAt = null;
   state.remainingSec = ROUTINE_STEPS[0].durationSec;
   renderStep();
-  updateQuickStartCard();
   renderHistory();
   switchView("history-view");
-}
-
-function updateQuickStartCard() {
-  if (els.quickStartMeta) {
-    const totalSec = ROUTINE_STEPS.reduce((sum, step) => {
-      if (step.durationSec === null) return sum + 30;
-      if (step.durationSec === "briskWalk") return sum + state.settings.defaultWalkDuration * 60;
-      return sum + step.durationSec;
-    }, 0);
-    els.quickStartMeta.textContent = `${ROUTINE_STEPS.length} steps • ~${Math.round(totalSec / 60)} min`;
-  }
-
-  if (els.quickStartLast) {
-    const history = loadHistory();
-    const latest = history[0];
-    if (!latest?.completedAt) {
-      els.quickStartLast.textContent = "Last session: none yet";
-      return;
-    }
-    const when = new Date(latest.completedAt).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric"
-    });
-    const mins = Math.max(1, Math.round((Number(latest.durationSec) || 0) / 60));
-    els.quickStartLast.textContent = `Last session: ${when} • ${mins} min`;
-  }
 }
 
 function loadSettings() {
