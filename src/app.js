@@ -4,6 +4,7 @@ const APP_VERSION = "v1";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
 const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
+const HISTORY_UI_KEY = "m0b1li7y.historyUi";
 const HISTORY_SAVE_DEBOUNCE_MS = 400;
 const WEEKLY_GOAL = 5;
 
@@ -38,6 +39,13 @@ const ROUTINE_STEPS = [
   { id: "briskWalk", name: "Brisk Walk", cue: "Pick 3, 4, or 5 minutes.", durationSec: "briskWalk" }
 ];
 
+const DEFAULT_HISTORY_UI = {
+  summary: true,
+  addDay: false,
+  recent: true,
+  editor: false
+};
+
 const state = {
   settings: loadSettings(),
   startedAt: null,
@@ -56,7 +64,8 @@ const state = {
   historyLastRenderMs: 0,
   historyEditsPending: null,
   historyEditsSaveTimer: null,
-  preloadedImageUrls: new Set()
+  preloadedImageUrls: new Set(),
+  historyUi: loadHistoryUi()
 };
 
 const els = {
@@ -90,6 +99,14 @@ const els = {
   openDayEdit: document.getElementById("open-day-edit"),
   historyEditor: document.getElementById("history-editor"),
   historyEditorTitle: document.getElementById("history-editor-title"),
+  historySummaryToggle: document.getElementById("history-summary-toggle"),
+  historySummaryContent: document.getElementById("history-summary-content"),
+  historyAddToggle: document.getElementById("history-add-toggle"),
+  historyAddContent: document.getElementById("history-add-content"),
+  historyRecentToggle: document.getElementById("history-recent-toggle"),
+  historyRecentContent: document.getElementById("history-recent-content"),
+  historyEditorToggle: document.getElementById("history-editor-toggle"),
+  historyEditorContent: document.getElementById("history-editor-content"),
   historyPieceList: document.getElementById("history-piece-list"),
   piecesValue: document.getElementById("pieces-value"),
   markAllDayEdit: document.getElementById("mark-all-day-edit"),
@@ -118,6 +135,7 @@ function init() {
   hydrateSettingsUI();
   applyTheme(state.settings.theme);
   attachErrorHandlers();
+  applyHistoryUiState();
   initializeHistoryEditorChecklist();
   wireEvents();
   renderStep();
@@ -187,6 +205,30 @@ function wireEvents() {
 
   if (els.openDayEdit) {
     els.openDayEdit.addEventListener("click", openSelectedDayEditor);
+  }
+
+  if (els.historySummaryToggle) {
+    els.historySummaryToggle.addEventListener("click", () => {
+      toggleHistoryUiSection("summary");
+    });
+  }
+
+  if (els.historyAddToggle) {
+    els.historyAddToggle.addEventListener("click", () => {
+      toggleHistoryUiSection("addDay");
+    });
+  }
+
+  if (els.historyRecentToggle) {
+    els.historyRecentToggle.addEventListener("click", () => {
+      toggleHistoryUiSection("recent");
+    });
+  }
+
+  if (els.historyEditorToggle) {
+    els.historyEditorToggle.addEventListener("click", () => {
+      toggleHistoryUiSection("editor");
+    });
   }
 
   if (els.markAllDayEdit) {
@@ -542,6 +584,66 @@ function loadSettings() {
   }
 }
 
+function loadHistoryUi() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(HISTORY_UI_KEY) || "{}");
+    return {
+      ...DEFAULT_HISTORY_UI,
+      ...parsed
+    };
+  } catch {
+    return { ...DEFAULT_HISTORY_UI };
+  }
+}
+
+function saveHistoryUi() {
+  localStorage.setItem(HISTORY_UI_KEY, JSON.stringify(state.historyUi));
+}
+
+function applyHistoryUiState() {
+  setHistoryUiSection("summary", Boolean(state.historyUi.summary), false);
+  setHistoryUiSection("addDay", Boolean(state.historyUi.addDay), false);
+  setHistoryUiSection("recent", Boolean(state.historyUi.recent), false);
+  setHistoryUiSection("editor", Boolean(state.historyUi.editor), false);
+}
+
+function toggleHistoryUiSection(sectionKey) {
+  const nextValue = !state.historyUi[sectionKey];
+  setHistoryUiSection(sectionKey, nextValue, true);
+}
+
+function setHistoryUiSection(sectionKey, expanded, shouldSave) {
+  const sectionMap = {
+    summary: {
+      toggle: els.historySummaryToggle,
+      content: els.historySummaryContent
+    },
+    addDay: {
+      toggle: els.historyAddToggle,
+      content: els.historyAddContent
+    },
+    recent: {
+      toggle: els.historyRecentToggle,
+      content: els.historyRecentContent
+    },
+    editor: {
+      toggle: els.historyEditorToggle,
+      content: els.historyEditorContent
+    }
+  };
+
+  const section = sectionMap[sectionKey];
+  if (!section?.toggle || !section?.content) return;
+
+  state.historyUi[sectionKey] = Boolean(expanded);
+  section.toggle.setAttribute("aria-expanded", String(expanded));
+  section.content.hidden = !expanded;
+
+  if (shouldSave) {
+    saveHistoryUi();
+  }
+}
+
 function saveSettings() {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
 }
@@ -878,6 +980,7 @@ function migrateAndCleanHistoryDayEdits(dayEdits) {
 }
 
 function openHistoryEditor(dayKey) {
+  setHistoryUiSection("editor", true, true);
   state.selectedHistoryDay = dayKey;
   const { stepIds } = getHistoryDaySummary(dayKey);
   state.selectedHistoryStepIds = [...stepIds];
@@ -934,6 +1037,7 @@ function resetHistoryDayEdit() {
 
 function openSelectedDayEditor() {
   if (!els.historyDayInput || !els.historyDayInput.value) return;
+  setHistoryUiSection("addDay", true, true);
   openHistoryEditor(els.historyDayInput.value);
 }
 

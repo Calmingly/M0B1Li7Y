@@ -369,6 +369,40 @@ body {
   margin: 0;
 }
 
+.history-group {
+  margin-bottom: var(--space-md);
+}
+
+.history-group-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--card-bg) 92%, black 8%);
+  color: color-mix(in srgb, var(--text) 90%, var(--text-muted));
+  padding: 0.58rem 0.72rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.history-group-toggle::after {
+  content: "▾";
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.history-group-toggle[aria-expanded="false"]::after {
+  content: "▸";
+}
+
+.history-group-content {
+  margin-top: var(--space-sm);
+}
+
 .history-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -556,6 +590,7 @@ body {
 .history-reset-btn {
   grid-column: 1 / -1;
 }
+
 .milestone-chip {
   margin: var(--space-md) 0 0;
   display: inline-block;

@@ -101,19 +101,79 @@
             <h2 class="section-title">📊 History</h2>
             <p id="streak" class="streak-badge">Streak: 0 days</p>
           </div>
-          <div class="history-stats" aria-label="Summary stats">
-            <div class="history-stat">
-              <p class="history-stat-label">This week</p>
-              <p id="sessions-week" class="history-stat-value">0 sessions</p>
+          <section class="history-group">
+            <button id="history-summary-toggle" class="history-group-toggle" type="button" aria-expanded="true" aria-controls="history-summary-content">
+              Summary
+            </button>
+            <div id="history-summary-content" class="history-group-content">
+              <div class="history-stats" aria-label="Summary stats">
+                <div class="history-stat">
+                  <p class="history-stat-label">This week</p>
+                  <p id="sessions-week" class="history-stat-value">0 sessions</p>
+                </div>
+                <div class="history-stat">
+                  <p class="history-stat-label">Last 7 days</p>
+                  <p id="minutes-week" class="history-stat-value">0 min</p>
+                </div>
+                <div class="history-stat">
+                  <p class="history-stat-label">Current streak</p>
+                  <p id="streak-summary" class="history-stat-value">0 days</p>
+                </div>
+              </div>
+              <p id="goal-nudge" class="history-nudge">Complete your first routine.</p>
+              <p id="milestone-progress" class="milestone-chip">Next milestone: 5 sessions (0/5)</p>
             </div>
-            <div class="history-stat">
-              <p class="history-stat-label">Last 7 days</p>
-              <p id="minutes-week" class="history-stat-value">0 min</p>
+          </section>
+
+          <section class="history-group">
+            <button id="history-add-toggle" class="history-group-toggle" type="button" aria-expanded="false" aria-controls="history-add-content">
+              Add or edit day
+            </button>
+            <div id="history-add-content" class="history-group-content" hidden>
+              <div class="history-add-day">
+                <label class="history-editor-label" for="history-day-input">Select day</label>
+                <div class="history-add-day-controls">
+                  <input id="history-day-input" class="history-day-input" type="date" />
+                  <button id="open-day-edit" class="control-btn control-btn--secondary">Open day</button>
+                </div>
+              </div>
             </div>
-            <div class="history-stat">
-              <p class="history-stat-label">Current streak</p>
-              <p id="streak-summary" class="history-stat-value">0 days</p>
+          </section>
+
+          <section class="history-group">
+            <button id="history-recent-toggle" class="history-group-toggle" type="button" aria-expanded="true" aria-controls="history-recent-content">
+              Recent days
+            </button>
+            <div id="history-recent-content" class="history-group-content">
+              <div class="history-card">
+                <ul id="history-list" class="history-list"></ul>
+              </div>
             </div>
+          </section>
+
+          <section class="history-group">
+            <button id="history-editor-toggle" class="history-group-toggle" type="button" aria-expanded="false" aria-controls="history-editor-content">
+              Day details
+            </button>
+            <div id="history-editor-content" class="history-group-content" hidden>
+              <div id="history-editor" class="history-editor" hidden>
+                <h3 id="history-editor-title" class="history-card-title">Edit day</h3>
+                <p class="history-editor-label">Check completed pieces</p>
+                <div class="history-quick-actions">
+                  <button id="mark-all-day-edit" class="control-btn control-btn--secondary">Mark all</button>
+                  <button id="clear-all-day-edit" class="control-btn control-btn--secondary">Clear all</button>
+                  <button id="weekday-template-day-edit" class="control-btn control-btn--secondary">Mon–Fri template</button>
+                </div>
+                <div id="history-piece-list" class="history-piece-list"></div>
+                <p id="pieces-value" class="history-editor-value">0 / 11 pieces</p>
+                <div class="history-editor-actions">
+                  <button id="save-day-edit" class="control-btn control-btn--primary">Save</button>
+                  <button id="cancel-day-edit" class="control-btn control-btn--secondary">Cancel</button>
+                  <button id="reset-day-edit" class="control-btn control-btn--secondary history-reset-btn">Reset day</button>
+                </div>
+              </div>
+            </div>
+          </section>
           </div>
           <p id="goal-nudge" class="history-nudge">Complete your first routine.</p>
           <div class="history-add-day">
