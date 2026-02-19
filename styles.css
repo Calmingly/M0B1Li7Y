@@ -48,6 +48,7 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100dvh;
+  font-variant-numeric: tabular-nums;
 }
 
 .app-shell {
@@ -327,6 +328,37 @@ body {
   color: color-mix(in srgb, var(--text-muted) 88%, var(--card-bg));
 }
 
+.quick-start-card {
+  margin: 0 auto var(--space-md);
+  width: min(100%, 440px);
+  padding: 0.78rem 0.88rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 88%, black 12%), color-mix(in srgb, var(--card-bg-strong) 84%, black 16%));
+  box-shadow: var(--elevation-1);
+}
+
+.quick-start-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-muted) 86%, var(--card-bg));
+}
+
+.quick-start-main {
+  margin: 0.2rem 0 0;
+  font-size: 1.06rem;
+  font-weight: 720;
+  color: var(--text);
+}
+
+.quick-start-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--text-muted) 90%, var(--card-bg));
+}
+
 /* WALK PICKER */
 .walk-picker {
   background: var(--card-bg);
@@ -577,6 +609,79 @@ body {
   font-size: 0.7rem;
   font-weight: 650;
   color: color-mix(in srgb, var(--text) 90%, var(--text-muted));
+}
+
+.weekly-track {
+  margin-bottom: var(--space-sm);
+  padding: 0.72rem;
+  border-radius: 0.88rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 86%, black 14%);
+  box-shadow: var(--elevation-1);
+}
+
+.weekly-track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.48rem;
+}
+
+.weekly-track-title {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-muted) 88%, var(--card-bg));
+}
+
+.weekly-track-caption {
+  margin: 0;
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--text) 84%, var(--text-muted));
+}
+
+.week-bars {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.week-bar-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.26rem;
+}
+
+.week-bar {
+  width: 100%;
+  height: 2.1rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
+  background: color-mix(in srgb, var(--card-bg-strong) 84%, black 16%);
+  transition: transform var(--motion-fast) var(--ease-standard), background-color var(--motion-base) var(--ease-standard);
+}
+
+.week-bar[data-level="2"] {
+  background: color-mix(in srgb, var(--accent-warning) 32%, var(--card-bg-strong));
+}
+
+.week-bar[data-level="3"] {
+  background: color-mix(in srgb, var(--secondary) 34%, var(--card-bg-strong));
+}
+
+.week-bar[data-level="4"] {
+  background: color-mix(in srgb, var(--secondary-light) 46%, var(--secondary));
+}
+
+.week-bar[data-today="true"] {
+  border-color: color-mix(in srgb, var(--primary-light) 56%, transparent);
+  transform: translateY(-2px);
+}
+
+.week-bar-label {
+  font-size: 0.66rem;
+  color: color-mix(in srgb, var(--text-muted) 84%, var(--card-bg));
 }
 
 .history-stats {
@@ -874,6 +979,19 @@ body {
   font-weight: 700;
   color: var(--text);
   font-size: 0.95rem;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.settings-legend::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.34rem;
+  width: 0.46rem;
+  height: 0.46rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary-light) 70%, var(--secondary-light));
 }
 
 .checkbox-label,
@@ -1025,8 +1143,10 @@ body {
 }
 
 .nav-label {
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   margin-top: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* TOAST */

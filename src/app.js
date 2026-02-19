@@ -75,6 +75,8 @@ const state = {
 const els = {
   stepProgress: document.getElementById("step-progress"),
   stepChip: document.getElementById("step-chip"),
+  quickStartMeta: document.getElementById("quick-start-meta"),
+  quickStartLast: document.getElementById("quick-start-last"),
   stepName: document.getElementById("step-name"),
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
@@ -103,6 +105,8 @@ const els = {
   weekGoalLabel: document.getElementById("week-goal-label"),
   streakGoalRing: document.getElementById("streak-goal-ring"),
   streakGoalLabel: document.getElementById("streak-goal-label"),
+  weekBars: document.getElementById("week-bars"),
+  weeklyTrackCaption: document.getElementById("weekly-track-caption"),
   goalNudge: document.getElementById("goal-nudge"),
   milestoneProgress: document.getElementById("milestone-progress"),
   historyDayInput: document.getElementById("history-day-input"),
@@ -149,6 +153,7 @@ function init() {
   initializeHistoryEditorChecklist();
   wireEvents();
   renderStep();
+  updateQuickStartCard();
   renderHistory();
   registerServiceWorker();
   // If we previously requested an update and reloaded, show a small confirmation.
@@ -276,6 +281,7 @@ function wireEvents() {
     btn.addEventListener("click", () => {
       state.settings.defaultWalkDuration = Number(btn.dataset.mins);
       saveSettings();
+      updateQuickStartCard();
       if (currentStep().id === "briskWalk") {
         state.remainingSec = state.settings.defaultWalkDuration * 60;
         renderStep();
@@ -297,6 +303,7 @@ function wireEvents() {
   els.defaultWalkDuration.addEventListener("change", () => {
     state.settings.defaultWalkDuration = Number(els.defaultWalkDuration.value);
     saveSettings();
+    updateQuickStartCard();
   });
 
   els.remoteImageCaching.addEventListener("change", () => {
@@ -605,8 +612,35 @@ function finishRoutine() {
   state.startedAt = null;
   state.remainingSec = ROUTINE_STEPS[0].durationSec;
   renderStep();
+  updateQuickStartCard();
   renderHistory();
   switchView("history-view");
+}
+
+function updateQuickStartCard() {
+  if (els.quickStartMeta) {
+    const totalSec = ROUTINE_STEPS.reduce((sum, step) => {
+      if (step.durationSec === null) return sum + 30;
+      if (step.durationSec === "briskWalk") return sum + state.settings.defaultWalkDuration * 60;
+      return sum + step.durationSec;
+    }, 0);
+    els.quickStartMeta.textContent = `${ROUTINE_STEPS.length} steps • ~${Math.round(totalSec / 60)} min`;
+  }
+
+  if (els.quickStartLast) {
+    const history = loadHistory();
+    const latest = history[0];
+    if (!latest?.completedAt) {
+      els.quickStartLast.textContent = "Last session: none yet";
+      return;
+    }
+    const when = new Date(latest.completedAt).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric"
+    });
+    const mins = Math.max(1, Math.round((Number(latest.durationSec) || 0) / 60));
+    els.quickStartLast.textContent = `Last session: ${when} • ${mins} min`;
+  }
 }
 
 function loadSettings() {
@@ -861,6 +895,8 @@ function renderHistory() {
     els.streakGoalLabel.textContent = `${streak}d`;
   }
 
+  renderWeeklyBars(daySummaries, now);
+
   if (els.goalNudge) {
     const remainingThisWeek = Math.max(0, WEEKLY_GOAL - sessionsThisWeekCount);
     const weekdaysElapsed = weekdaysElapsedThisWeek(now);
@@ -889,6 +925,47 @@ function renderHistory() {
   triggerHistoryCelebrationEffects();
   state.historyLastRenderMs = performance.now() - startedAt;
   updateHistoryDebugPanel();
+}
+
+function renderWeeklyBars(daySummaries, now) {
+  if (!els.weekBars) return;
+
+  const monday = startOfWeekMonday(now);
+  const byKey = new Map(daySummaries.map((day) => [day.dayKey, day]));
+  const labels = ["M", "T", "W", "T", "F", "S", "S"];
+  const todayKey = toDayKey(now);
+
+  els.weekBars.innerHTML = "";
+
+  for (let index = 0; index < 7; index += 1) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + index);
+    const dayKey = toDayKey(date);
+    const summary = byKey.get(dayKey);
+    const pieces = summary?.piecesCompleted || 0;
+    const pct = pieces / ROUTINE_STEPS.length;
+    const level = pct >= 1 ? 4 : pct >= 0.66 ? 3 : pct > 0 ? 2 : 1;
+
+    const item = document.createElement("div");
+    item.className = "week-bar-item";
+
+    const bar = document.createElement("span");
+    bar.className = "week-bar";
+    bar.dataset.level = String(level);
+    if (dayKey === todayKey) bar.dataset.today = "true";
+
+    const label = document.createElement("span");
+    label.className = "week-bar-label";
+    label.textContent = labels[index];
+
+    item.append(bar, label);
+    els.weekBars.append(item);
+  }
+
+  if (els.weeklyTrackCaption) {
+    const completeDays = daySummaries.filter((day) => day.dayKey >= toDayKey(monday) && day.piecesCompleted >= ROUTINE_STEPS.length).length;
+    els.weeklyTrackCaption.textContent = `${completeDays}/7 complete`;
+  }
 }
 
 function setMiniRingProgress(el, percent) {

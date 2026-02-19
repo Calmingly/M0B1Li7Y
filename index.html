@@ -66,6 +66,12 @@
             </div>
           </div>
 
+          <section class="quick-start-card" aria-label="Today plan">
+            <p class="quick-start-kicker">Today plan</p>
+            <p id="quick-start-meta" class="quick-start-main">11 steps • ~13 min</p>
+            <p id="quick-start-last" class="quick-start-sub">Last session: —</p>
+          </section>
+
           <!-- Walk Picker -->
           <div class="walk-picker" id="walk-picker" hidden>
             <h3 class="walk-title">Choose walk duration</h3>
@@ -102,7 +108,7 @@
         <!-- HISTORY VIEW -->
         <section id="history-view" class="view" aria-label="History" hidden>
           <div class="section-header">
-            <h2 class="section-title">📊 History</h2>
+            <h2 class="section-title">History</h2>
             <p id="streak" class="streak-badge">Streak: 0 days</p>
           </div>
           <section class="history-group">
@@ -146,6 +152,13 @@
                   <p class="history-stat-label">Current streak</p>
                   <p id="streak-summary" class="history-stat-value">0 days</p>
                 </div>
+              </div>
+              <div class="weekly-track" aria-label="Weekly adherence">
+                <div class="weekly-track-header">
+                  <p class="weekly-track-title">Weekly adherence</p>
+                  <p id="weekly-track-caption" class="weekly-track-caption">Mon–Sun</p>
+                </div>
+                <div id="week-bars" class="week-bars" role="img" aria-label="Weekly completion"></div>
               </div>
               <p id="goal-nudge" class="history-nudge">Complete your first routine.</p>
               <p id="milestone-progress" class="milestone-chip">Next milestone: 5 sessions (0/5)</p>
@@ -210,11 +223,11 @@
         <!-- SETTINGS VIEW -->
         <section id="settings-view" class="view" aria-label="Settings" hidden>
           <div class="section-header">
-            <h2 class="section-title">⚙️ Settings</h2>
+            <h2 class="section-title">Settings</h2>
           </div>
 
           <fieldset class="settings-group">
-            <legend class="settings-legend">🔊 Cues</legend>
+            <legend class="settings-legend">Cues</legend>
             <label class="checkbox-label">
               <input type="checkbox" id="sound-enabled" checked />
               <span>Sound cues</span>
@@ -226,7 +239,7 @@
           </fieldset>
 
           <fieldset class="settings-group">
-            <legend class="settings-legend">🚶 Routine defaults</legend>
+            <legend class="settings-legend">Routine defaults</legend>
             <label class="select-label">
               Default walk duration
               <select id="default-walk-duration">
@@ -238,7 +251,7 @@
           </fieldset>
 
           <fieldset class="settings-group">
-            <legend class="settings-legend">🖼️ Images</legend>
+            <legend class="settings-legend">Images</legend>
             <label class="checkbox-label">
               <input type="checkbox" id="remote-image-caching" />
               <span>Cache exercise images for offline use</span>
@@ -247,7 +260,7 @@
           </fieldset>
 
           <fieldset class="settings-group">
-            <legend class="settings-legend">🎨 Theme</legend>
+            <legend class="settings-legend">Theme</legend>
             <label class="select-label">
               Theme
               <select id="theme-select">
@@ -272,7 +285,7 @@
           </fieldset>
 
           <fieldset class="settings-group">
-            <legend class="settings-legend">👨‍💻 Developer</legend>
+            <legend class="settings-legend">Developer</legend>
             <label class="checkbox-label">
               <input type="checkbox" id="disable-sw" />
               <span>Disable service worker (bypass cache)</span>
