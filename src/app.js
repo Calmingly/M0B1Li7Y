@@ -49,7 +49,6 @@ const els = {
   stepName: document.getElementById("step-name"),
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
-  untimedHint: document.getElementById("untimed-hint"),
   startBtn: document.getElementById("start-btn"),
   startControls: document.getElementById("start-controls"),
   runControls: document.getElementById("run-controls"),
@@ -295,7 +294,6 @@ function renderStep() {
   els.stepCue.textContent = step.cue;
 
   const untimed = step.durationSec === null;
-  els.untimedHint.hidden = !untimed;
   els.doneBtn.hidden = !untimed;
 
   els.walkPicker.hidden = step.id !== "briskWalk";

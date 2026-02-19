@@ -303,39 +303,6 @@ body {
   color: white;
 }
 
-/* UNTIMED HINT */
-.untimed-hint {
-  text-align: center;
-  padding: var(--space-md);
-  background: rgba(245,158,11,0.15);
-  border: 1px solid rgba(245,158,11,0.3);
-  border-radius: 0.8rem;
-  color: var(--text);
-  font-size: 0.95rem;
-  margin-bottom: var(--space-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-}
-
-.hint-icon {
-  width: 1rem;
-  height: 1rem;
-  display: inline-grid;
-  place-items: center;
-}
-
-.hint-icon svg {
-  width: 1rem;
-  height: 1rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 /* WALK PICKER */
 .walk-picker {
   background: var(--card-bg);
