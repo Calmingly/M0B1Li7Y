@@ -322,8 +322,8 @@ body {
 
 .control-btn--secondary {
   background: color-mix(in srgb, var(--card-bg) 95%, black 5%);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.16);
+  color: color-mix(in srgb, var(--text) 86%, var(--text-muted));
+  border: 1px solid rgba(255,255,255,0.12);
 }
 
 .control-btn--secondary:active {
