@@ -234,73 +234,12 @@ body {
   color: var(--text-muted);
 }
 
-/* CARDS GRID */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-}
-
-.info-card {
-  padding: 0.72rem;
-  border-radius: 0.82rem;
-  display: flex;
-  gap: 0.52rem;
-  align-items: flex-start;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.info-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.info-card--blue {
-  background: var(--chip-gradient);
-}
-
-.info-card--green {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 55%, #042f2e), var(--secondary-light));
-}
-
-.card-icon {
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: rgba(255,255,255,0.16);
-  border: 1px solid rgba(255,255,255,0.22);
-  flex-shrink: 0;
-}
-
-.card-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.card-content {
-  flex: 1;
-}
-
-.card-label {
-  margin: 0;
-  font-size: 0.68rem;
-  color: rgba(255,255,255,0.7);
-}
-
-.card-value {
-  margin: 0.2rem 0 0;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: white;
+.routine-meta {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 /* WALK PICKER */
