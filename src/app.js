@@ -13,7 +13,8 @@ const DEFAULT_SETTINGS = {
   defaultWalkDuration: 4,
   enableRemoteImageCaching: false
   ,theme: "default",
-  highContrastMode: false
+  highContrastMode: false,
+  autoHighContrastNight: false
 };
 
 // Developer setting: disable service worker to bypass caching during development/testing
@@ -103,6 +104,7 @@ const els = {
   remoteImageCaching: document.getElementById("remote-image-caching"),
   disableSW: document.getElementById("disable-sw"),
   highContrastMode: document.getElementById("high-contrast-mode"),
+  autoHighContrastNight: document.getElementById("auto-high-contrast-night"),
   historyRenderMs: document.getElementById("history-render-ms"),
   historyCacheRate: document.getElementById("history-cache-rate"),
   themeSelect: document.getElementById("theme-select"),
@@ -138,6 +140,18 @@ function init() {
   }
 
   window.addEventListener("beforeunload", flushHistoryDayEditsWrite);
+
+  setInterval(() => {
+    if (state.settings.autoHighContrastNight && !state.settings.highContrastMode) {
+      applyTheme(state.settings.theme);
+    }
+  }, 15 * 60 * 1000);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && state.settings.autoHighContrastNight && !state.settings.highContrastMode) {
+      applyTheme(state.settings.theme);
+    }
+  });
 }
 
 function wireEvents() {
@@ -268,6 +282,14 @@ function wireEvents() {
   if (els.highContrastMode) {
     els.highContrastMode.addEventListener("change", () => {
       state.settings.highContrastMode = els.highContrastMode.checked;
+      saveSettings();
+      applyTheme(state.settings.theme);
+    });
+  }
+
+  if (els.autoHighContrastNight) {
+    els.autoHighContrastNight.addEventListener("change", () => {
+      state.settings.autoHighContrastNight = els.autoHighContrastNight.checked;
       saveSettings();
       applyTheme(state.settings.theme);
     });
@@ -531,6 +553,7 @@ function hydrateSettingsUI() {
   els.remoteImageCaching.checked = state.settings.enableRemoteImageCaching;
   if (els.disableSW) els.disableSW.checked = state.settings.disableServiceWorker;
   if (els.highContrastMode) els.highContrastMode.checked = Boolean(state.settings.highContrastMode);
+  if (els.autoHighContrastNight) els.autoHighContrastNight.checked = Boolean(state.settings.autoHighContrastNight);
   if (els.themeSelect) els.themeSelect.value = state.settings.theme || "default";
   if (els.themeSwatch) updateThemeSwatch();
   syncMuteIcon();
@@ -554,8 +577,19 @@ function applyTheme(theme) {
   if (theme === "sunset") html.classList.add("theme-sunset");
   if (theme === "midnight") html.classList.add("theme-midnight");
   if (theme === "slate") html.classList.add("theme-slate");
-  if (state.settings.highContrastMode) html.classList.add("high-contrast");
+  if (shouldEnableHighContrast()) html.classList.add("high-contrast");
   updateThemeSwatch();
+}
+
+function shouldEnableHighContrast() {
+  if (state.settings.highContrastMode) return true;
+  if (!state.settings.autoHighContrastNight) return false;
+  return isNightTimeNow();
+}
+
+function isNightTimeNow() {
+  const hour = new Date().getHours();
+  return hour >= 20 || hour < 7;
 }
 
 function updateThemeSwatch() {
