@@ -12,7 +12,8 @@ const DEFAULT_SETTINGS = {
   hapticsEnabled: true,
   defaultWalkDuration: 4,
   enableRemoteImageCaching: false
-  ,theme: "default"
+  ,theme: "default",
+  highContrastMode: false
 };
 
 // Developer setting: disable service worker to bypass caching during development/testing
@@ -101,6 +102,7 @@ const els = {
   defaultWalkDuration: document.getElementById("default-walk-duration"),
   remoteImageCaching: document.getElementById("remote-image-caching"),
   disableSW: document.getElementById("disable-sw"),
+  highContrastMode: document.getElementById("high-contrast-mode"),
   historyRenderMs: document.getElementById("history-render-ms"),
   historyCacheRate: document.getElementById("history-cache-rate"),
   themeSelect: document.getElementById("theme-select"),
@@ -258,6 +260,14 @@ function wireEvents() {
 
     els.themeSelect.addEventListener("change", () => {
       state.settings.theme = els.themeSelect.value;
+      saveSettings();
+      applyTheme(state.settings.theme);
+    });
+  }
+
+  if (els.highContrastMode) {
+    els.highContrastMode.addEventListener("change", () => {
+      state.settings.highContrastMode = els.highContrastMode.checked;
       saveSettings();
       applyTheme(state.settings.theme);
     });
@@ -520,6 +530,7 @@ function hydrateSettingsUI() {
   els.defaultWalkDuration.value = String(state.settings.defaultWalkDuration);
   els.remoteImageCaching.checked = state.settings.enableRemoteImageCaching;
   if (els.disableSW) els.disableSW.checked = state.settings.disableServiceWorker;
+  if (els.highContrastMode) els.highContrastMode.checked = Boolean(state.settings.highContrastMode);
   if (els.themeSelect) els.themeSelect.value = state.settings.theme || "default";
   if (els.themeSwatch) updateThemeSwatch();
   syncMuteIcon();
@@ -534,7 +545,8 @@ function applyTheme(theme) {
     "theme-rose",
     "theme-sunset",
     "theme-midnight",
-    "theme-slate"
+    "theme-slate",
+    "high-contrast"
   );
   if (theme === "blue") html.classList.add("theme-blue");
   if (theme === "emerald") html.classList.add("theme-emerald");
@@ -542,6 +554,7 @@ function applyTheme(theme) {
   if (theme === "sunset") html.classList.add("theme-sunset");
   if (theme === "midnight") html.classList.add("theme-midnight");
   if (theme === "slate") html.classList.add("theme-slate");
+  if (state.settings.highContrastMode) html.classList.add("high-contrast");
   updateThemeSwatch();
 }
 

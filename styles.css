@@ -779,6 +779,42 @@ body {
 /* VIEWS */
 .view[hidden] { display: none; }
 
+/* HIGH CONTRAST MODE */
+.high-contrast {
+  --bg: #05070f;
+  --bg-light: #0a1020;
+  --card-bg: #101728;
+  --card-bg-strong: #16223a;
+  --text: #ffffff;
+  --text-muted: #dbe7ff;
+  --surface: rgba(255,255,255,0.14);
+  --header-glow: rgba(59,130,246,0.3);
+  --header-glow-2: rgba(20,184,166,0.26);
+}
+
+.high-contrast .history-day-btn,
+.high-contrast .control-btn,
+.high-contrast .checkbox-label,
+.high-contrast .select-label,
+.high-contrast .settings-group,
+.high-contrast .history-editor,
+.high-contrast .history-card,
+.high-contrast .walk-picker,
+.high-contrast .nav-btn.active {
+  border-width: 2px;
+}
+
+.high-contrast .history-day-btn,
+.high-contrast .history-piece-item {
+  text-shadow: none;
+}
+
+.high-contrast .header-brand h1,
+.high-contrast .large-timer,
+.high-contrast .timer.low {
+  filter: saturate(1.2) contrast(1.14);
+}
+
 /* THEME OVERRIDES */
 .theme-blue {
   --primary: #0ea5e9;
