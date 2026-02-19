@@ -8,8 +8,8 @@ const DEFAULT_SETTINGS = {
   soundEnabled: true,
   hapticsEnabled: true,
   defaultWalkDuration: 4,
-  enableRemoteImageCaching: false
-  ,theme: "default"
+  enableRemoteImageCaching: false,
+  theme: "default"
 };
 
 // Developer setting: disable service worker to bypass caching during development/testing
