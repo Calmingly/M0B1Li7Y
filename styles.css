@@ -180,6 +180,7 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 18%, transparent);
+  filter: saturate(1.08);
 }
 
 .step-progress {
@@ -458,6 +459,9 @@ body {
   color: var(--text);
   text-align: left;
   cursor: pointer;
+  font-weight: 600;
+  line-height: 1.35;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.16);
 }
 
 .history-day-btn:active {
@@ -467,17 +471,17 @@ body {
 
 .history-day-btn[data-status="complete"] {
   background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 22%, transparent), color-mix(in srgb, var(--secondary-light) 12%, transparent));
-  border-color: color-mix(in srgb, var(--secondary) 32%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 42%, transparent);
 }
 
 .history-day-btn[data-status="partial"] {
   background: linear-gradient(135deg, color-mix(in srgb, var(--accent-warning) 18%, transparent), color-mix(in srgb, var(--primary) 12%, transparent));
-  border-color: color-mix(in srgb, var(--accent-warning) 34%, transparent);
+  border-color: color-mix(in srgb, var(--accent-warning) 44%, transparent);
 }
 
 .history-day-btn[data-status="not-done"] {
   background: linear-gradient(135deg, color-mix(in srgb, var(--text-muted) 10%, transparent), color-mix(in srgb, var(--card-bg) 74%, black 26%));
-  border-color: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.2);
 }
 
 .history-empty {
@@ -921,4 +925,5 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 4px 12px color-mix(in srgb, var(--accent-danger) 24%, transparent);
+  filter: saturate(1.1) contrast(1.08);
 }
