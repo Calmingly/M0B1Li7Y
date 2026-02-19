@@ -2,9 +2,9 @@
 
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 1901.003 1669.306" enable-background="new 0 0 1901.003 1669.306" xml:space="preserve">
-<rect width="1901.003" height="1669.306" fill="#39FF14"/>
-<g>
+	 viewBox="0 0 1901.003 1901.003" enable-background="new 0 0 1901.003 1901.003" xml:space="preserve">
+<rect width="1901.003" height="1901.003" fill="#39FF14"/>
+<g transform="translate(333 408) scale(0.65)">
 	<path d="M1825.348,1633.382c-22.034,6.624-39.107-14.612-61.301-18.376c-12.639-2.144-21.588-58.244-22.411-65.671
 		c-3.143-28.376-19.957-52.31-24.517-80.109c-0.364-2.221-3.308-5.558-5.301-5.746c-39.833-3.751-58.618-35.162-82.297-60.916
 		c-39.507-42.969-60.961-96.102-79.906-149.078c-13.252-37.057-40.534-63.354-57.501-96.883
