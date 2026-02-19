@@ -78,14 +78,14 @@ body {
 
 .icon-btn {
   background: color-mix(in srgb, var(--card-bg) 86%, black 14%);
-  border: 1px solid rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.12);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   font-weight: 700;
   cursor: pointer;
   padding: 0.38rem 0.55rem;
   border-radius: 0.55rem;
-  color: var(--text);
+  color: color-mix(in srgb, var(--text) 88%, var(--text-muted));
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -321,9 +321,9 @@ body {
 }
 
 .control-btn--secondary {
-  background: color-mix(in srgb, var(--card-bg) 95%, black 5%);
-  color: color-mix(in srgb, var(--text) 86%, var(--text-muted));
-  border: 1px solid rgba(255,255,255,0.12);
+  background: color-mix(in srgb, var(--card-bg) 96%, black 4%);
+  color: color-mix(in srgb, var(--text) 80%, var(--text-muted));
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .control-btn--secondary:active {
