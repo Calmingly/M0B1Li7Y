@@ -22,6 +22,9 @@
   --accent: var(--primary);
   --accent-danger: #ef4444;
   --accent-warning: #f59e0b;
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   
   --space-xs: 0.4rem;
   --space-sm: 0.8rem;
@@ -86,7 +89,7 @@ body {
   padding: 0.38rem 0.55rem;
   border-radius: 0.55rem;
   color: color-mix(in srgb, var(--text) 88%, var(--text-muted));
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
 }
 
 .icon-btn--sound {
@@ -109,6 +112,7 @@ body {
 
 .icon-btn:active {
   background: color-mix(in srgb, var(--card-bg) 74%, white 5%);
+  transform: translateY(1px);
 }
 
 /* MAIN CONTENT */
@@ -198,6 +202,7 @@ body {
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
   background: color-mix(in srgb, var(--card-bg) 92%, black 8%);
+  box-shadow: 0 10px 24px color-mix(in srgb, black 26%, transparent);
 }
 
 @keyframes slideUp {
@@ -270,12 +275,13 @@ body {
   color: var(--text);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   font-size: 0.78rem;
 }
 
 .walk-btn:active {
   background: color-mix(in srgb, var(--card-bg) 80%, white 6%);
+  transform: translateY(1px);
 }
 
 /* BUTTONS */
@@ -299,11 +305,17 @@ body {
   font-weight: 500;
   font-size: 0.84rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.08s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
+}
+
+.control-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .control-btn--primary {
@@ -350,13 +362,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .section-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .streak-badge {
@@ -387,6 +400,7 @@ body {
   font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), color var(--motion-base) var(--ease-standard);
 }
 
 .history-group-toggle::after {
@@ -464,6 +478,7 @@ body {
   border-radius: 1rem;
   padding: var(--space-md);
   border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 20px color-mix(in srgb, black 20%, transparent);
 }
 
 .history-card-title {
@@ -493,7 +508,7 @@ body {
   border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
   border-radius: 0.8rem;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   color: var(--text);
   text-align: left;
   cursor: pointer;
@@ -609,6 +624,7 @@ body {
   border-radius: 0.95rem;
   margin: 0 0 var(--space-lg);
   background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 94%, black 6%), color-mix(in srgb, var(--card-bg-strong) 90%, black 10%));
+  box-shadow: 0 6px 14px color-mix(in srgb, black 16%, transparent);
 }
 
 .settings-group:nth-of-type(1) {
@@ -648,7 +664,7 @@ body {
   background: var(--card-bg);
   border-radius: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   margin-bottom: var(--space-sm);
   border: 1px solid rgba(255,255,255,0.05);
 }
@@ -753,7 +769,7 @@ body {
   color: color-mix(in srgb, var(--text-muted) 88%, var(--card-bg));
   cursor: pointer;
   border-radius: 0.6rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
   font-size: 0.68rem;
   font-weight: 600;
 }
@@ -806,6 +822,32 @@ body {
   z-index: 50;
   box-shadow: 0 12px 32px color-mix(in srgb, var(--secondary) 42%, transparent);
   animation: toastSlide 0.3s ease-out;
+}
+
+.control-btn:focus-visible,
+.icon-btn:focus-visible,
+.walk-btn:focus-visible,
+.history-group-toggle:focus-visible,
+.history-day-btn:focus-visible,
+.history-day-input:focus-visible,
+.nav-btn:focus-visible,
+.select-label select:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary-light) 55%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+@media (hover: hover) {
+  .control-btn:hover:not(:disabled),
+  .walk-btn:hover,
+  .history-group-toggle:hover,
+  .history-day-btn:hover,
+  .icon-btn:hover,
+  .nav-btn:hover,
+  .checkbox-label:hover,
+  .select-label:hover {
+    border-color: color-mix(in srgb, var(--primary) 36%, transparent);
+  }
 }
 
 @keyframes toastSlide {
@@ -1001,4 +1043,15 @@ body {
   background-clip: text;
   text-shadow: 0 4px 12px color-mix(in srgb, var(--accent-danger) 24%, transparent);
   filter: saturate(1.1) contrast(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }
