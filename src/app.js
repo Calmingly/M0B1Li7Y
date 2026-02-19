@@ -418,6 +418,10 @@ function goToStep(nextIndex) {
   state.stepIndex = nextIndex;
   const step = currentStep();
 
+  if (state.isRunning) {
+    state.isPaused = true;
+  }
+
   if (step.durationSec === "briskWalk") {
     state.remainingSec = state.settings.defaultWalkDuration * 60;
   } else {
