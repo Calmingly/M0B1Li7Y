@@ -49,6 +49,9 @@ const state = {
   selectedHistoryStepIds: [],
   selectedHistoryStepSet: new Set(),
   historyCache: null,
+  historyCacheHits: 0,
+  historyCacheMisses: 0,
+  historyLastRenderMs: 0,
   historyEditsPending: null,
   historyEditsSaveTimer: null,
   preloadedImageUrls: new Set()
@@ -98,6 +101,8 @@ const els = {
   defaultWalkDuration: document.getElementById("default-walk-duration"),
   remoteImageCaching: document.getElementById("remote-image-caching"),
   disableSW: document.getElementById("disable-sw"),
+  historyRenderMs: document.getElementById("history-render-ms"),
+  historyCacheRate: document.getElementById("history-cache-rate"),
   themeSelect: document.getElementById("theme-select"),
   themeSwatch: document.getElementById("theme-swatch"),
   navButtons: Array.from(document.querySelectorAll(".nav-btn")),
@@ -592,6 +597,7 @@ function invalidateHistoryCache() {
 }
 
 function renderHistory() {
+  const startedAt = performance.now();
   const context = getHistoryContext();
   const {
     now,
@@ -667,6 +673,9 @@ function renderHistory() {
       els.milestoneProgress.textContent = `Milestone unlocked: 100+ sessions (${totalSessions} total)`;
     }
   }
+
+  state.historyLastRenderMs = performance.now() - startedAt;
+  updateHistoryDebugPanel();
 }
 
 function getHistoryContext() {
@@ -678,8 +687,11 @@ function getHistoryContext() {
     state.historyCache.historyRaw === historyRaw &&
     state.historyCache.dayEditsRaw === dayEditsRaw
   ) {
+    state.historyCacheHits += 1;
     return state.historyCache.context;
   }
+
+  state.historyCacheMisses += 1;
 
   let history;
   let dayEdits;
@@ -709,6 +721,18 @@ function getHistoryContext() {
     context
   };
   return context;
+}
+
+function updateHistoryDebugPanel() {
+  if (els.historyRenderMs) {
+    els.historyRenderMs.textContent = `${state.historyLastRenderMs.toFixed(1)} ms`;
+  }
+
+  if (els.historyCacheRate) {
+    const total = state.historyCacheHits + state.historyCacheMisses;
+    const rate = total === 0 ? 0 : Math.round((state.historyCacheHits / total) * 100);
+    els.historyCacheRate.textContent = `${rate}% (${state.historyCacheHits}/${total})`;
+  }
 }
 
 function buildHistoryContext(history, dayEdits) {

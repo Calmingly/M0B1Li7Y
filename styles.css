@@ -599,6 +599,27 @@ body {
   padding-left: var(--space-md);
 }
 
+.perf-debug {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.perf-debug-title {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.perf-debug-line {
+  margin: 0.2rem 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 .theme-swatch {
   width: 2rem;
   height: 2rem;
