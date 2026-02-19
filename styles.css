@@ -480,6 +480,10 @@ body {
   gap: var(--space-sm);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+
+.history-reset-btn {
+  grid-column: 1 / -1;
+}
 .milestone-chip {
   margin: var(--space-md) 0 0;
   display: inline-block;

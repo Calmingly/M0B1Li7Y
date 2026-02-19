@@ -79,6 +79,7 @@ const els = {
   piecesValue: document.getElementById("pieces-value"),
   saveDayEdit: document.getElementById("save-day-edit"),
   cancelDayEdit: document.getElementById("cancel-day-edit"),
+  resetDayEdit: document.getElementById("reset-day-edit"),
   soundEnabled: document.getElementById("sound-enabled"),
   hapticsEnabled: document.getElementById("haptics-enabled"),
   defaultWalkDuration: document.getElementById("default-walk-duration"),
@@ -156,6 +157,10 @@ function wireEvents() {
 
   if (els.cancelDayEdit) {
     els.cancelDayEdit.addEventListener("click", closeHistoryEditor);
+  }
+
+  if (els.resetDayEdit) {
+    els.resetDayEdit.addEventListener("click", resetHistoryDayEdit);
   }
 
   els.navButtons.forEach((btn) => btn.addEventListener("click", () => switchView(btn.dataset.view)));
@@ -651,6 +656,15 @@ function saveHistoryDayEdit() {
   edits[state.selectedHistoryDay] = {
     piecesCompleted: clampPieces(Number(els.piecesCompleted.value || 0))
   };
+  saveHistoryDayEdits(edits);
+  closeHistoryEditor();
+  renderHistory();
+}
+
+function resetHistoryDayEdit() {
+  if (!state.selectedHistoryDay) return;
+  const edits = loadHistoryDayEdits();
+  delete edits[state.selectedHistoryDay];
   saveHistoryDayEdits(edits);
   closeHistoryEditor();
   renderHistory();
