@@ -495,8 +495,13 @@ function renderStepImage() {
   els.imageCredit.hidden = true;
   els.imageFallback.hidden = false;
   els.imageFallback.classList.add("image-fallback--loading");
-  els.stepImage.hidden = true;
+  els.stepImage.hidden = false;
   els.stepImage.src = imageInfo.url;
+
+  if (els.stepImage.complete && els.stepImage.naturalWidth > 0) {
+    els.imageFallback.hidden = true;
+    els.imageFallback.classList.remove("image-fallback--loading");
+  }
 
   preloadNextStepImage();
 }
