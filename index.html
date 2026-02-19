@@ -6,8 +6,9 @@
     <meta name="theme-color" content="#0f172a" />
     <meta name="description" content="M0B1Li7Y: a fast, offline-capable 12-minute mobility routine." />
     <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" sizes="192x192" type="image/png" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <link rel="stylesheet" href="./styles.css" />
     <title>M0B1Li7Y</title>
   </head>
@@ -129,6 +130,11 @@
           <div id="history-editor" class="history-editor" hidden>
             <h3 id="history-editor-title" class="history-card-title">Edit day</h3>
             <p class="history-editor-label">Check completed pieces</p>
+            <div class="history-quick-actions">
+              <button id="mark-all-day-edit" class="control-btn control-btn--secondary">Mark all</button>
+              <button id="clear-all-day-edit" class="control-btn control-btn--secondary">Clear all</button>
+              <button id="weekday-template-day-edit" class="control-btn control-btn--secondary">Mon–Fri template</button>
+            </div>
             <div id="history-piece-list" class="history-piece-list"></div>
             <p id="pieces-value" class="history-editor-value">0 / 11 pieces</p>
             <div class="history-editor-actions">

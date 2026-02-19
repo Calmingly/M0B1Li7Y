@@ -4,6 +4,8 @@ const APP_VERSION = "v1";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
 const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
+const HISTORY_SAVE_DEBOUNCE_MS = 400;
+const WEEKLY_GOAL = 5;
 
 const DEFAULT_SETTINGS = {
   soundEnabled: true,
@@ -44,7 +46,12 @@ const state = {
   timerRef: null,
   imageMap: {},
   selectedHistoryDay: null,
-  selectedHistoryStepIds: []
+  selectedHistoryStepIds: [],
+  selectedHistoryStepSet: new Set(),
+  historyCache: null,
+  historyEditsPending: null,
+  historyEditsSaveTimer: null,
+  preloadedImageUrls: new Set()
 };
 
 const els = {
@@ -80,6 +87,9 @@ const els = {
   historyEditorTitle: document.getElementById("history-editor-title"),
   historyPieceList: document.getElementById("history-piece-list"),
   piecesValue: document.getElementById("pieces-value"),
+  markAllDayEdit: document.getElementById("mark-all-day-edit"),
+  clearAllDayEdit: document.getElementById("clear-all-day-edit"),
+  weekdayTemplateDayEdit: document.getElementById("weekday-template-day-edit"),
   saveDayEdit: document.getElementById("save-day-edit"),
   cancelDayEdit: document.getElementById("cancel-day-edit"),
   resetDayEdit: document.getElementById("reset-day-edit"),
@@ -99,6 +109,7 @@ function init() {
   hydrateSettingsUI();
   applyTheme(state.settings.theme);
   attachErrorHandlers();
+  initializeHistoryEditorChecklist();
   wireEvents();
   renderStep();
   renderHistory();
@@ -114,6 +125,12 @@ function init() {
     state.imageMap = imageMap;
     renderStepImage();
   });
+
+  if (els.historyDayInput && !els.historyDayInput.value) {
+    els.historyDayInput.value = toDayKey(new Date());
+  }
+
+  window.addEventListener("beforeunload", flushHistoryDayEditsWrite);
 }
 
 function wireEvents() {
@@ -149,6 +166,24 @@ function wireEvents() {
 
   if (els.openDayEdit) {
     els.openDayEdit.addEventListener("click", openSelectedDayEditor);
+  }
+
+  if (els.markAllDayEdit) {
+    els.markAllDayEdit.addEventListener("click", () => {
+      state.selectedHistoryStepSet = new Set(ROUTINE_STEPS.map((step) => step.id));
+      syncHistoryStepSelectionFromSet();
+    });
+  }
+
+  if (els.clearAllDayEdit) {
+    els.clearAllDayEdit.addEventListener("click", () => {
+      state.selectedHistoryStepSet = new Set();
+      syncHistoryStepSelectionFromSet();
+    });
+  }
+
+  if (els.weekdayTemplateDayEdit) {
+    els.weekdayTemplateDayEdit.addEventListener("click", applyWeekdayTemplateForSelectedDay);
   }
 
   if (els.saveDayEdit) {
@@ -365,6 +400,22 @@ function renderStepImage() {
   els.imageFallback.hidden = true;
   els.stepImage.hidden = false;
   els.stepImage.src = imageInfo.url;
+
+  preloadNextStepImage();
+}
+
+function preloadNextStepImage() {
+  const nextStep = ROUTINE_STEPS[state.stepIndex + 1];
+  if (!nextStep) return;
+
+  const nextImageInfo = state.imageMap[nextStep.id];
+  if (!nextImageInfo?.url) return;
+  if (state.preloadedImageUrls.has(nextImageInfo.url)) return;
+
+  const img = new Image();
+  img.decoding = "async";
+  img.src = nextImageInfo.url;
+  state.preloadedImageUrls.add(nextImageInfo.url);
 }
 
 function renderTimer() {
@@ -505,6 +556,9 @@ function loadHistory() {
 }
 
 function loadHistoryDayEdits() {
+  if (state.historyEditsPending) {
+    return { ...state.historyEditsPending };
+  }
   try {
     return JSON.parse(localStorage.getItem(HISTORY_DAY_EDITS_KEY) || "{}");
   } catch {
@@ -513,30 +567,43 @@ function loadHistoryDayEdits() {
 }
 
 function saveHistoryDayEdits(edits) {
-  localStorage.setItem(HISTORY_DAY_EDITS_KEY, JSON.stringify(edits));
+  state.historyEditsPending = edits;
+  if (state.historyEditsSaveTimer) {
+    clearTimeout(state.historyEditsSaveTimer);
+  }
+  state.historyEditsSaveTimer = setTimeout(() => {
+    flushHistoryDayEditsWrite();
+  }, HISTORY_SAVE_DEBOUNCE_MS);
+  invalidateHistoryCache();
+}
+
+function flushHistoryDayEditsWrite() {
+  if (state.historyEditsSaveTimer) {
+    clearTimeout(state.historyEditsSaveTimer);
+    state.historyEditsSaveTimer = null;
+  }
+  if (!state.historyEditsPending) return;
+  localStorage.setItem(HISTORY_DAY_EDITS_KEY, JSON.stringify(state.historyEditsPending));
+  state.historyEditsPending = null;
+}
+
+function invalidateHistoryCache() {
+  state.historyCache = null;
 }
 
 function renderHistory() {
-  const history = loadHistory();
-  const dayEdits = loadHistoryDayEdits();
-  const now = new Date();
-  const threshold = new Date(now);
-  threshold.setDate(threshold.getDate() - 7);
-  const weekStart = startOfWeekMonday(now);
+  const context = getHistoryContext();
+  const {
+    now,
+    daySummaries,
+    recentDays,
+    sessionsThisWeekCount,
+    totalMinutesLastWeek,
+    streak,
+    totalSessions
+  } = context;
 
-  const recent = history.filter((item) => new Date(item.completedAt) >= threshold);
-  const weekStartKey = toDayKey(weekStart);
-  const totalMinutesLastWeek = Math.round(
-    recent.reduce((sum, item) => sum + (Number(item.durationSec) || 0), 0) / 60
-  );
-  const totalSessions = history.length;
   els.historyList.innerHTML = "";
-
-  const daySummaries = summarizeDays(history, dayEdits);
-  const sessionsThisWeek = daySummaries.filter(
-    (day) => day.dayKey >= weekStartKey && day.piecesCompleted > 0
-  );
-  const recentDays = daySummaries.slice(0, 7);
 
   if (recentDays.length === 0) {
     const li = document.createElement("li");
@@ -562,14 +629,13 @@ function renderHistory() {
     });
   }
 
-  const streak = computeStreak(daySummaries);
   els.streak.textContent = `Streak: ${streak} day${streak === 1 ? "" : "s"}`;
   if (els.streakSummary) {
     els.streakSummary.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
   }
 
   if (els.sessionsWeek) {
-    els.sessionsWeek.textContent = `${sessionsThisWeek.length} session${sessionsThisWeek.length === 1 ? "" : "s"}`;
+    els.sessionsWeek.textContent = `${sessionsThisWeekCount} session${sessionsThisWeekCount === 1 ? "" : "s"}`;
   }
 
   if (els.minutesWeek) {
@@ -577,8 +643,7 @@ function renderHistory() {
   }
 
   if (els.goalNudge) {
-    const weeklyGoal = 5;
-    const remainingThisWeek = Math.max(0, weeklyGoal - sessionsThisWeek.length);
+    const remainingThisWeek = Math.max(0, WEEKLY_GOAL - sessionsThisWeekCount);
     const weekdaysElapsed = weekdaysElapsedThisWeek(now);
     const weekdaysRemaining = Math.max(0, 5 - weekdaysElapsed);
 
@@ -604,17 +669,78 @@ function renderHistory() {
   }
 }
 
-function summarizeDays(history, dayEdits) {
+function getHistoryContext() {
+  const historyRaw = localStorage.getItem(HISTORY_KEY) || "[]";
+  const dayEditsRaw = JSON.stringify(state.historyEditsPending || loadHistoryDayEdits());
+
+  if (
+    state.historyCache &&
+    state.historyCache.historyRaw === historyRaw &&
+    state.historyCache.dayEditsRaw === dayEditsRaw
+  ) {
+    return state.historyCache.context;
+  }
+
+  let history;
+  let dayEdits;
+  try {
+    history = JSON.parse(historyRaw);
+  } catch {
+    history = [];
+  }
+  try {
+    dayEdits = JSON.parse(dayEditsRaw);
+  } catch {
+    dayEdits = {};
+  }
+
+  const cleanedEdits = migrateAndCleanHistoryDayEdits(dayEdits);
+  const cleanedEditsRaw = JSON.stringify(cleanedEdits);
+
+  if (cleanedEditsRaw !== dayEditsRaw) {
+    localStorage.setItem(HISTORY_DAY_EDITS_KEY, cleanedEditsRaw);
+    state.historyEditsPending = null;
+  }
+
+  const context = buildHistoryContext(history, cleanedEdits);
+  state.historyCache = {
+    historyRaw,
+    dayEditsRaw: cleanedEditsRaw,
+    context
+  };
+  return context;
+}
+
+function buildHistoryContext(history, dayEdits) {
+  const now = new Date();
+  const threshold = new Date(now);
+  threshold.setDate(threshold.getDate() - 7);
+  const thresholdMs = threshold.getTime();
+  const weekStart = startOfWeekMonday(now);
+  const weekStartKey = toDayKey(weekStart);
   const byDay = new Map();
 
+  let totalSessions = 0;
+  let totalSecondsLastWeek = 0;
+
   history.forEach((item) => {
+    if (!item?.completedAt) return;
+    const completedMs = Date.parse(item.completedAt);
+    if (!Number.isFinite(completedMs)) return;
+
+    totalSessions += 1;
+    const durationSec = Number(item.durationSec) || 0;
+    if (completedMs >= thresholdMs) {
+      totalSecondsLastWeek += durationSec;
+    }
+
     const dayKey = toDayKey(item.completedAt);
     if (!byDay.has(dayKey)) {
       byDay.set(dayKey, { dayKey, sessions: 0, durationSec: 0 });
     }
     const existing = byDay.get(dayKey);
     existing.sessions += 1;
-    existing.durationSec += Number(item.durationSec) || 0;
+    existing.durationSec += durationSec;
   });
 
   Object.keys(dayEdits).forEach((dayKey) => {
@@ -623,29 +749,69 @@ function summarizeDays(history, dayEdits) {
     }
   });
 
-  return Array.from(byDay.values())
+  const daySummaries = Array.from(byDay.values())
     .map((day) => {
       const edit = dayEdits[day.dayKey] || {};
       const stepIds = resolveStepIdsForDay(day, edit);
       return { ...day, stepIds, piecesCompleted: stepIds.length };
     })
     .sort((a, b) => (a.dayKey < b.dayKey ? 1 : -1));
+
+  const sessionsThisWeekCount = daySummaries.filter(
+    (day) => day.dayKey >= weekStartKey && day.piecesCompleted > 0
+  ).length;
+
+  return {
+    now,
+    daySummaries,
+    recentDays: daySummaries.slice(0, 7),
+    sessionsThisWeekCount,
+    totalMinutesLastWeek: Math.round(totalSecondsLastWeek / 60),
+    streak: computeStreak(daySummaries),
+    totalSessions
+  };
+}
+
+function migrateAndCleanHistoryDayEdits(dayEdits) {
+  const migrated = {};
+
+  Object.entries(dayEdits || {}).forEach(([dayKey, value]) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dayKey)) return;
+    const edit = value || {};
+
+    if (Array.isArray(edit.stepIds)) {
+      const stepIds = normalizeStepIds(edit.stepIds);
+      if (stepIds.length > 0) {
+        migrated[dayKey] = { stepIds };
+      }
+      return;
+    }
+
+    if (Number.isFinite(edit.piecesCompleted)) {
+      const count = clampPieces(edit.piecesCompleted);
+      if (count > 0) {
+        migrated[dayKey] = {
+          stepIds: ROUTINE_STEPS.slice(0, count).map((step) => step.id)
+        };
+      }
+    }
+  });
+
+  return migrated;
 }
 
 function openHistoryEditor(dayKey) {
   state.selectedHistoryDay = dayKey;
   const { stepIds } = getHistoryDaySummary(dayKey);
   state.selectedHistoryStepIds = [...stepIds];
+  state.selectedHistoryStepSet = new Set(stepIds);
   if (els.historyEditorTitle) {
     els.historyEditorTitle.textContent = `Edit ${formatDayLabel(dayKey)}`;
   }
   if (els.historyDayInput) {
     els.historyDayInput.value = dayKey;
   }
-  renderHistoryPieceChecklist();
-  if (els.piecesValue) {
-    els.piecesValue.textContent = `${state.selectedHistoryStepIds.length} / ${ROUTINE_STEPS.length} pieces`;
-  }
+  syncHistoryStepSelectionFromSet();
   if (els.historyEditor) {
     els.historyEditor.hidden = false;
   }
@@ -654,6 +820,7 @@ function openHistoryEditor(dayKey) {
 function closeHistoryEditor() {
   state.selectedHistoryDay = null;
   state.selectedHistoryStepIds = [];
+  state.selectedHistoryStepSet = new Set();
   if (els.historyEditor) {
     els.historyEditor.hidden = true;
   }
@@ -662,9 +829,18 @@ function closeHistoryEditor() {
 function saveHistoryDayEdit() {
   if (!state.selectedHistoryDay) return;
   const edits = loadHistoryDayEdits();
-  edits[state.selectedHistoryDay] = {
-    stepIds: normalizeStepIds(state.selectedHistoryStepIds)
-  };
+  const normalizedStepIds = normalizeStepIds(Array.from(state.selectedHistoryStepSet));
+  const summary = getHistoryDaySummary(state.selectedHistoryDay);
+  const isDefaultCompletion = summary.sessions > 0 && normalizedStepIds.length === ROUTINE_STEPS.length;
+
+  if (isDefaultCompletion) {
+    delete edits[state.selectedHistoryDay];
+  } else {
+    edits[state.selectedHistoryDay] = {
+      stepIds: normalizedStepIds
+    };
+  }
+
   saveHistoryDayEdits(edits);
   closeHistoryEditor();
   renderHistory();
@@ -685,9 +861,7 @@ function openSelectedDayEditor() {
 }
 
 function renderHistoryPieceChecklist() {
-  if (!els.historyPieceList) return;
-  const selected = new Set(state.selectedHistoryStepIds);
-  els.historyPieceList.innerHTML = "";
+  if (!els.historyPieceList || els.historyPieceList.childElementCount > 0) return;
 
   ROUTINE_STEPS.forEach((step) => {
     const label = document.createElement("label");
@@ -695,23 +869,20 @@ function renderHistoryPieceChecklist() {
 
     const input = document.createElement("input");
     input.type = "checkbox";
-    input.checked = selected.has(step.id);
+    input.className = "history-piece-checkbox";
+    input.checked = false;
     input.dataset.stepId = step.id;
 
     const text = document.createElement("span");
     text.textContent = step.name;
 
     input.addEventListener("change", () => {
-      const next = new Set(state.selectedHistoryStepIds);
       if (input.checked) {
-        next.add(step.id);
+        state.selectedHistoryStepSet.add(step.id);
       } else {
-        next.delete(step.id);
+        state.selectedHistoryStepSet.delete(step.id);
       }
-      state.selectedHistoryStepIds = normalizeStepIds(Array.from(next));
-      if (els.piecesValue) {
-        els.piecesValue.textContent = `${state.selectedHistoryStepIds.length} / ${ROUTINE_STEPS.length} pieces`;
-      }
+      syncHistoryStepSelectionFromSet();
     });
 
     label.append(input, text);
@@ -719,22 +890,46 @@ function renderHistoryPieceChecklist() {
   });
 }
 
-function getHistoryDaySummary(dayKey) {
-  const history = loadHistory();
-  const dayEdits = loadHistoryDayEdits();
-  const day = history
-    .filter((item) => toDayKey(item.completedAt) === dayKey)
-    .reduce(
-      (acc, item) => {
-        acc.sessions += 1;
-        acc.durationSec += Number(item.durationSec) || 0;
-        return acc;
-      },
-      { dayKey, sessions: 0, durationSec: 0 }
-    );
+function initializeHistoryEditorChecklist() {
+  renderHistoryPieceChecklist();
+}
 
-  const stepIds = resolveStepIdsForDay(day, dayEdits[dayKey] || {});
-  return { ...day, stepIds, piecesCompleted: stepIds.length };
+function syncHistoryStepSelectionFromSet() {
+  state.selectedHistoryStepIds = normalizeStepIds(Array.from(state.selectedHistoryStepSet));
+
+  if (els.historyPieceList) {
+    els.historyPieceList.querySelectorAll("input[data-step-id]").forEach((input) => {
+      if (!(input instanceof HTMLInputElement)) return;
+      input.checked = state.selectedHistoryStepSet.has(input.dataset.stepId);
+    });
+  }
+
+  if (els.piecesValue) {
+    els.piecesValue.textContent = `${state.selectedHistoryStepIds.length} / ${ROUTINE_STEPS.length} pieces`;
+  }
+}
+
+function applyWeekdayTemplateForSelectedDay() {
+  if (!state.selectedHistoryDay) return;
+  const weekend = isWeekendDayKey(state.selectedHistoryDay);
+  state.selectedHistoryStepSet = weekend
+    ? new Set()
+    : new Set(ROUTINE_STEPS.map((step) => step.id));
+  syncHistoryStepSelectionFromSet();
+}
+
+function getHistoryDaySummary(dayKey) {
+  const context = getHistoryContext();
+  const existing = context.daySummaries.find((day) => day.dayKey === dayKey);
+  if (existing) return existing;
+
+  return {
+    dayKey,
+    sessions: 0,
+    durationSec: 0,
+    stepIds: [],
+    piecesCompleted: 0
+  };
 }
 
 function resolveStepIdsForDay(day, edit) {
@@ -753,6 +948,11 @@ function resolveStepIdsForDay(day, edit) {
 function normalizeStepIds(stepIds) {
   const valid = new Set(ROUTINE_STEPS.map((step) => step.id));
   return Array.from(new Set(stepIds.filter((stepId) => valid.has(stepId))));
+}
+
+function isWeekendDayKey(dayKey) {
+  const day = new Date(`${dayKey}T00:00:00`).getDay();
+  return day === 0 || day === 6;
 }
 
 function clampPieces(value) {

@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v6";
+const VERSION = "m0b1li7y-v7";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const CORE_ASSETS = [
@@ -9,6 +9,8 @@ const CORE_ASSETS = [
   "./src/routineImages.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
   "./img/demo-arm-circles.svg",
   "./img/demo-trunk-rotations.svg",
   "./img/demo-side-bends.svg",

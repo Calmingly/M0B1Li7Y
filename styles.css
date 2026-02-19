@@ -488,6 +488,13 @@ body {
   gap: var(--space-xs);
 }
 
+.history-quick-actions {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: var(--space-sm);
+}
+
 .history-piece-item {
   display: flex;
   align-items: center;
