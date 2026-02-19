@@ -100,9 +100,26 @@
             <h2 class="section-title">📊 History</h2>
             <p id="streak" class="streak-badge">Streak: 0 days</p>
           </div>
+          <div class="history-stats" aria-label="Summary stats">
+            <div class="history-stat">
+              <p class="history-stat-label">This week</p>
+              <p id="sessions-week" class="history-stat-value">0 sessions</p>
+            </div>
+            <div class="history-stat">
+              <p class="history-stat-label">Last 7 days</p>
+              <p id="minutes-week" class="history-stat-value">0 min</p>
+            </div>
+            <div class="history-stat">
+              <p class="history-stat-label">Current streak</p>
+              <p id="streak-summary" class="history-stat-value">0 days</p>
+            </div>
+          </div>
+          <p id="goal-nudge" class="history-nudge">Complete your first routine.</p>
           <div class="history-card">
+            <h3 class="history-card-title">Recent sessions</h3>
             <ul id="history-list" class="history-list"></ul>
           </div>
+          <p id="milestone-progress" class="milestone-chip">Next milestone: 5 sessions (0/5)</p>
         </section>
 
         <!-- SETTINGS VIEW -->

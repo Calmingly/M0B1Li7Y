@@ -66,6 +66,11 @@ const els = {
   imageCreditLink: document.getElementById("image-credit-link"),
   historyList: document.getElementById("history-list"),
   streak: document.getElementById("streak"),
+  streakSummary: document.getElementById("streak-summary"),
+  sessionsWeek: document.getElementById("sessions-week"),
+  minutesWeek: document.getElementById("minutes-week"),
+  goalNudge: document.getElementById("goal-nudge"),
+  milestoneProgress: document.getElementById("milestone-progress"),
   soundEnabled: document.getElementById("sound-enabled"),
   hapticsEnabled: document.getElementById("haptics-enabled"),
   defaultWalkDuration: document.getElementById("default-walk-duration"),
@@ -467,14 +472,20 @@ function renderHistory() {
   threshold.setDate(threshold.getDate() - 7);
 
   const recent = history.filter((item) => new Date(item.completedAt) >= threshold);
+  const totalMinutesLastWeek = Math.round(
+    recent.reduce((sum, item) => sum + (Number(item.durationSec) || 0), 0) / 60
+  );
+  const totalSessions = history.length;
   els.historyList.innerHTML = "";
 
-  if (recent.length === 0) {
+  const recentSessions = history.slice(0, 3);
+
+  if (recentSessions.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "No completions yet.";
+    li.textContent = "Complete your first routine.";
     els.historyList.append(li);
   } else {
-    recent.forEach((item) => {
+    recentSessions.forEach((item) => {
       const li = document.createElement("li");
       const date = new Date(item.completedAt);
       li.textContent = `${date.toLocaleDateString()} • ${formatTime(item.durationSec)}`;
@@ -484,6 +495,34 @@ function renderHistory() {
 
   const streak = computeStreak(history);
   els.streak.textContent = `Streak: ${streak} day${streak === 1 ? "" : "s"}`;
+  if (els.streakSummary) {
+    els.streakSummary.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
+  }
+
+  if (els.sessionsWeek) {
+    els.sessionsWeek.textContent = `${recent.length} session${recent.length === 1 ? "" : "s"}`;
+  }
+
+  if (els.minutesWeek) {
+    els.minutesWeek.textContent = `${totalMinutesLastWeek} min`;
+  }
+
+  if (els.goalNudge) {
+    const remainingThisWeek = Math.max(0, 5 - recent.length);
+    els.goalNudge.textContent = remainingThisWeek === 0
+      ? "Weekly goal reached. Great consistency."
+      : `${remainingThisWeek} session${remainingThisWeek === 1 ? "" : "s"} to reach 5 this week.`;
+  }
+
+  if (els.milestoneProgress) {
+    const milestones = [5, 10, 25, 50, 100];
+    const nextMilestone = milestones.find((value) => totalSessions < value);
+    if (nextMilestone) {
+      els.milestoneProgress.textContent = `Next milestone: ${nextMilestone} sessions (${totalSessions}/${nextMilestone})`;
+    } else {
+      els.milestoneProgress.textContent = `Milestone unlocked: 100+ sessions (${totalSessions} total)`;
+    }
+  }
 }
 
 function computeStreak(history) {
