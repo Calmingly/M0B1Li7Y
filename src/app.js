@@ -42,7 +42,7 @@ const ROUTINE_STEPS = [
 const DEFAULT_HISTORY_UI = {
   summary: true,
   addDay: false,
-  recent: true,
+  recent: false,
   editor: false
 };
 
