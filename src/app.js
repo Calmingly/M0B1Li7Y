@@ -621,14 +621,20 @@ function renderHistory() {
       const li = document.createElement("li");
       const button = document.createElement("button");
       const dateText = formatDayLabel(day.dayKey);
-      const completionState = day.piecesCompleted >= ROUTINE_STEPS.length
-        ? "Complete"
+      const statusKey = day.piecesCompleted >= ROUTINE_STEPS.length
+        ? "complete"
         : day.piecesCompleted === 0
-          ? "Not done"
-          : "Partial";
+          ? "not-done"
+          : "partial";
+      const completionState = statusKey === "complete"
+        ? "Complete"
+        : statusKey === "partial"
+          ? "Partial"
+          : "Not done";
       button.type = "button";
       button.className = "history-day-btn";
       button.dataset.dayKey = day.dayKey;
+      button.dataset.status = statusKey;
       button.textContent = `${dateText} • ${day.piecesCompleted}/${ROUTINE_STEPS.length} pieces • ${completionState}`;
       li.append(button);
       els.historyList.append(li);

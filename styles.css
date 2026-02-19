@@ -135,6 +135,8 @@ body {
   position: relative;
   width: 180px;
   height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 65%);
 }
 
 .progress-ring {
@@ -151,12 +153,13 @@ body {
 
 .progress-ring-fg {
   fill: none;
-  stroke: url(#gradient);
+  stroke: color-mix(in srgb, var(--primary-light) 75%, var(--secondary-light) 25%);
   stroke-width: 8;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease;
   stroke-dasharray: 283;
   stroke-dashoffset: 283;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--primary) 40%, transparent));
 }
 
 .progress-text {
@@ -176,6 +179,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 .step-progress {
@@ -216,7 +220,9 @@ body {
 .card-overlay {
   position: static;
   padding: 0.72rem 0.82rem 0.82rem;
-  background: color-mix(in srgb, var(--card-bg-strong) 92%, black 8%);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--primary) 14%, transparent), transparent 48%),
+    linear-gradient(180deg, color-mix(in srgb, var(--card-bg-strong) 94%, black 6%), color-mix(in srgb, var(--card-bg) 90%, black 10%));
   border-top: 1px solid rgba(255,255,255,0.08);
   color: var(--text);
 }
@@ -300,14 +306,14 @@ body {
 }
 
 .control-btn--primary {
-  background: color-mix(in srgb, var(--primary) 26%, var(--card-bg));
+  background: var(--cta-gradient);
   color: var(--text);
   border-color: color-mix(in srgb, var(--primary) 55%, transparent);
-  box-shadow: none;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--cta-shadow) 75%, transparent);
 }
 
 .control-btn--primary:active {
-  background: color-mix(in srgb, var(--primary) 34%, var(--card-bg));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-dark) 88%, black 12%), color-mix(in srgb, var(--primary-light) 88%, black 12%));
 }
 
 .control-btn--secondary {
@@ -444,8 +450,8 @@ body {
 .history-day-btn {
   width: 100%;
   padding: var(--space-md);
-  background: color-mix(in srgb, var(--primary) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--secondary) 14%, transparent));
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
   border-radius: 0.8rem;
   font-size: 0.95rem;
   transition: all 0.2s ease;
@@ -457,6 +463,21 @@ body {
 .history-day-btn:active {
   background: rgba(37,99,235,0.2);
   transform: translateX(4px);
+}
+
+.history-day-btn[data-status="complete"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 28%, transparent), color-mix(in srgb, var(--secondary-light) 18%, transparent));
+  border-color: color-mix(in srgb, var(--secondary) 42%, transparent);
+}
+
+.history-day-btn[data-status="partial"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-warning) 24%, transparent), color-mix(in srgb, var(--primary) 16%, transparent));
+  border-color: color-mix(in srgb, var(--accent-warning) 45%, transparent);
+}
+
+.history-day-btn[data-status="not-done"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--text-muted) 14%, transparent), color-mix(in srgb, var(--card-bg) 70%, black 30%));
+  border-color: rgba(255,255,255,0.14);
 }
 
 .history-empty {
@@ -540,9 +561,31 @@ body {
 
 /* SETTINGS */
 .settings-group {
-  border: none;
-  padding: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: var(--space-sm);
+  border-radius: 0.95rem;
   margin: 0 0 var(--space-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 94%, black 6%), color-mix(in srgb, var(--card-bg-strong) 90%, black 10%));
+}
+
+.settings-group:nth-of-type(1) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, var(--card-bg)), color-mix(in srgb, var(--secondary) 8%, var(--card-bg-strong)));
+}
+
+.settings-group:nth-of-type(2) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 14%, var(--card-bg)), color-mix(in srgb, var(--primary) 8%, var(--card-bg-strong)));
+}
+
+.settings-group:nth-of-type(3) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-light) 12%, var(--card-bg)), color-mix(in srgb, var(--card-bg-strong) 92%, black 8%));
+}
+
+.settings-group:nth-of-type(4) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-light) 13%, var(--card-bg)), color-mix(in srgb, var(--primary) 8%, var(--card-bg-strong)));
+}
+
+.settings-group:nth-of-type(5) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--text-muted) 10%, var(--card-bg)), color-mix(in srgb, var(--primary) 8%, var(--card-bg-strong)));
 }
 
 .settings-legend {
@@ -873,5 +916,9 @@ body {
 
 .timer.low {
   animation: pulse 1s ease-in-out infinite;
-  color: var(--accent-danger);
+  background: linear-gradient(90deg, var(--accent-warning), var(--accent-danger));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 6px 18px color-mix(in srgb, var(--accent-danger) 35%, transparent);
 }
