@@ -58,6 +58,7 @@
                 <span class="skeleton-bar"></span>
                 <span class="skeleton-bar"></span>
               </div>
+              <span id="step-chip" class="step-chip">Step 1 • Arm Circles</span>
             </div>
             <div class="card-overlay">
               <h2 id="step-name" class="hero-title">Arm circles</h2>
@@ -109,6 +110,29 @@
               Summary
             </button>
             <div id="history-summary-content" class="history-group-content">
+              <article class="health-today-card" aria-label="Today summary">
+                <div class="health-today-main">
+                  <p class="health-kicker">Today</p>
+                  <p id="minutes-today" class="health-main-value">0 min</p>
+                  <p class="health-helper">Mobility minutes completed</p>
+                </div>
+                <div class="health-rings" aria-hidden="true">
+                  <div class="health-ring-item">
+                    <svg class="health-mini-ring" viewBox="0 0 40 40">
+                      <circle cx="20" cy="20" r="16" class="health-mini-ring-bg"></circle>
+                      <circle id="week-goal-ring" cx="20" cy="20" r="16" class="health-mini-ring-fg"></circle>
+                    </svg>
+                    <p id="week-goal-label" class="health-ring-label">0%</p>
+                  </div>
+                  <div class="health-ring-item">
+                    <svg class="health-mini-ring" viewBox="0 0 40 40">
+                      <circle cx="20" cy="20" r="16" class="health-mini-ring-bg"></circle>
+                      <circle id="streak-goal-ring" cx="20" cy="20" r="16" class="health-mini-ring-fg"></circle>
+                    </svg>
+                    <p id="streak-goal-label" class="health-ring-label">0d</p>
+                  </div>
+                </div>
+              </article>
               <div class="history-stats" aria-label="Summary stats">
                 <div class="history-stat">
                   <p class="history-stat-label">This week</p>

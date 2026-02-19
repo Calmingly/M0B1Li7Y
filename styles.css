@@ -229,9 +229,26 @@ body {
 }
 
 .media-frame--hero {
+  position: relative;
   width: 100%;
   border-radius: 0.9rem;
   background: transparent;
+}
+
+.step-chip {
+  position: absolute;
+  top: 0.72rem;
+  left: 0.72rem;
+  z-index: 2;
+  padding: 0.28rem 0.52rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 26%, transparent);
+  backdrop-filter: blur(6px);
 }
 
 #step-image {
@@ -244,6 +261,7 @@ body {
 .image-fallback {
   width: 100%;
   height: 100%;
+  min-height: 14rem;
   display: grid;
   align-content: end;
   gap: 0.5rem;
@@ -431,7 +449,7 @@ body {
 
 .section-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.56rem;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
@@ -481,6 +499,80 @@ body {
   margin-top: var(--space-sm);
 }
 
+.health-today-card {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 0.88rem;
+  border-radius: 1rem;
+  margin-bottom: var(--space-sm);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg-strong) 84%, black 16%), color-mix(in srgb, var(--card-bg) 86%, black 14%));
+  box-shadow: var(--elevation-2);
+}
+
+.health-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-muted) 86%, var(--card-bg));
+}
+
+.health-main-value {
+  margin: 0.15rem 0 0;
+  font-size: 1.7rem;
+  font-weight: 760;
+  line-height: 1.02;
+  color: var(--text);
+}
+
+.health-helper {
+  margin: 0.18rem 0 0;
+  font-size: 0.76rem;
+  color: color-mix(in srgb, var(--text-muted) 84%, var(--card-bg));
+}
+
+.health-rings {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.52rem;
+  align-items: center;
+}
+
+.health-ring-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.22rem;
+}
+
+.health-mini-ring {
+  width: 2.55rem;
+  height: 2.55rem;
+  transform: rotate(-90deg);
+}
+
+.health-mini-ring-bg {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  stroke-width: 3.2;
+}
+
+.health-mini-ring-fg {
+  fill: none;
+  stroke: color-mix(in srgb, var(--secondary-light) 80%, var(--primary-light));
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--motion-slow) var(--ease-standard);
+}
+
+.health-ring-label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 650;
+  color: color-mix(in srgb, var(--text) 90%, var(--text-muted));
+}
+
 .history-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -489,10 +581,11 @@ body {
 }
 
 .history-stat {
-  background: var(--card-bg);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: color-mix(in srgb, var(--card-bg) 88%, black 12%);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
   border-radius: 0.8rem;
-  padding: var(--space-sm);
+  padding: 0.72rem;
+  box-shadow: var(--elevation-1);
 }
 
 .history-stat-label {
@@ -503,8 +596,8 @@ body {
 
 .history-stat-value {
   margin: 0.18rem 0 0;
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 730;
   color: var(--text);
 }
 
@@ -568,8 +661,9 @@ body {
 .history-day-btn {
   width: 100%;
   padding: var(--space-md);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), color-mix(in srgb, var(--secondary) 10%, transparent));
-  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 84%, black 16%);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
+  border-left: 4px solid color-mix(in srgb, var(--text-muted) 34%, transparent);
   border-radius: 0.8rem;
   font-size: 0.95rem;
   transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
@@ -587,18 +681,21 @@ body {
 }
 
 .history-day-btn[data-status="complete"] {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 22%, transparent), color-mix(in srgb, var(--secondary-light) 12%, transparent));
-  border-color: color-mix(in srgb, var(--secondary) 42%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 82%, var(--secondary) 18%);
+  border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+  border-left-color: color-mix(in srgb, var(--secondary-light) 72%, var(--secondary));
 }
 
 .history-day-btn[data-status="partial"] {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-warning) 18%, transparent), color-mix(in srgb, var(--primary) 12%, transparent));
-  border-color: color-mix(in srgb, var(--accent-warning) 44%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 84%, var(--accent-warning) 16%);
+  border-color: color-mix(in srgb, var(--accent-warning) 30%, transparent);
+  border-left-color: color-mix(in srgb, var(--accent-warning) 72%, var(--primary));
 }
 
 .history-day-btn[data-status="not-done"] {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--text-muted) 10%, transparent), color-mix(in srgb, var(--card-bg) 74%, black 26%));
-  border-color: rgba(255,255,255,0.2);
+  background: color-mix(in srgb, var(--card-bg) 90%, black 10%);
+  border-color: color-mix(in srgb, var(--text-muted) 16%, transparent);
+  border-left-color: color-mix(in srgb, var(--text-muted) 40%, transparent);
 }
 
 .history-empty {

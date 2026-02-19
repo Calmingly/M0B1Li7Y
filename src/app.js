@@ -74,6 +74,7 @@ const state = {
 
 const els = {
   stepProgress: document.getElementById("step-progress"),
+  stepChip: document.getElementById("step-chip"),
   stepName: document.getElementById("step-name"),
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
@@ -97,6 +98,11 @@ const els = {
   streakSummary: document.getElementById("streak-summary"),
   sessionsWeek: document.getElementById("sessions-week"),
   minutesWeek: document.getElementById("minutes-week"),
+  minutesToday: document.getElementById("minutes-today"),
+  weekGoalRing: document.getElementById("week-goal-ring"),
+  weekGoalLabel: document.getElementById("week-goal-label"),
+  streakGoalRing: document.getElementById("streak-goal-ring"),
+  streakGoalLabel: document.getElementById("streak-goal-label"),
   goalNudge: document.getElementById("goal-nudge"),
   milestoneProgress: document.getElementById("milestone-progress"),
   historyDayInput: document.getElementById("history-day-input"),
@@ -454,6 +460,9 @@ function updateControlLayout(step) {
 function renderStep() {
   const step = currentStep();
   els.stepProgress.textContent = `Step ${state.stepIndex + 1} of ${ROUTINE_STEPS.length}`;
+  if (els.stepChip) {
+    els.stepChip.textContent = `Step ${state.stepIndex + 1} • ${step.name}`;
+  }
   els.stepName.textContent = step.name;
   els.stepCue.textContent = step.cue;
 
@@ -771,6 +780,10 @@ function renderHistory() {
     totalSessions
   } = context;
 
+  const todayKey = toDayKey(now);
+  const todaySummary = daySummaries.find((day) => day.dayKey === todayKey);
+  const todayMinutes = Math.round((todaySummary?.durationSec || 0) / 60);
+
   els.historyList.innerHTML = "";
   els.historyList.classList.remove("is-loading");
   els.historyList.setAttribute("aria-busy", "false");
@@ -821,6 +834,21 @@ function renderHistory() {
     els.minutesWeek.textContent = `${totalMinutesLastWeek} min`;
   }
 
+  if (els.minutesToday) {
+    els.minutesToday.textContent = `${todayMinutes} min`;
+  }
+
+  const weekGoalPercent = Math.min(100, Math.round((sessionsThisWeekCount / WEEKLY_GOAL) * 100));
+  const streakPercent = Math.min(100, Math.round((streak / 7) * 100));
+  setMiniRingProgress(els.weekGoalRing, weekGoalPercent);
+  setMiniRingProgress(els.streakGoalRing, streakPercent);
+  if (els.weekGoalLabel) {
+    els.weekGoalLabel.textContent = `${weekGoalPercent}%`;
+  }
+  if (els.streakGoalLabel) {
+    els.streakGoalLabel.textContent = `${streak}d`;
+  }
+
   if (els.goalNudge) {
     const remainingThisWeek = Math.max(0, WEEKLY_GOAL - sessionsThisWeekCount);
     const weekdaysElapsed = weekdaysElapsedThisWeek(now);
@@ -849,6 +877,16 @@ function renderHistory() {
   triggerHistoryCelebrationEffects();
   state.historyLastRenderMs = performance.now() - startedAt;
   updateHistoryDebugPanel();
+}
+
+function setMiniRingProgress(el, percent) {
+  if (!el) return;
+  const radius = 16;
+  const circumference = 2 * Math.PI * radius;
+  const normalized = Math.max(0, Math.min(100, percent));
+  const dashOffset = circumference * (1 - normalized / 100);
+  el.style.strokeDasharray = String(circumference);
+  el.style.strokeDashoffset = String(dashOffset);
 }
 
 function triggerHistoryCelebrationEffects() {
@@ -1061,6 +1099,14 @@ function closeHistoryEditor() {
 function saveHistoryDayEdit() {
   if (!state.selectedHistoryDay) return;
   state.lastSavedHistoryDay = state.selectedHistoryDay;
+  if (els.saveDayEdit) {
+    els.saveDayEdit.classList.remove("is-saved");
+    void els.saveDayEdit.offsetWidth;
+    els.saveDayEdit.classList.add("is-saved");
+    setTimeout(() => {
+      els.saveDayEdit.classList.remove("is-saved");
+    }, 900);
+  }
   const edits = loadHistoryDayEdits();
   const normalizedStepIds = normalizeStepIds(Array.from(state.selectedHistoryStepSet));
   const summary = getHistoryDaySummary(state.selectedHistoryDay);
