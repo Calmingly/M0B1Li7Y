@@ -259,14 +259,16 @@ body {
 }
 
 .image-fallback {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 14rem;
   display: grid;
   align-content: end;
   gap: 0.5rem;
   padding: 0.85rem;
   background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 88%, black 12%), color-mix(in srgb, var(--card-bg-strong) 90%, black 10%));
+  pointer-events: none;
 }
 
 .image-fallback--loading .skeleton-bar {
