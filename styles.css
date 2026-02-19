@@ -311,6 +311,8 @@ body {
   color: var(--text);
   border-color: color-mix(in srgb, var(--primary) 60%, transparent);
   box-shadow: none;
+  font-weight: 600;
+  font-size: 0.88rem;
 }
 
 .control-btn--primary:active {
