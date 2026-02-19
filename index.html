@@ -54,7 +54,10 @@
           <div class="hero-card">
             <div class="media-frame media-frame--hero" id="media-frame">
               <img id="step-image" alt="" loading="lazy" />
-              <div id="image-fallback" class="image-fallback" hidden aria-hidden="true"></div>
+              <div id="image-fallback" class="image-fallback" aria-hidden="true">
+                <span class="skeleton-bar"></span>
+                <span class="skeleton-bar"></span>
+              </div>
             </div>
             <div class="card-overlay">
               <h2 id="step-name" class="hero-title">Arm circles</h2>
@@ -146,7 +149,11 @@
             </button>
             <div id="history-recent-content" class="history-group-content" hidden>
               <div class="history-card">
-                <ul id="history-list" class="history-list"></ul>
+                <ul id="history-list" class="history-list is-loading" aria-busy="true">
+                  <li class="history-skeleton" aria-hidden="true"></li>
+                  <li class="history-skeleton" aria-hidden="true"></li>
+                  <li class="history-skeleton" aria-hidden="true"></li>
+                </ul>
               </div>
             </div>
           </section>

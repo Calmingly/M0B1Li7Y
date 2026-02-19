@@ -7,6 +7,7 @@ const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
 const HISTORY_UI_KEY = "m0b1li7y.historyUi";
 const HISTORY_SAVE_DEBOUNCE_MS = 400;
 const WEEKLY_GOAL = 5;
+const MILESTONES = [5, 10, 25, 50, 100];
 
 const DEFAULT_SETTINGS = {
   soundEnabled: true,
@@ -65,7 +66,10 @@ const state = {
   historyEditsPending: null,
   historyEditsSaveTimer: null,
   preloadedImageUrls: new Set(),
-  historyUi: loadHistoryUi()
+  historyUi: loadHistoryUi(),
+  lastSavedHistoryDay: null,
+  celebrateCompletion: false,
+  celebrateMilestone: false
 };
 
 const els = {
@@ -342,17 +346,20 @@ function wireEvents() {
     if (!info) {
       els.stepImage.hidden = true;
       els.imageFallback.hidden = true;
+      els.imageFallback.classList.remove("image-fallback--loading");
       els.imageCredit.hidden = true;
       return;
     }
     els.stepImage.hidden = false;
     els.imageFallback.hidden = true;
+    els.imageFallback.classList.remove("image-fallback--loading");
     els.imageCredit.hidden = true;
   });
 
   els.stepImage.addEventListener("error", () => {
     els.stepImage.hidden = true;
-    els.imageFallback.hidden = true;
+    els.imageFallback.hidden = false;
+    els.imageFallback.classList.remove("image-fallback--loading");
     els.imageCredit.hidden = true;
   });
 }
@@ -469,6 +476,7 @@ function renderStepImage() {
     els.stepImage.removeAttribute("src");
     els.stepImage.hidden = true;
     els.imageFallback.hidden = true;
+    els.imageFallback.classList.remove("image-fallback--loading");
     els.imageCredit.hidden = true;
     return;
   }
@@ -476,8 +484,9 @@ function renderStepImage() {
   els.stepImage.alt = imageInfo.alt;
   // Image credit text intentionally hidden in UI.
   els.imageCredit.hidden = true;
-  els.imageFallback.hidden = true;
-  els.stepImage.hidden = false;
+  els.imageFallback.hidden = false;
+  els.imageFallback.classList.add("image-fallback--loading");
+  els.stepImage.hidden = true;
   els.stepImage.src = imageInfo.url;
 
   preloadNextStepImage();
@@ -560,11 +569,15 @@ function finishRoutine() {
   state.isRunning = false;
   state.isPaused = false;
 
+  const previousSessions = loadHistory().length;
+
   if (state.startedAt) {
     const durationSec = Math.round((Date.now() - state.startedAt) / 1000);
     const history = loadHistory();
     history.unshift({ completedAt: new Date().toISOString(), durationSec });
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 100)));
+    state.celebrateCompletion = true;
+    state.celebrateMilestone = MILESTONES.includes(previousSessions + 1);
   }
 
   state.stepIndex = 0;
@@ -759,11 +772,13 @@ function renderHistory() {
   } = context;
 
   els.historyList.innerHTML = "";
+  els.historyList.classList.remove("is-loading");
+  els.historyList.setAttribute("aria-busy", "false");
 
   if (recentDays.length === 0) {
     const li = document.createElement("li");
     li.className = "history-empty";
-    li.textContent = "No days logged yet.";
+    li.innerHTML = "<strong>No days logged yet</strong><span>Complete a routine or add a day to start your streak.</span>";
     els.historyList.append(li);
   } else {
     recentDays.forEach((day) => {
@@ -784,6 +799,9 @@ function renderHistory() {
       button.className = "history-day-btn";
       button.dataset.dayKey = day.dayKey;
       button.dataset.status = statusKey;
+      if (state.lastSavedHistoryDay === day.dayKey) {
+        button.classList.add("is-saved");
+      }
       button.textContent = `${dateText} • ${day.piecesCompleted}/${ROUTINE_STEPS.length} pieces • ${completionState}`;
       li.append(button);
       els.historyList.append(li);
@@ -820,8 +838,7 @@ function renderHistory() {
   }
 
   if (els.milestoneProgress) {
-    const milestones = [5, 10, 25, 50, 100];
-    const nextMilestone = milestones.find((value) => totalSessions < value);
+    const nextMilestone = MILESTONES.find((value) => totalSessions < value);
     if (nextMilestone) {
       els.milestoneProgress.textContent = `Next milestone: ${nextMilestone} sessions (${totalSessions}/${nextMilestone})`;
     } else {
@@ -829,8 +846,43 @@ function renderHistory() {
     }
   }
 
+  triggerHistoryCelebrationEffects();
   state.historyLastRenderMs = performance.now() - startedAt;
   updateHistoryDebugPanel();
+}
+
+function triggerHistoryCelebrationEffects() {
+  if (state.celebrateCompletion && els.streak) {
+    els.streak.classList.remove("celebrate-pulse");
+    void els.streak.offsetWidth;
+    els.streak.classList.add("celebrate-pulse");
+    setTimeout(() => {
+      els.streak.classList.remove("celebrate-pulse");
+    }, 900);
+    state.celebrateCompletion = false;
+  }
+
+  if (state.celebrateMilestone && els.milestoneProgress) {
+    els.milestoneProgress.classList.remove("celebrate-shimmer");
+    void els.milestoneProgress.offsetWidth;
+    els.milestoneProgress.classList.add("celebrate-shimmer");
+    setTimeout(() => {
+      els.milestoneProgress.classList.remove("celebrate-shimmer");
+    }, 1300);
+    state.celebrateMilestone = false;
+  }
+
+  if (!state.lastSavedHistoryDay || !els.historyList) return;
+  const savedButton = els.historyList.querySelector(`button[data-day-key="${state.lastSavedHistoryDay}"]`);
+  if (savedButton) {
+    savedButton.classList.remove("is-saved");
+    void savedButton.offsetWidth;
+    savedButton.classList.add("is-saved");
+    setTimeout(() => {
+      savedButton.classList.remove("is-saved");
+    }, 1200);
+  }
+  state.lastSavedHistoryDay = null;
 }
 
 function getHistoryContext() {
@@ -1008,6 +1060,7 @@ function closeHistoryEditor() {
 
 function saveHistoryDayEdit() {
   if (!state.selectedHistoryDay) return;
+  state.lastSavedHistoryDay = state.selectedHistoryDay;
   const edits = loadHistoryDayEdits();
   const normalizedStepIds = normalizeStepIds(Array.from(state.selectedHistoryStepSet));
   const summary = getHistoryDaySummary(state.selectedHistoryDay);
