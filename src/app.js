@@ -468,10 +468,13 @@ function loadHistory() {
 
 function renderHistory() {
   const history = loadHistory();
-  const threshold = new Date();
+  const now = new Date();
+  const threshold = new Date(now);
   threshold.setDate(threshold.getDate() - 7);
+  const weekStart = startOfWeekMonday(now);
 
   const recent = history.filter((item) => new Date(item.completedAt) >= threshold);
+  const sessionsThisWeek = history.filter((item) => new Date(item.completedAt) >= weekStart);
   const totalMinutesLastWeek = Math.round(
     recent.reduce((sum, item) => sum + (Number(item.durationSec) || 0), 0) / 60
   );
@@ -500,7 +503,7 @@ function renderHistory() {
   }
 
   if (els.sessionsWeek) {
-    els.sessionsWeek.textContent = `${recent.length} session${recent.length === 1 ? "" : "s"}`;
+    els.sessionsWeek.textContent = `${sessionsThisWeek.length} session${sessionsThisWeek.length === 1 ? "" : "s"}`;
   }
 
   if (els.minutesWeek) {
@@ -508,10 +511,20 @@ function renderHistory() {
   }
 
   if (els.goalNudge) {
-    const remainingThisWeek = Math.max(0, 5 - recent.length);
-    els.goalNudge.textContent = remainingThisWeek === 0
-      ? "Weekly goal reached. Great consistency."
-      : `${remainingThisWeek} session${remainingThisWeek === 1 ? "" : "s"} to reach 5 this week.`;
+    const weeklyGoal = 5;
+    const remainingThisWeek = Math.max(0, weeklyGoal - sessionsThisWeek.length);
+    const weekdaysElapsed = weekdaysElapsedThisWeek(now);
+    const weekdaysRemaining = Math.max(0, 5 - weekdaysElapsed);
+
+    if (remainingThisWeek === 0) {
+      els.goalNudge.textContent = "Weekly goal reached. Great consistency.";
+    } else if (weekdaysRemaining === 0) {
+      els.goalNudge.textContent = `${remainingThisWeek} session${remainingThisWeek === 1 ? "" : "s"} short of this week's goal. Weekends are optional.`;
+    } else if (remainingThisWeek <= weekdaysRemaining) {
+      els.goalNudge.textContent = `On track for Friday: ${remainingThisWeek} session${remainingThisWeek === 1 ? "" : "s"} left (${weekdaysRemaining} weekday${weekdaysRemaining === 1 ? "" : "s"} remaining).`;
+    } else {
+      els.goalNudge.textContent = `${remainingThisWeek} session${remainingThisWeek === 1 ? "" : "s"} left with ${weekdaysRemaining} weekday${weekdaysRemaining === 1 ? "" : "s"} remaining.`;
+    }
   }
 
   if (els.milestoneProgress) {
@@ -523,6 +536,21 @@ function renderHistory() {
       els.milestoneProgress.textContent = `Milestone unlocked: 100+ sessions (${totalSessions} total)`;
     }
   }
+}
+
+function startOfWeekMonday(date) {
+  const start = new Date(date);
+  const day = start.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diffToMonday);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function weekdaysElapsedThisWeek(date) {
+  const day = date.getDay();
+  if (day === 0 || day === 6) return 5;
+  return day;
 }
 
 function computeStreak(history) {
