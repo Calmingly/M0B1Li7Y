@@ -234,14 +234,6 @@ body {
   color: var(--text-muted);
 }
 
-.routine-meta {
-  margin: 0 0 1rem;
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
 /* WALK PICKER */
 .walk-picker {
   background: var(--card-bg);
