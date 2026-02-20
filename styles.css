@@ -1298,113 +1298,154 @@ body {
 /* VIEWS */
 .view[hidden] { display: none; }
 
-/* UI REBOOT: STABLE RESPONSIVE LAYOUT */
+/* UI REBOOT V2: IMAGE-FIRST STORYBOARD LAYOUT */
 .app-shell {
-  max-width: 980px;
+  max-width: 1100px;
   background:
-    radial-gradient(1000px 600px at 15% -20%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 65%),
-    radial-gradient(780px 520px at 85% -15%, color-mix(in srgb, var(--secondary) 12%, transparent), transparent 72%),
+    radial-gradient(1000px 560px at 80% -10%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 68%),
+    radial-gradient(960px 560px at 10% -20%, color-mix(in srgb, var(--secondary) 10%, transparent), transparent 72%),
     linear-gradient(145deg, var(--bg) 0%, var(--bg-light) 100%);
 }
 
 .app-header {
-  padding: 0.95rem 1rem;
-  margin: 0.7rem 0.75rem 0;
-  border-radius: 0.95rem;
+  margin: 0.6rem 0.8rem 0;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
   box-shadow: var(--elevation-1);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--card-bg-strong) 84%, black 16%), color-mix(in srgb, var(--card-bg) 90%, black 10%));
 }
 
 .main-content {
   padding: 0.9rem;
-  padding-bottom: 106px;
+  padding-bottom: 108px;
 }
 
 .view {
-  width: min(100%, 920px);
+  width: min(100%, 980px);
   margin: 0 auto;
 }
 
 #routine-view {
-  width: min(100%, 920px);
+  width: min(100%, 980px);
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "ring"
     "hero"
-    "walk"
+    "ring"
     "controls"
+    "walk"
     "credit";
-  justify-items: center;
+  justify-items: stretch;
   gap: 0.82rem;
-  padding: 0.2rem;
+  padding: 0.25rem;
 }
 
 #routine-view::before {
-  inset: -0.4rem;
+  inset: -0.5rem;
   height: 100%;
   border-radius: 1.2rem;
   background:
-    linear-gradient(155deg, color-mix(in srgb, var(--primary) 8%, transparent), transparent 44%),
-    linear-gradient(330deg, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 46%);
+    linear-gradient(150deg, color-mix(in srgb, var(--primary) 9%, transparent), transparent 45%),
+    linear-gradient(330deg, color-mix(in srgb, var(--secondary) 9%, transparent), transparent 48%);
+}
+
+.hero-card {
+  grid-area: hero;
+  width: min(100%, 960px);
+  margin: 0;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 88%, black 12%);
+  box-shadow: var(--elevation-2);
+}
+
+.media-frame--hero {
+  min-height: 340px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--primary-light) 20%, transparent), transparent 58%),
+    linear-gradient(180deg, color-mix(in srgb, var(--card-bg-strong) 90%, black 10%), color-mix(in srgb, var(--card-bg) 92%, black 8%));
+}
+
+#step-image {
+  width: min(88%, 520px);
+  max-height: 310px;
+  object-fit: contain;
+  margin: 0 auto;
+  filter: saturate(0.95) contrast(1.03) brightness(0.98);
+}
+
+.step-chip {
+  top: auto;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--bg) 58%, transparent);
+}
+
+.card-overlay {
+  padding: 0.8rem 1rem 0.95rem;
 }
 
 .progress-container {
   grid-area: ring;
   justify-content: center;
   margin: 0;
-}
-
-.hero-card {
-  grid-area: hero;
-  width: min(100%, 560px);
-  margin: 0;
-}
-
-.walk-picker {
-  grid-area: walk;
-  width: min(100%, 560px);
-  margin: 0;
+  padding: 0.78rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
+  background: color-mix(in srgb, var(--card-bg-strong) 84%, black 16%);
 }
 
 .button-grid {
   grid-area: controls;
-  width: min(100%, 560px);
+  width: 100%;
   margin: 0;
-  padding: 0.72rem;
-  border-radius: 0.95rem;
+  padding: 0.78rem;
+  border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
   background: color-mix(in srgb, var(--card-bg) 90%, black 10%);
   box-shadow: var(--elevation-1);
 }
 
+.walk-picker {
+  grid-area: walk;
+  width: 100%;
+  margin: 0;
+  border-radius: 1rem;
+}
+
 .image-credit {
   grid-area: credit;
-  margin: 0.08rem 0 0;
+  margin: 0.05rem 0 0;
 }
 
 #history-view,
 #settings-view {
-  width: min(100%, 920px);
+  width: min(100%, 980px);
   display: grid;
-  gap: 0.7rem;
-  padding: 0.15rem;
+  gap: 0.72rem;
+  padding: 0.2rem;
 }
 
 #history-view .section-header,
 #settings-view .section-header {
   margin: 0;
-  padding: 0.72rem 0.9rem;
-  border-radius: 0.9rem;
+  padding: 0.78rem 0.95rem;
+  border-radius: 0.95rem;
   border: 1px solid color-mix(in srgb, var(--text-muted) 13%, transparent);
-  background: color-mix(in srgb, var(--card-bg-strong) 85%, black 15%);
+  background: color-mix(in srgb, var(--card-bg-strong) 86%, black 14%);
 }
 
 .history-group,
 .settings-group {
   margin: 0;
-  border-radius: 0.95rem;
+  border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
-  background: color-mix(in srgb, var(--card-bg) 91%, black 9%);
+  background: color-mix(in srgb, var(--card-bg) 90%, black 10%);
+  box-shadow: var(--elevation-1);
 }
 
 .history-group {
@@ -1412,31 +1453,44 @@ body {
 }
 
 .settings-group {
-  padding: 0.88rem;
+  padding: 0.9rem;
 }
 
 @media (min-width: 960px) {
   #routine-view {
-    grid-template-columns: minmax(280px, 380px) minmax(300px, 1fr);
+    grid-template-columns: minmax(440px, 1.05fr) minmax(280px, 0.95fr);
     grid-template-areas:
-      "ring hero"
-      "controls hero"
-      "walk hero"
-      "credit hero";
+      "hero ring"
+      "hero controls"
+      "hero walk"
+      "hero credit";
+    gap: 0.9rem 1rem;
+  }
+
+  .progress-container,
+  .button-grid,
+  .walk-picker {
+    max-width: 420px;
+    justify-self: end;
+  }
+
+  .media-frame--hero {
+    min-height: 420px;
+  }
+
+  #step-image {
+    max-height: 360px;
+  }
+
+  #history-view,
+  #settings-view {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-    justify-items: stretch;
-    gap: 0.85rem 1rem;
   }
 
-  .progress-container {
-    justify-content: flex-start;
-  }
-
-  .hero-card,
-  .walk-picker,
-  .button-grid {
-    width: 100%;
-    max-width: none;
+  #history-view .section-header,
+  #settings-view .section-header {
+    grid-column: 1 / -1;
   }
 }
 
