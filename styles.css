@@ -134,6 +134,13 @@ body {
   animation: viewFadeIn var(--motion-slow) var(--ease-standard);
 }
 
+#routine-view {
+  display: grid;
+  gap: 0.62rem;
+  align-content: start;
+  justify-items: center;
+}
+
 @keyframes viewFadeIn {
   from {
     opacity: 0;
@@ -164,6 +171,45 @@ body {
   height: 180px;
   border-radius: 999px;
   background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%);
+}
+
+.mission-orbit {
+  position: absolute;
+  inset: -18px;
+  pointer-events: none;
+}
+
+.mission-node {
+  --orbit-radius: 82px;
+  --node-size: 0.76rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--node-size);
+  height: var(--node-size);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 34%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 88%, black 12%);
+  transform: translate(-50%, -50%) rotate(var(--node-angle)) translateY(calc(-1 * var(--orbit-radius)));
+  transition: background-color var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard), box-shadow var(--motion-base) var(--ease-standard), opacity var(--motion-base) var(--ease-standard);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.mission-node.is-complete {
+  background: color-mix(in srgb, var(--secondary-light) 72%, var(--secondary));
+  border-color: color-mix(in srgb, var(--secondary-light) 74%, transparent);
+}
+
+.mission-node.is-active {
+  --node-size: 0.96rem;
+  background: color-mix(in srgb, var(--primary-light) 82%, var(--secondary-light));
+  border-color: color-mix(in srgb, var(--primary-light) 86%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.mission-node.is-upcoming {
+  opacity: 0.7;
 }
 
 .progress-ring {
@@ -220,12 +266,40 @@ body {
 .hero-card {
   position: relative;
   width: min(100%, 192px);
-  margin: 0 auto var(--space-lg);
+  margin: 0 auto var(--space-sm);
   border-radius: 0.9rem;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
   background: color-mix(in srgb, var(--card-bg) 92%, black 8%);
   box-shadow: var(--elevation-2);
+}
+
+.mission-strip {
+  width: min(100%, 420px);
+  margin-bottom: var(--space-sm);
+  padding: 0.58rem 0.74rem;
+  border-radius: 0.82rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg-strong) 84%, black 16%), color-mix(in srgb, var(--card-bg) 88%, black 12%));
+  box-shadow: var(--elevation-1);
+  display: grid;
+  gap: 0.28rem;
+}
+
+.mission-strip-line {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 0.62rem;
+  font-size: 0.84rem;
+}
+
+.mission-strip-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-muted) 86%, var(--card-bg));
 }
 
 @keyframes slideUp {

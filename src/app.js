@@ -80,6 +80,9 @@ const els = {
   stepName: document.getElementById("step-name"),
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
+  missionOrbit: document.getElementById("mission-orbit"),
+  missionNow: document.getElementById("mission-now"),
+  missionNext: document.getElementById("mission-next"),
   startBtn: document.getElementById("start-btn"),
   startControls: document.getElementById("start-controls"),
   runControls: document.getElementById("run-controls"),
@@ -154,6 +157,7 @@ function init() {
   attachErrorHandlers();
   applyHistoryUiState();
   initializeHistoryEditorChecklist();
+  initializeMissionControlOrbit();
   wireEvents();
   renderStep();
   renderHistory();
@@ -496,7 +500,63 @@ function renderStep() {
 
   renderTimer();
   renderStepImage();
+  renderMissionControlTelemetry();
+  renderMissionControlOrbit();
   updateControlLayout(step);
+}
+
+function initializeMissionControlOrbit() {
+  if (!els.missionOrbit) return;
+
+  els.missionOrbit.innerHTML = "";
+  const fragment = document.createDocumentFragment();
+
+  ROUTINE_STEPS.forEach((step, index) => {
+    const node = document.createElement("button");
+    node.type = "button";
+    node.className = "mission-node";
+    node.dataset.stepIndex = String(index);
+    node.dataset.stepId = step.id;
+    node.title = `Step ${index + 1}: ${step.name}`;
+    node.setAttribute("aria-label", `Go to step ${index + 1}: ${step.name}`);
+    node.addEventListener("click", () => {
+      if (state.isRunning && !state.isPaused) {
+        transitionCue();
+      }
+      goToStep(index);
+    });
+    fragment.append(node);
+  });
+
+  els.missionOrbit.append(fragment);
+}
+
+function renderMissionControlOrbit() {
+  if (!els.missionOrbit) return;
+
+  const nodes = els.missionOrbit.querySelectorAll(".mission-node");
+  const total = ROUTINE_STEPS.length;
+  const stepArc = 300;
+  const startAngle = -150;
+
+  nodes.forEach((node, index) => {
+    const angle = startAngle + (total <= 1 ? 0 : (stepArc / (total - 1)) * index);
+    node.style.setProperty("--node-angle", `${angle}deg`);
+    node.classList.toggle("is-active", index === state.stepIndex);
+    node.classList.toggle("is-complete", index < state.stepIndex);
+    node.classList.toggle("is-upcoming", index > state.stepIndex);
+  });
+}
+
+function renderMissionControlTelemetry() {
+  if (els.missionNow) {
+    els.missionNow.textContent = currentStep().name;
+  }
+
+  if (els.missionNext) {
+    const nextStep = ROUTINE_STEPS[state.stepIndex + 1];
+    els.missionNext.textContent = nextStep ? nextStep.name : "Complete routine";
+  }
 }
 
 function renderStepImage() {

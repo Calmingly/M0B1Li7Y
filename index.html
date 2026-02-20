@@ -43,6 +43,7 @@
                 <circle cx="50" cy="50" r="45" class="progress-ring-bg"></circle>
                 <circle cx="50" cy="50" r="45" class="progress-ring-fg" id="progress-ring"></circle>
               </svg>
+              <div id="mission-orbit" class="mission-orbit" aria-label="Step orbit"></div>
               <div class="progress-text">
                 <div class="timer large-timer" id="timer">00:30</div>
                 <p class="step-progress" id="step-progress">Step 1 of 12</p>
@@ -65,6 +66,11 @@
               <p id="step-cue" class="hero-cue">Keep shoulders relaxed and smooth.</p>
             </div>
           </div>
+
+          <section class="mission-strip" aria-label="Mission telemetry">
+            <p class="mission-strip-line"><span class="mission-strip-label">Now</span><span id="mission-now">Arm Circles</span></p>
+            <p class="mission-strip-line"><span class="mission-strip-label">Next</span><span id="mission-next">Counter Pushups</span></p>
+          </section>
 
           <!-- Walk Picker -->
           <div class="walk-picker" id="walk-picker" hidden>
