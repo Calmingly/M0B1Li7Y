@@ -1,6 +1,6 @@
 import { loadRoutineImages } from "./routineImages.js";
 
-const APP_VERSION = "v1";
+const APP_VERSION = "v2";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
 const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
