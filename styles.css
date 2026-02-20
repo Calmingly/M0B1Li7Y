@@ -274,7 +274,7 @@ body {
 }
 
 .large-timer {
-  font-size: 10rem;
+  font-size: clamp(2.4rem, 30vw, 10rem);
   font-weight: 700;
   line-height: 0.9;
   background: var(--timer-gradient);
