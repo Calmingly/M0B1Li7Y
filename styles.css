@@ -276,6 +276,7 @@ body {
 .large-timer {
   font-size: 10rem;
   font-weight: 700;
+  line-height: 0.9;
   background: var(--timer-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -286,9 +287,10 @@ body {
 
 .step-progress {
   margin: 0;
-  font-size: 0.76rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-size: 0.92rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
   color: color-mix(in srgb, var(--text-muted) 88%, var(--card-bg));
 }
 
