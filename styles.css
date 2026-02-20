@@ -134,13 +134,6 @@ body {
   animation: viewFadeIn var(--motion-slow) var(--ease-standard);
 }
 
-#routine-view {
-  display: grid;
-  gap: var(--space-md);
-  align-content: start;
-  justify-items: center;
-}
-
 @keyframes viewFadeIn {
   from {
     opacity: 0;
@@ -156,7 +149,7 @@ body {
 .progress-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 0;
+  margin-bottom: var(--space-lg);
   animation: fadeInScale 0.6s ease-out;
 }
 
@@ -167,8 +160,8 @@ body {
 
 .progress-ring-wrapper {
   position: relative;
-  width: 166px;
-  height: 166px;
+  width: 180px;
+  height: 180px;
   border-radius: 999px;
   background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%);
 }
@@ -226,8 +219,8 @@ body {
 /* HERO CARD */
 .hero-card {
   position: relative;
-  width: min(100%, 272px);
-  margin: 0;
+  width: min(100%, 192px);
+  margin: 0 auto var(--space-lg);
   border-radius: 0.9rem;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
@@ -338,10 +331,9 @@ body {
 /* WALK PICKER */
 .walk-picker {
   background: var(--card-bg);
-  width: min(100%, 420px);
   padding: var(--space-sm) var(--space-md);
   border-radius: 1rem;
-  margin-bottom: 0;
+  margin-bottom: var(--space-md);
   border: 1px solid rgba(255,255,255,0.1);
   box-shadow: var(--elevation-1);
 }
@@ -377,37 +369,10 @@ body {
 
 /* BUTTONS */
 .button-grid {
-  width: min(100%, 420px);
   display: flex;
   flex-direction: column;
   gap: 0.52rem;
-  margin-bottom: 0;
-}
-
-@media (min-width: 760px) {
-  #routine-view {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-lg);
-    row-gap: var(--space-md);
-    justify-items: stretch;
-    align-items: start;
-  }
-
-  .progress-container {
-    justify-self: end;
-  }
-
-  .hero-card {
-    justify-self: start;
-    width: min(100%, 320px);
-  }
-
-  .walk-picker,
-  .button-grid,
-  .image-credit {
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
+  margin-bottom: var(--space-md);
 }
 
 .controls-section {
