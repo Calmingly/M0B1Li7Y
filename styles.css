@@ -219,7 +219,7 @@ body {
 /* HERO CARD */
 .hero-card {
   position: relative;
-  width: min(100%, 440px);
+  width: min(100%, 360px);
   margin: 0 auto var(--space-lg);
   border-radius: 0.9rem;
   overflow: hidden;
@@ -260,7 +260,7 @@ body {
   width: 100%;
   height: auto;
   display: block;
-  filter: saturate(0.62) contrast(0.92) brightness(0.84);
+  filter: saturate(0.82) contrast(0.98) brightness(0.9);
 }
 
 .image-fallback {

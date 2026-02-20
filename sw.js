@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v11";
+const VERSION = "m0b1li7y-v12";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const MAX_REMOTE_IMAGE_ENTRIES = 40;
