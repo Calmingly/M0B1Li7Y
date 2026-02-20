@@ -219,7 +219,7 @@ body {
 /* HERO CARD */
 .hero-card {
   position: relative;
-  width: min(100%, 360px);
+  width: min(100%, 220px);
   margin: 0 auto var(--space-lg);
   border-radius: 0.9rem;
   overflow: hidden;
