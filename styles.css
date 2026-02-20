@@ -136,7 +136,7 @@ body {
 
 #routine-view {
   display: grid;
-  gap: var(--space-md);
+  gap: 0.7rem;
   align-content: start;
   justify-items: center;
 }
@@ -167,8 +167,8 @@ body {
 
 .progress-ring-wrapper {
   position: relative;
-  width: 166px;
-  height: 166px;
+  width: 148px;
+  height: 148px;
   border-radius: 999px;
   background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%);
 }
@@ -207,7 +207,7 @@ body {
 }
 
 .large-timer {
-  font-size: 2.5rem;
+  font-size: 2.1rem;
   font-weight: 800;
   background: var(--timer-gradient);
   -webkit-background-clip: text;
@@ -219,7 +219,7 @@ body {
 
 .step-progress {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 
@@ -380,7 +380,7 @@ body {
   width: min(100%, 420px);
   display: flex;
   flex-direction: column;
-  gap: 0.52rem;
+  gap: 0.42rem;
   margin-bottom: 0;
 }
 
@@ -412,7 +412,7 @@ body {
 
 .controls-section {
   display: flex;
-  gap: 0.55rem;
+  gap: 0.45rem;
 }
 
 .control-btn {
