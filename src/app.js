@@ -81,8 +81,6 @@ const els = {
   stepCue: document.getElementById("step-cue"),
   timer: document.getElementById("timer"),
   missionOrbit: document.getElementById("mission-orbit"),
-  missionNow: document.getElementById("mission-now"),
-  missionNext: document.getElementById("mission-next"),
   startBtn: document.getElementById("start-btn"),
   startControls: document.getElementById("start-controls"),
   runControls: document.getElementById("run-controls"),
@@ -500,7 +498,6 @@ function renderStep() {
 
   renderTimer();
   renderStepImage();
-  renderMissionControlTelemetry();
   renderMissionControlOrbit();
   updateControlLayout(step);
 }
@@ -546,17 +543,6 @@ function renderMissionControlOrbit() {
     node.classList.toggle("is-complete", index < state.stepIndex);
     node.classList.toggle("is-upcoming", index > state.stepIndex);
   });
-}
-
-function renderMissionControlTelemetry() {
-  if (els.missionNow) {
-    els.missionNow.textContent = currentStep().name;
-  }
-
-  if (els.missionNext) {
-    const nextStep = ROUTINE_STEPS[state.stepIndex + 1];
-    els.missionNext.textContent = nextStep ? nextStep.name : "Complete routine";
-  }
 }
 
 function renderStepImage() {
