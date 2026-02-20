@@ -274,14 +274,14 @@ body {
 }
 
 .large-timer {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
   background: var(--timer-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 5px 16px color-mix(in srgb, var(--secondary) 16%, transparent);
-  filter: saturate(1.12);
+  text-shadow: none;
+  filter: saturate(1.04);
 }
 
 .step-progress {

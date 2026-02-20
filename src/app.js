@@ -602,9 +602,18 @@ function renderTimer() {
 }
 
 function formatTime(totalSec) {
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
-  const ss = String(totalSec % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
+  const minutes = Math.floor(totalSec / 60);
+  const seconds = totalSec % 60;
+
+  if (minutes <= 0) {
+    return `${seconds}s`;
+  }
+
+  if (seconds === 0) {
+    return `${minutes}m`;
+  }
+
+  return `${minutes}m ${seconds}s`;
 }
 
 function transitionCue() {
