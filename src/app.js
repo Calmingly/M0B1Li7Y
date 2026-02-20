@@ -49,6 +49,7 @@ const DEFAULT_HISTORY_UI = {
 
 const state = {
   settings: loadSettings(),
+  settingsHydrated: false,
   startedAt: null,
   isRunning: false,
   isPaused: false,
@@ -66,6 +67,7 @@ const state = {
   historyEditsPending: null,
   historyEditsSaveTimer: null,
   preloadedImageUrls: new Set(),
+  dayLabelCache: new Map(),
   historyUi: loadHistoryUi(),
   lastSavedHistoryDay: null,
   celebrateCompletion: false,
@@ -144,8 +146,8 @@ const els = {
 };
 
 function init() {
-  hydrateSettingsUI();
   applyTheme(state.settings.theme);
+  syncMuteIcon();
   attachErrorHandlers();
   applyHistoryUiState();
   initializeHistoryEditorChecklist();
@@ -805,6 +807,7 @@ function renderHistory() {
   const todaySummary = daySummaries.find((day) => day.dayKey === todayKey);
   const todayMinutes = Math.round((todaySummary?.durationSec || 0) / 60);
 
+  const listFragment = document.createDocumentFragment();
   els.historyList.innerHTML = "";
   els.historyList.classList.remove("is-loading");
   els.historyList.setAttribute("aria-busy", "false");
@@ -813,7 +816,7 @@ function renderHistory() {
     const li = document.createElement("li");
     li.className = "history-empty";
     li.innerHTML = "<strong>No days logged yet</strong><span>Complete a routine or add a day to start your streak.</span>";
-    els.historyList.append(li);
+    listFragment.append(li);
   } else {
     recentDays.forEach((day) => {
       const li = document.createElement("li");
@@ -838,9 +841,11 @@ function renderHistory() {
       }
       button.textContent = `${dateText} • ${day.piecesCompleted}/${ROUTINE_STEPS.length} pieces • ${completionState}`;
       li.append(button);
-      els.historyList.append(li);
+      listFragment.append(li);
     });
   }
+
+  els.historyList.append(listFragment);
 
   els.streak.textContent = `Streak: ${streak} day${streak === 1 ? "" : "s"}`;
   if (els.streakSummary) {
@@ -906,10 +911,12 @@ function renderWeeklyBars(daySummaries, now) {
   if (!els.weekBars) return;
 
   const monday = startOfWeekMonday(now);
+  const mondayKey = toDayKey(monday);
   const byKey = new Map(daySummaries.map((day) => [day.dayKey, day]));
   const labels = ["M", "T", "W", "T", "F", "S", "S"];
   const todayKey = toDayKey(now);
 
+  const fragment = document.createDocumentFragment();
   els.weekBars.innerHTML = "";
 
   for (let index = 0; index < 7; index += 1) {
@@ -934,11 +941,13 @@ function renderWeeklyBars(daySummaries, now) {
     label.textContent = labels[index];
 
     item.append(bar, label);
-    els.weekBars.append(item);
+    fragment.append(item);
   }
 
+  els.weekBars.append(fragment);
+
   if (els.weeklyTrackCaption) {
-    const completeDays = daySummaries.filter((day) => day.dayKey >= toDayKey(monday) && day.piecesCompleted >= ROUTINE_STEPS.length).length;
+    const completeDays = daySummaries.filter((day) => day.dayKey >= mondayKey && day.piecesCompleted >= ROUTINE_STEPS.length).length;
     els.weeklyTrackCaption.textContent = `${completeDays}/7 complete`;
   }
 }
@@ -1309,12 +1318,18 @@ function toDayKey(input) {
 }
 
 function formatDayLabel(dayKey) {
+  const cached = state.dayLabelCache.get(dayKey);
+  if (cached) return cached;
+
   const date = new Date(`${dayKey}T00:00:00`);
-  return date.toLocaleDateString(undefined, {
+  const label = date.toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric"
   });
+
+  state.dayLabelCache.set(dayKey, label);
+  return label;
 }
 
 function startOfWeekMonday(date) {
@@ -1352,11 +1367,21 @@ function computeStreak(daySummaries) {
 }
 
 function switchView(viewId) {
+  if (viewId === "settings-view") {
+    hydrateSettingsUIOnce();
+  }
+
   els.views.forEach((view) => {
     view.hidden = view.id !== viewId;
     view.classList.toggle("active", view.id === viewId);
   });
   els.navButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.view === viewId));
+}
+
+function hydrateSettingsUIOnce() {
+  if (state.settingsHydrated) return;
+  hydrateSettingsUI();
+  state.settingsHydrated = true;
 }
 
 function registerServiceWorker() {

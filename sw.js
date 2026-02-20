@@ -1,6 +1,7 @@
-const VERSION = "m0b1li7y-v8";
+const VERSION = "m0b1li7y-v9";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
+const MAX_REMOTE_IMAGE_ENTRIES = 40;
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -94,6 +95,17 @@ async function cacheFirst(request, cacheName) {
   const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  if (response?.ok) cache.put(request, response.clone());
+  if (response?.ok) {
+    await cache.put(request, response.clone());
+    await trimRemoteImageCache(cache);
+  }
   return response;
+}
+
+async function trimRemoteImageCache(cache) {
+  const keys = await cache.keys();
+  if (keys.length <= MAX_REMOTE_IMAGE_ENTRIES) return;
+
+  const toDelete = keys.slice(0, keys.length - MAX_REMOTE_IMAGE_ENTRIES);
+  await Promise.all(toDelete.map((request) => cache.delete(request)));
 }
