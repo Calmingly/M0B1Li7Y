@@ -181,8 +181,8 @@ body {
 
 .progress-ring-wrapper {
   position: relative;
-  width: 210px;
-  height: 210px;
+  width: 168px;
+  height: 168px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--primary-light) 28%, transparent);
   background:
@@ -194,12 +194,12 @@ body {
 
 .mission-orbit {
   position: absolute;
-  inset: -8px;
+  inset: -6px;
   pointer-events: none;
 }
 
 .mission-node {
-  --orbit-radius: 104px;
+  --orbit-radius: 82px;
   --node-size: 0.66rem;
   position: absolute;
   top: 50%;
@@ -238,7 +238,7 @@ body {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
-  padding: 12px;
+  padding: 9px;
 }
 
 .progress-ring-bg {
@@ -260,7 +260,7 @@ body {
 
 .progress-text {
   position: absolute;
-  inset: 20px;
+  inset: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -274,14 +274,14 @@ body {
 }
 
 .large-timer {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   background: var(--timer-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none;
-  filter: saturate(1.04);
+  text-shadow: 0 2px 8px color-mix(in srgb, var(--secondary) 12%, transparent);
+  filter: saturate(1.08);
 }
 
 .step-progress {
