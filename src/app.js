@@ -365,6 +365,12 @@ function wireEvents() {
   });
 
   els.stepImage.addEventListener("error", () => {
+    const fallbackUrl = els.stepImage.dataset.fallbackUrl;
+    if (fallbackUrl) {
+      els.stepImage.dataset.fallbackUrl = "";
+      els.stepImage.src = fallbackUrl;
+      return;
+    }
     els.stepImage.hidden = true;
     els.imageFallback.hidden = false;
     els.imageFallback.classList.remove("image-fallback--loading");
@@ -500,6 +506,7 @@ function renderStepImage() {
   }
 
   els.stepImage.alt = imageInfo.alt;
+  els.stepImage.dataset.fallbackUrl = imageInfo.fallbackUrl || "";
   // Image credit text intentionally hidden in UI.
   els.imageCredit.hidden = true;
   els.imageFallback.hidden = false;

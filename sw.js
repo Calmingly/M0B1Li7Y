@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v7";
+const VERSION = "m0b1li7y-v8";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const CORE_ASSETS = [
@@ -11,19 +11,18 @@ const CORE_ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./img/demo-arm-circles.svg",
-  "./img/demo-trunk-rotations.svg",
-  "./img/demo-side-bends.svg",
-  "./img/demo-leg-swings-left.svg",
-  "./img/demo-leg-swings-right.svg",
-  "./img/demo-knees-to-chest.svg",
-  "./img/demo-figure-four-left.svg",
-  "./img/demo-figure-four-right.svg",
-  "./img/demo-child-pose.svg",
-  "./img/demo-posture-reset.svg",
-  "./img/demo-plank.svg",
-  "./img/demo-push-ups.svg",
-  "./img/demo-walk.svg"
+  "./img/armcircles.png",
+  "./img/briskwalk.png",
+  "./img/childspose.png",
+  "./img/counterpushups.png",
+  "./img/kneestochest.png",
+  "./img/legswings.png",
+  "./img/lyingfigurefour.png",
+  "./img/overheadreach.png",
+  "./img/plank.png",
+  "./img/sidebends.png",
+  "./img/toetouchtwist.png",
+  "./img/trunkrotation.png"
 ];
 
 let enableRemoteImageCaching = false;

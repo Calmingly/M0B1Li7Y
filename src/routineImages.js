@@ -1,4 +1,4 @@
-const CACHE_KEY = "m0b1li7y.routineImages.demoOnly.v6";
+const CACHE_KEY = "m0b1li7y.routineImages.demoOnly.v7";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCAL_MEDIA_DIR = "./img";
 
@@ -42,10 +42,17 @@ function persistImageMap(imageMap) {
 
 function buildStaticImageMap() {
   return Object.fromEntries(
-    Object.entries(IMAGE_FILE_BY_STEP).map(([stepId, filename]) => [
-      stepId,
-      `${LOCAL_MEDIA_DIR}/${filename}`
-    ])
+    Object.entries(IMAGE_FILE_BY_STEP).map(([stepId, filename]) => {
+      const fallbackUrl = `${LOCAL_MEDIA_DIR}/${filename}`;
+      const optimizedUrl = toOptimizedUrl(fallbackUrl);
+      return [
+        stepId,
+        {
+          url: optimizedUrl,
+          fallbackUrl
+        }
+      ];
+    })
   );
 }
 
@@ -62,11 +69,16 @@ function buildImageInfoMap(urlMap) {
   const map = {};
 
   for (const stepId of Object.keys(IMAGE_FILE_BY_STEP)) {
-    const url = urlMap?.[stepId];
+    const entry = urlMap?.[stepId];
+    if (!entry) continue;
+
+    const url = typeof entry === "string" ? entry : entry.url;
+    const fallbackUrl = typeof entry === "string" ? null : entry.fallbackUrl || null;
     if (!url) continue;
 
     map[stepId] = {
       url,
+      fallbackUrl,
       alt: `Demonstration of ${humanize(stepId)}`,
       sourceUrl: LOCAL_MEDIA_DIR,
       sourceName: "Local routine media"
@@ -74,6 +86,10 @@ function buildImageInfoMap(urlMap) {
   }
 
   return map;
+}
+
+function toOptimizedUrl(url) {
+  return url.replace(/\.(png|jpg|jpeg)$/i, ".webp");
 }
 
 function humanize(stepId) {
