@@ -274,7 +274,7 @@ body {
 }
 
 .large-timer {
-  font-size: 1rem;
+  font-size: 10rem;
   font-weight: 700;
   background: var(--timer-gradient);
   -webkit-background-clip: text;
