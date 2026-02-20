@@ -96,6 +96,9 @@ const els = {
   imageCredit: document.getElementById("image-credit"),
   imageCreditLink: document.getElementById("image-credit-link"),
   historyList: document.getElementById("history-list"),
+  healthTodayCard: document.getElementById("health-today-card"),
+  historyStats: document.getElementById("history-stats"),
+  weeklyTrack: document.getElementById("weekly-track"),
   streak: document.getElementById("streak"),
   streakSummary: document.getElementById("streak-summary"),
   sessionsWeek: document.getElementById("sessions-week"),
@@ -607,7 +610,7 @@ function finishRoutine() {
     const durationSec = Math.round((Date.now() - state.startedAt) / 1000);
     const history = loadHistory();
     history.unshift({ completedAt: new Date().toISOString(), durationSec });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 100)));
+    saveHistory(history.slice(0, 100));
     state.celebrateCompletion = true;
     state.celebrateMilestone = MILESTONES.includes(previousSessions + 1);
   }
@@ -748,10 +751,60 @@ function updateThemeSwatch() {
 
 function loadHistory() {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    const raw = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    const normalized = normalizeHistoryEntries(raw);
+
+    const needsRewrite = Array.isArray(raw) && raw.some((entry) => {
+      if (!entry || typeof entry !== "object") return true;
+      return !Number.isFinite(entry.c) || !Number.isFinite(entry.d);
+    });
+
+    if (needsRewrite) {
+      saveHistory(normalized);
+    }
+
+    return normalized;
   } catch {
     return [];
   }
+}
+
+function saveHistory(historyEntries) {
+  const compact = historyEntries.map((entry) => ({
+    c: Date.parse(entry.completedAt),
+    d: Number(entry.durationSec) || 0
+  }));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(compact));
+  invalidateHistoryCache();
+}
+
+function normalizeHistoryEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries
+    .map(normalizeHistoryEntry)
+    .filter(Boolean);
+}
+
+function normalizeHistoryEntry(entry) {
+  if (!entry || typeof entry !== "object") return null;
+
+  if (Number.isFinite(entry.c)) {
+    return {
+      completedAt: new Date(entry.c).toISOString(),
+      durationSec: Number(entry.d) || 0
+    };
+  }
+
+  if (entry.completedAt) {
+    const completedMs = Date.parse(entry.completedAt);
+    if (!Number.isFinite(completedMs)) return null;
+    return {
+      completedAt: new Date(completedMs).toISOString(),
+      durationSec: Number(entry.durationSec) || 0
+    };
+  }
+
+  return null;
 }
 
 function loadHistoryDayEdits() {
@@ -806,6 +859,10 @@ function renderHistory() {
   const todayKey = toDayKey(now);
   const todaySummary = daySummaries.find((day) => day.dayKey === todayKey);
   const todayMinutes = Math.round((todaySummary?.durationSec || 0) / 60);
+
+  if (els.healthTodayCard) els.healthTodayCard.classList.remove("is-loading");
+  if (els.historyStats) els.historyStats.classList.remove("is-loading");
+  if (els.weeklyTrack) els.weeklyTrack.classList.remove("is-loading");
 
   const listFragment = document.createDocumentFragment();
   els.historyList.innerHTML = "";
@@ -1014,7 +1071,7 @@ function getHistoryContext() {
   let history;
   let dayEdits;
   try {
-    history = JSON.parse(historyRaw);
+    history = normalizeHistoryEntries(JSON.parse(historyRaw));
   } catch {
     history = [];
   }

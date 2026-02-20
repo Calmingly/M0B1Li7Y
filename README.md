@@ -18,3 +18,16 @@ Mobile-first progressive web app for a guided mobility routine (`M0B1Li7Y +`) th
 python3 -m http.server 4173
 ```
 Then open `http://localhost:4173`.
+
+## Image budget check
+Validate routine image sizes before committing:
+
+```bash
+python3 scripts/check_image_budgets.py
+```
+
+Optional custom budgets:
+
+```bash
+python3 scripts/check_image_budgets.py --max-per-image-kb 180 --max-total-kb 2500
+```

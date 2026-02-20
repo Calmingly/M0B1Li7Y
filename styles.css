@@ -518,6 +518,35 @@ body {
   box-shadow: var(--elevation-2);
 }
 
+.health-today-card.is-loading,
+.history-stats.is-loading,
+.weekly-track.is-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.health-today-card.is-loading > *,
+.history-stats.is-loading > *,
+.weekly-track.is-loading > * {
+  opacity: 0;
+}
+
+.health-today-card.is-loading::after,
+.history-stats.is-loading::after,
+.weekly-track.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--card-bg) 70%, transparent),
+    color-mix(in srgb, white 16%, transparent),
+    color-mix(in srgb, var(--card-bg) 70%, transparent)
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.1s ease-in-out infinite;
+}
+
 .health-kicker {
   margin: 0;
   font-size: 0.7rem;
