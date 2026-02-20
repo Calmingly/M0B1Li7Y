@@ -1298,6 +1298,192 @@ body {
 /* VIEWS */
 .view[hidden] { display: none; }
 
+/* UI REBOOT: GLOBAL LAYOUT */
+.app-shell {
+  max-width: 1140px;
+  grid-template-columns: minmax(0, 1fr);
+  background:
+    radial-gradient(1200px 700px at 10% -20%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 65%),
+    radial-gradient(900px 600px at 90% -10%, color-mix(in srgb, var(--secondary) 14%, transparent), transparent 70%),
+    linear-gradient(145deg, var(--bg) 0%, var(--bg-light) 100%);
+}
+
+.app-header {
+  padding: 1rem 1.2rem;
+  margin: 0.9rem 1rem 0;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
+  box-shadow: var(--elevation-1);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--card-bg-strong) 82%, black 18%), color-mix(in srgb, var(--card-bg) 88%, black 12%));
+}
+
+.main-content {
+  padding: 1rem;
+  padding-bottom: 112px;
+}
+
+.view {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+}
+
+/* ROUTINE: CONTROL-DECK COMPOSITION */
+#routine-view {
+  width: min(100%, 980px);
+  grid-template-columns: minmax(260px, 420px) minmax(260px, 1fr);
+  grid-template-areas:
+    "ring hero"
+    "controls hero"
+    "walk hero"
+    "credit hero";
+  align-items: start;
+  justify-items: stretch;
+  gap: 0.85rem 1rem;
+  padding: 0.35rem;
+}
+
+#routine-view::before {
+  inset: -0.6rem;
+  height: 100%;
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--primary) 10%, transparent), transparent 40%),
+    linear-gradient(330deg, color-mix(in srgb, var(--secondary) 10%, transparent), transparent 42%);
+  opacity: 1;
+}
+
+.progress-container {
+  grid-area: ring;
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.button-grid {
+  grid-area: controls;
+  width: min(100%, 420px);
+  margin: 0;
+  padding: 0.72rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 88%, black 12%);
+  box-shadow: var(--elevation-1);
+}
+
+.walk-picker {
+  grid-area: walk;
+  width: min(100%, 420px);
+  margin: 0;
+}
+
+.hero-card {
+  grid-area: hero;
+  width: 100%;
+  max-width: 520px;
+  margin: 0;
+  border-radius: 1.2rem;
+}
+
+.image-credit {
+  grid-area: credit;
+  margin: 0.1rem 0 0;
+}
+
+/* HISTORY + SETTINGS: PANELIZED */
+#history-view,
+#settings-view {
+  width: min(100%, 980px);
+  display: grid;
+  gap: 0.72rem;
+  padding: 0.25rem;
+}
+
+#history-view .section-header,
+#settings-view .section-header {
+  margin-bottom: 0.18rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
+  background: color-mix(in srgb, var(--card-bg-strong) 84%, black 16%);
+}
+
+.history-group,
+.settings-group {
+  margin: 0;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 90%, black 10%);
+  box-shadow: var(--elevation-1);
+}
+
+.history-group {
+  padding: 0.58rem;
+}
+
+.settings-group {
+  padding: 0.92rem;
+}
+
+.history-group-toggle {
+  border-radius: 0.78rem;
+}
+
+/* NAV: DESKTOP SIDE RAIL */
+@media (min-width: 960px) {
+  .app-shell {
+    min-height: 100dvh;
+    padding-left: 96px;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    left: 14px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: 72px;
+    padding: 0.6rem 0.45rem;
+    border-radius: 1rem;
+    display: grid;
+    gap: 0.48rem;
+    background: color-mix(in srgb, var(--card-bg-strong) 88%, black 12%);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+    box-shadow: var(--elevation-2);
+    z-index: 40;
+  }
+
+  .nav-btn {
+    min-height: 66px;
+    border-radius: 0.82rem;
+    justify-items: center;
+    padding: 0.45rem 0.3rem;
+  }
+
+  .nav-label {
+    font-size: 0.58rem;
+  }
+}
+
+/* MOBILE FALLBACK STACK */
+@media (max-width: 959px) {
+  #routine-view {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "ring"
+      "hero"
+      "walk"
+      "controls"
+      "credit";
+    justify-items: center;
+  }
+
+  .progress-container,
+  .button-grid,
+  .walk-picker,
+  .hero-card {
+    width: min(100%, 520px);
+  }
+}
+
 /* HIGH CONTRAST MODE */
 .high-contrast {
   --bg: #05070f;
