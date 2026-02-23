@@ -1495,6 +1495,159 @@ body {
   }
 }
 
+/* HARD RESET VISUAL LAYOUT v5 */
+.app-shell {
+  max-width: 760px !important;
+  background: color-mix(in srgb, var(--bg-light) 96%, black 4%) !important;
+}
+
+.app-header {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  padding: 0.66rem 0.72rem !important;
+}
+
+.main-content {
+  padding: 0.5rem !important;
+  padding-bottom: 88px !important;
+}
+
+#routine-view {
+  gap: 0.34rem !important;
+}
+
+#routine-view::before {
+  display: none !important;
+}
+
+.progress-container,
+.hero-card,
+.button-grid,
+.walk-picker,
+#history-view .section-header,
+#settings-view .section-header,
+.history-group,
+.settings-group {
+  border-radius: 0.46rem !important;
+  box-shadow: none !important;
+  border-width: 1px !important;
+}
+
+.progress-container {
+  padding: 0.4rem !important;
+  justify-content: center !important;
+}
+
+.progress-ring-wrapper {
+  width: 116px !important;
+  height: 116px !important;
+  border-radius: 0.42rem !important;
+}
+
+.mission-node {
+  --orbit-radius: 56px !important;
+  --node-size: 0.42rem !important;
+}
+
+.progress-text {
+  inset: 9px !important;
+  border-radius: 0.3rem !important;
+}
+
+.large-timer {
+  font-size: clamp(0.82rem, 3.8vw, 1.24rem) !important;
+}
+
+.step-progress {
+  font-size: 0.58rem !important;
+}
+
+.media-frame--hero {
+  min-height: 132px !important;
+}
+
+#step-image {
+  max-height: 126px !important;
+  width: min(94%, 340px) !important;
+}
+
+.card-overlay {
+  padding: 0.34rem 0.42rem 0.4rem !important;
+}
+
+.hero-title {
+  font-size: 0.82rem !important;
+}
+
+.hero-cue {
+  font-size: 0.68rem !important;
+}
+
+.button-grid,
+.walk-picker {
+  padding: 0.38rem !important;
+}
+
+.controls-section {
+  gap: 0.24rem !important;
+}
+
+.control-btn {
+  border-radius: 0.34rem !important;
+  padding: 0.36rem 0.42rem !important;
+  font-size: 0.72rem !important;
+}
+
+.walk-btn {
+  border-radius: 0.32rem !important;
+  font-size: 0.68rem !important;
+  padding: 0.34rem 0.26rem !important;
+}
+
+#history-view,
+#settings-view {
+  gap: 0.32rem !important;
+}
+
+#history-view .section-header,
+#settings-view .section-header {
+  padding: 0.34rem 0.42rem !important;
+}
+
+.section-title {
+  font-size: 0.96rem !important;
+}
+
+.history-group,
+.settings-group {
+  padding: 0.34rem !important;
+}
+
+.bottom-nav {
+  width: min(96%, 520px) !important;
+  border-radius: 0.46rem !important;
+  padding: 0.16rem !important;
+  gap: 0.14rem !important;
+}
+
+.nav-btn {
+  min-height: 40px !important;
+  border-radius: 0.28rem !important;
+}
+
+.nav-icon {
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+  border-radius: 0.24rem !important;
+}
+
+.nav-label {
+  font-size: 0.54rem !important;
+}
+
 /* HIGH CONTRAST MODE */
 .high-contrast {
   --bg: #05070f;
