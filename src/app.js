@@ -33,6 +33,7 @@ const stepName = document.getElementById("step-name");
 const stepCue = document.getElementById("step-cue");
 const howtoStepName = document.getElementById("howto-step-name");
 const howtoText = document.getElementById("howto-text");
+const howtoCard = document.querySelector(".coach-card-collapsible");
 const stepImage = document.getElementById("step-image");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
@@ -221,6 +222,7 @@ function moveToStep(nextIndex) {
   if (nextIndex < 0 || nextIndex >= routineSteps.length) return;
 
   stopTimer();
+  if (howtoCard) howtoCard.open = false;
   state.stepIndex = nextIndex;
   state.remainingSec = routineSteps[nextIndex].durationSec;
   state.isRunning = false;
@@ -306,6 +308,7 @@ function resetRoutine(keepSessionCount = true) {
   stopTimer();
   state.isRunning = false;
   state.isPaused = false;
+  if (howtoCard) howtoCard.open = false;
   state.stepIndex = 0;
   state.remainingSec = routineSteps[0].durationSec;
   state.sessionStartedAt = null;
