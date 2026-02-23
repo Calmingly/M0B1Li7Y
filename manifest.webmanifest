@@ -1,4 +1,5 @@
 {
+  "id": "./?app-id=m0b1li7y-20260223e",
   "name": "M0B1Li7Y Mobility Coach",
   "short_name": "M0B1Li7Y",
   "description": "Guided mobility routine coach with timing, tracking, and progression.",
@@ -12,25 +13,13 @@
       "src": "./icons/icon-192-android.png?v=20260223d",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./icons/icon-512-android.png?v=20260223d",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-192-maskable.png?v=20260223d",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icons/icon-512-maskable.png?v=20260223d",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
