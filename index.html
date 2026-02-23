@@ -9,21 +9,51 @@
   <body>
     <main class="shell">
       <header class="app-header">
-        <h1>M0B1Li7Y</h1>
-        <p class="subhead">Daily mobility routine</p>
+        <p class="eyebrow">M0B1Li7Y</p>
+        <h1>Guided Mobility</h1>
+        <p class="subhead">Beginner-friendly flow with fitness-tech clarity</p>
       </header>
 
-      <section class="status" aria-live="polite">
-        <p id="progress-label">Step 1 of 12</p>
-        <p id="session-count">Sessions completed: 0</p>
+      <section class="metrics" aria-label="Progress metrics" aria-live="polite">
+        <article class="metric-card metric-card--highlight">
+          <p class="metric-label">Today</p>
+          <p id="progress-label" class="metric-value">Step 1 of 12</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Sessions</p>
+          <p id="session-count" class="metric-value">0</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Streak</p>
+          <p id="streak-count" class="metric-value">0 days</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Last 7 days</p>
+          <p id="week-count" class="metric-value">0 sessions</p>
+        </article>
       </section>
 
       <section class="step-card">
-        <p id="step-chip" class="chip">Warmup</p>
+        <div class="player-head">
+          <p id="step-chip" class="chip">Warmup</p>
+          <p id="phase-progress" class="phase-progress">8% complete</p>
+        </div>
         <h2 id="step-name">Arm Circles</h2>
-        <p id="step-cue">Smooth shoulder circles.</p>
-        <img id="step-image" alt="Routine step visual" />
-        <p id="timer" class="timer">00:30</p>
+        <p id="step-cue" class="step-cue">Smooth shoulder circles.</p>
+
+        <div class="hero-media">
+          <img id="step-image" alt="Routine step visual" />
+          <div class="ring-wrap" aria-hidden="true">
+            <div id="progress-ring" class="progress-ring">
+              <p id="timer" class="timer">00:30</p>
+            </div>
+          </div>
+        </div>
+
+        <article class="coach-card" aria-live="polite">
+          <p class="coach-title">Beginner Coach</p>
+          <p id="coach-tip" class="coach-tip">Keep your range comfortable and breathe naturally.</p>
+        </article>
       </section>
 
       <section class="controls" aria-label="Routine controls">
@@ -35,7 +65,7 @@
       </section>
 
       <section class="asset-check">
-        <h3>Saved assets check</h3>
+        <h3>Hybrid direction</h3>
         <p id="summary"></p>
       </section>
     </main>

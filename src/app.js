@@ -1,4 +1,5 @@
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
+const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -18,11 +19,16 @@ const routineSteps = [
 const summary = document.getElementById("summary");
 const progressLabel = document.getElementById("progress-label");
 const sessionCount = document.getElementById("session-count");
+const streakCount = document.getElementById("streak-count");
+const weekCount = document.getElementById("week-count");
 const stepChip = document.getElementById("step-chip");
+const phaseProgress = document.getElementById("phase-progress");
 const stepName = document.getElementById("step-name");
 const stepCue = document.getElementById("step-cue");
+const coachTip = document.getElementById("coach-tip");
 const stepImage = document.getElementById("step-image");
 const timer = document.getElementById("timer");
+const progressRing = document.getElementById("progress-ring");
 
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
@@ -36,7 +42,8 @@ const state = {
   isRunning: false,
   isPaused: false,
   timerRef: null,
-  sessionsCompleted: loadSessionCount()
+  sessionsCompleted: loadSessionCount(),
+  sessionDays: loadSessionDays()
 };
 
 init();
@@ -45,7 +52,7 @@ function init() {
   wireEvents();
   renderSummary();
   renderStep();
-  renderSessionCount();
+  renderSessionMetrics();
   updateControls();
 }
 
@@ -122,8 +129,9 @@ function completeRoutine() {
   state.isRunning = false;
   state.isPaused = false;
   state.sessionsCompleted += 1;
+  recordSessionDay();
   saveSessionCount(state.sessionsCompleted);
-  renderSessionCount();
+  renderSessionMetrics();
   resetRoutine(false);
   alert("Routine complete. Great work.");
 }
@@ -139,18 +147,22 @@ function resetRoutine(keepSessionCount = true) {
   updateControls();
 
   if (!keepSessionCount) {
-    renderSessionCount();
+    renderSessionMetrics();
   }
 }
 
 function renderStep() {
   const step = routineSteps[state.stepIndex];
   progressLabel.textContent = `Step ${state.stepIndex + 1} of ${routineSteps.length}`;
+  const percentComplete = Math.round(((state.stepIndex + 1) / routineSteps.length) * 100);
   stepChip.textContent = step.phase;
+  phaseProgress.textContent = `${percentComplete}% complete`;
   stepName.textContent = step.name;
   stepCue.textContent = step.cue;
+  coachTip.textContent = getCoachTip(step);
   stepImage.src = `./img/${step.image}`;
   stepImage.alt = `${step.name} visual`;
+  progressRing?.style.setProperty("--progress", `${percentComplete}%`);
   renderTimer();
 }
 
@@ -173,11 +185,15 @@ function updateControls() {
 }
 
 function renderSummary() {
-  summary.textContent = "Using preserved assets from img/ and icons/.";
+  summary.textContent = "Guided-first flow + fitness-tech metrics using your preserved routine and icon assets.";
 }
 
-function renderSessionCount() {
-  sessionCount.textContent = `Sessions completed: ${state.sessionsCompleted}`;
+function renderSessionMetrics() {
+  sessionCount.textContent = String(state.sessionsCompleted);
+  const streak = computeStreakDays(state.sessionDays);
+  const weekly = computeLast7DaysSessions(state.sessionDays);
+  streakCount.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
+  weekCount.textContent = `${weekly} session${weekly === 1 ? "" : "s"}`;
 }
 
 function formatTime(totalSec) {
@@ -202,4 +218,75 @@ function saveSessionCount(value) {
   } catch {
     // Ignore storage errors in private/restricted modes.
   }
+}
+
+function getCoachTip(step) {
+  const tipsByPhase = {
+    Warmup: "Move slowly, stay below pain, and find smooth control first.",
+    Strength: "Keep form clean. Stop with 2 reps left in the tank.",
+    Mobility: "Use a gentle range and pair each movement with slow breaths.",
+    Reset: "Stand tall and relax your shoulders before the next move.",
+    Cooldown: "Let your breathing slow down naturally and avoid forcing stretch depth.",
+    Finish: "Hold steady pace and finish feeling better than you started."
+  };
+
+  return tipsByPhase[step.phase] || "Move with control and keep breathing naturally.";
+}
+
+function loadSessionDays() {
+  try {
+    const raw = localStorage.getItem(SESSION_DAYS_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    return Array.isArray(parsed) ? parsed.filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSessionDays(values) {
+  try {
+    localStorage.setItem(SESSION_DAYS_KEY, JSON.stringify(values));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function recordSessionDay() {
+  const dayKey = toDayKey(new Date());
+  if (state.sessionDays.includes(dayKey)) return;
+  state.sessionDays = [...state.sessionDays, dayKey].sort();
+  saveSessionDays(state.sessionDays);
+}
+
+function toDayKey(dateValue) {
+  return new Date(dateValue).toISOString().slice(0, 10);
+}
+
+function computeLast7DaysSessions(dayKeys) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = new Date(today);
+  start.setDate(start.getDate() - 6);
+
+  const startKey = toDayKey(start);
+  const endKey = toDayKey(today);
+  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+}
+
+function computeStreakDays(dayKeys) {
+  if (dayKeys.length === 0) return 0;
+  const byDay = new Set(dayKeys);
+
+  let streak = 0;
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+
+  while (true) {
+    const key = toDayKey(current);
+    if (!byDay.has(key)) break;
+    streak += 1;
+    current.setDate(current.getDate() - 1);
+  }
+
+  return streak;
 }
