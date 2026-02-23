@@ -35,6 +35,7 @@ const coachTip = document.getElementById("coach-tip");
 const stepImage = document.getElementById("step-image");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
+const stepCard = document.querySelector("#routine-view .step-card");
 
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
@@ -159,7 +160,11 @@ function switchView(viewId) {
   state.activeView = viewId;
 
   views.forEach((view) => {
-    view.hidden = view.id !== viewId;
+    const isActive = view.id === viewId;
+    view.hidden = !isActive;
+    if (isActive) {
+      animateViewEntry(view);
+    }
   });
 
   tabButtons.forEach((button) => {
@@ -312,6 +317,7 @@ function renderStep() {
   stepImage.src = `./img/${step.image}`;
   stepImage.alt = `${step.name} visual`;
   progressRing?.style.setProperty("--progress", `${percentComplete}%`);
+  triggerStepVisualRefresh();
   renderTimer();
 }
 
@@ -319,10 +325,14 @@ function renderTimer() {
   const step = routineSteps[state.stepIndex];
   if (step.durationSec === null) {
     timer.textContent = "REPS";
+    timer.classList.remove("timer-warning");
     return;
   }
 
-  timer.textContent = formatTime(Math.max(0, Number(state.remainingSec)));
+  const safeRemaining = Math.max(0, Number(state.remainingSec));
+  timer.textContent = formatTime(safeRemaining);
+  const showWarning = state.isRunning && !state.isPaused && safeRemaining > 0 && safeRemaining <= 5;
+  timer.classList.toggle("timer-warning", showWarning);
 }
 
 function updateControls() {
@@ -342,6 +352,29 @@ function setButtonLabel(button, label) {
     return;
   }
   button.textContent = label;
+}
+
+function animateViewEntry(view) {
+  view.classList.remove("view-enter");
+  requestAnimationFrame(() => {
+    view.classList.add("view-enter");
+  });
+}
+
+function triggerStepVisualRefresh() {
+  if (stepCard) {
+    stepCard.classList.remove("step-refresh");
+    requestAnimationFrame(() => {
+      stepCard.classList.add("step-refresh");
+    });
+  }
+
+  if (stepImage) {
+    stepImage.classList.remove("image-refresh");
+    requestAnimationFrame(() => {
+      stepImage.classList.add("image-refresh");
+    });
+  }
 }
 
 function renderSummary() {
