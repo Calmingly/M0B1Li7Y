@@ -189,11 +189,11 @@ h1 {
 
 .metrics-routine {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 0.45rem;
   margin-bottom: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.1rem;
+  overflow-x: visible;
+  padding-bottom: 0;
 }
 
 .metric-pill {
@@ -762,12 +762,35 @@ input[type="checkbox"] {
     padding-bottom: 6.6rem;
   }
 
+  .metrics-routine {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    overflow: visible;
+  }
+
+  .metric-pill {
+    min-height: 3rem;
+    border-radius: 12px;
+    white-space: normal;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .metric-pill--today {
+    grid-column: 1 / -1;
+  }
+
+  .metrics-routine .metric-label {
+    font-size: 0.62rem;
+  }
+
   .controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .metrics-routine .metric-value {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
   }
 
   #step-name {
