@@ -1,6 +1,6 @@
 import { loadRoutineImages } from "./routineImages.js";
 
-const APP_VERSION = "v9";
+const APP_VERSION = "v10";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
 const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
 };
 
 // Developer setting: disable service worker to bypass caching during development/testing
-DEFAULT_SETTINGS.disableServiceWorker = false;
+DEFAULT_SETTINGS.disableServiceWorker = true;
 
 // Countdown low-warning threshold (seconds). When remaining time is <= this
 // value the UI will visually warn the user.
@@ -150,6 +150,7 @@ const els = {
 };
 
 function init() {
+  forceOnlineMode();
   applyTheme(state.settings.theme);
   syncMuteIcon();
   attachErrorHandlers();
@@ -189,6 +190,21 @@ function init() {
       applyTheme(state.settings.theme);
     }
   });
+}
+
+function forceOnlineMode() {
+  state.settings.disableServiceWorker = true;
+  saveSettings();
+  unregisterAllServiceWorkers();
+  clearAllCaches();
+}
+
+async function clearAllCaches() {
+  if (!("caches" in window)) return;
+  try {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  } catch {}
 }
 
 function wireEvents() {
