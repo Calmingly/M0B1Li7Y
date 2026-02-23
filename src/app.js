@@ -24,6 +24,7 @@ const routineSteps = [
 
 const summary = document.getElementById("summary");
 const progressLabel = document.getElementById("progress-label");
+const todayProgressFill = document.getElementById("today-progress-fill");
 const sessionCount = document.getElementById("session-count");
 const streakCount = document.getElementById("streak-count");
 const weekCount = document.getElementById("week-count");
@@ -322,6 +323,9 @@ function renderStep() {
   const step = routineSteps[state.stepIndex];
   progressLabel.textContent = `Step ${state.stepIndex + 1} of ${routineSteps.length}`;
   const percentComplete = Math.round(((state.stepIndex + 1) / routineSteps.length) * 100);
+  if (todayProgressFill) {
+    todayProgressFill.style.width = `${percentComplete}%`;
+  }
   stepChip.textContent = step.phase;
   phaseProgress.textContent = `${percentComplete}% complete`;
   stepName.textContent = step.name;

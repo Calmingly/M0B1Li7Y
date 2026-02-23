@@ -16,19 +16,59 @@
       <section id="routine-view" class="view">
         <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
           <article class="metric-pill metric-pill--today">
-            <p class="metric-label">Today</p>
+            <div class="metric-top">
+              <span class="metric-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M4 5h16v2H4z"></path>
+                  <path d="M8 3h2v4H8z"></path>
+                  <path d="M14 3h2v4h-2z"></path>
+                  <path d="M5 9h14v10H5z"></path>
+                </svg>
+              </span>
+              <p class="metric-label">Today</p>
+            </div>
             <p id="progress-label" class="metric-value">Step 1 of 12</p>
+            <div class="metric-mini-track" aria-hidden="true">
+              <span id="today-progress-fill" class="metric-mini-fill"></span>
+            </div>
           </article>
           <article class="metric-pill">
-            <p class="metric-label">Sessions</p>
+            <div class="metric-top">
+              <span class="metric-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M4 18h16v2H4z"></path>
+                  <path d="M7 10h2v8H7z"></path>
+                  <path d="M11 6h2v12h-2z"></path>
+                  <path d="M15 12h2v6h-2z"></path>
+                </svg>
+              </span>
+              <p class="metric-label">Sessions</p>
+            </div>
             <p id="session-count" class="metric-value">0</p>
           </article>
           <article class="metric-pill">
-            <p class="metric-label">Streak</p>
+            <div class="metric-top">
+              <span class="metric-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M12 2.5l2.1 4.2 4.6.7-3.3 3.2.8 4.6L12 13l-4.2 2.2.8-4.6-3.3-3.2 4.6-.7z"></path>
+                </svg>
+              </span>
+              <p class="metric-label">Streak</p>
+            </div>
             <p id="streak-count" class="metric-value">0 days</p>
           </article>
           <article class="metric-pill">
-            <p class="metric-label">Last 7 days</p>
+            <div class="metric-top">
+              <span class="metric-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M4 6h16v2H4z"></path>
+                  <path d="M6 10h12v2H6z"></path>
+                  <path d="M8 14h8v2H8z"></path>
+                  <path d="M10 18h4v2h-4z"></path>
+                </svg>
+              </span>
+              <p class="metric-label">7-day</p>
+            </div>
             <p id="week-count" class="metric-value">0 sessions</p>
           </article>
         </section>

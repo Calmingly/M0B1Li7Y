@@ -197,23 +197,21 @@ h1 {
 .metrics-routine {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin-bottom: 0.75rem;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
   overflow: visible;
 }
 
 .metric-pill {
   margin: 0;
-  padding: 0.35rem 0.52rem;
+  padding: 0.42rem 0.52rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 12px;
   background: var(--surface-card);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-  min-height: 2rem;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  white-space: normal;
+  min-height: 0;
+  display: grid;
+  gap: 0.2rem;
   min-width: 0;
 }
 
@@ -224,14 +222,64 @@ h1 {
     linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 45%, var(--surface-card)), color-mix(in srgb, var(--accent-strong) 24%, var(--surface-card)));
 }
 
+.metric-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  min-width: 0;
+}
+
+.metric-badge {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 80%, var(--surface-card));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.metric-badge svg {
+  width: 0.62rem;
+  height: 0.62rem;
+  fill: currentColor;
+  opacity: 0.9;
+}
+
 .metrics-routine .metric-label {
-  font-size: 0.63rem;
+  font-size: 0.6rem;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metrics-routine .metric-value {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-mini-track {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-card-2) 85%, black);
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--border));
+  overflow: hidden;
+}
+
+.metric-mini-fill {
+  display: block;
+  height: 100%;
+  width: 8%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 75%, white), var(--accent));
+  transition: width 180ms ease;
 }
 
 .metric-card {
@@ -775,24 +823,22 @@ input[type="checkbox"] {
   .metrics-routine {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem;
+    gap: 0.38rem;
     overflow: visible;
   }
 
   .metric-pill {
-    min-height: 3rem;
-    border-radius: 12px;
-    white-space: normal;
-    align-items: center;
-    justify-content: space-between;
+    min-height: 0;
+    padding: 0.4rem 0.48rem;
+    border-radius: 11px;
   }
 
   .metric-pill--today {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 
   .metrics-routine .metric-label {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
   }
 
   .controls {
@@ -800,7 +846,7 @@ input[type="checkbox"] {
   }
 
   .metrics-routine .metric-value {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   #step-name {
