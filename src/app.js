@@ -1,6 +1,7 @@
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
 const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
 const SESSION_LOG_KEY = "m0b1li7y.sessionLog";
+const DAY_PROGRESS_EDITS_KEY = "m0b1li7y.dayProgressEdits";
 const PROGRESSION_MODE_KEY = "m0b1li7y.progressionMode";
 const SOUND_ENABLED_KEY = "m0b1li7y.soundEnabled";
 const HAPTICS_ENABLED_KEY = "m0b1li7y.hapticsEnabled";
@@ -65,6 +66,7 @@ const state = {
   sessionsCompleted: loadSessionCount(),
   sessionDays: loadSessionDays(),
   sessionLog: loadSessionLog(),
+  dayProgressEdits: loadDayProgressEdits(),
   progressionMode: loadProgressionMode(),
   soundEnabled: loadBoolean(SOUND_ENABLED_KEY, true),
   hapticsEnabled: loadBoolean(HAPTICS_ENABLED_KEY, true),
@@ -119,6 +121,37 @@ function wireEvents() {
     button.addEventListener("click", () => {
       switchView(button.dataset.view);
     });
+  });
+
+  historyDays?.addEventListener("input", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (target.dataset.dayProgress === undefined) return;
+
+    const dayKey = target.dataset.dayProgress;
+    const output = historyDays.querySelector(`[data-day-output="${dayKey}"]`);
+    if (!output) return;
+    output.textContent = `${target.value}/${routineSteps.length} pieces`;
+  });
+
+  historyDays?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const button = target.closest("button[data-save-day]");
+    if (!button) return;
+
+    const dayKey = button.getAttribute("data-save-day");
+    if (!dayKey) return;
+
+    const input = historyDays.querySelector(`input[data-day-progress="${dayKey}"]`);
+    if (!(input instanceof HTMLInputElement)) return;
+
+    const progress = clampProgress(Number(input.value));
+    saveDayProgress(dayKey, progress);
+    renderSessionMetrics();
+    renderHistoryView();
+    triggerFeedback("stepChange");
   });
 }
 
@@ -307,15 +340,17 @@ function renderSummary() {
 
 function renderSessionMetrics() {
   sessionCount.textContent = String(state.sessionsCompleted);
-  const streak = computeStreakDays(state.sessionDays);
-  const weekly = computeLast7DaysSessions(state.sessionDays);
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const streak = computeStreakDays(activeDayKeys);
+  const weekly = computeLast7DaysSessions(activeDayKeys);
   streakCount.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
   weekCount.textContent = `${weekly} session${weekly === 1 ? "" : "s"}`;
 }
 
 function renderHistoryView() {
-  const streak = computeStreakDays(state.sessionDays);
-  const weekly = computeLast7DaysSessions(state.sessionDays);
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const streak = computeStreakDays(activeDayKeys);
+  const weekly = computeLast7DaysSessions(activeDayKeys);
   const totalMinutes = Math.round(state.sessionLog.reduce((sum, entry) => sum + (entry.durationSec || 0), 0) / 60);
 
   historyTotalSessions.textContent = String(state.sessionsCompleted);
@@ -350,10 +385,16 @@ function renderHistoryView() {
 
   historyDays.innerHTML = "";
 
-  const recentDays = buildRecentDayRows(state.sessionDays, state.sessionLog, 14);
+  const recentDays = buildRecentDayRows(state.sessionDays, state.sessionLog, state.dayProgressEdits, 14);
   recentDays.forEach((dayRow) => {
     const item = document.createElement("li");
     item.className = "history-day-item";
+
+    const details = document.createElement("details");
+    details.className = "history-day-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "history-day-summary";
 
     const title = document.createElement("p");
     title.className = "history-day-title";
@@ -361,9 +402,45 @@ function renderHistoryView() {
 
     const meta = document.createElement("p");
     meta.className = "history-day-meta";
-    meta.textContent = `${dayRow.sessions} session${dayRow.sessions === 1 ? "" : "s"} • ${dayRow.minutes} min`;
+    meta.textContent = `${dayRow.sessions} session${dayRow.sessions === 1 ? "" : "s"} • ${dayRow.minutes} min • ${dayRow.progress}/${routineSteps.length} pieces`;
 
-    item.append(title, meta);
+    summary.append(title, meta);
+
+    const editor = document.createElement("div");
+    editor.className = "history-day-editor";
+
+    const progressRow = document.createElement("div");
+    progressRow.className = "history-progress-row";
+
+    const label = document.createElement("label");
+    label.textContent = "Adjust progress";
+    label.setAttribute("for", `day-progress-${dayRow.dayKey}`);
+
+    const range = document.createElement("input");
+    range.id = `day-progress-${dayRow.dayKey}`;
+    range.type = "range";
+    range.min = "0";
+    range.max = String(routineSteps.length);
+    range.step = "1";
+    range.value = String(dayRow.progress);
+    range.dataset.dayProgress = dayRow.dayKey;
+
+    const progressMeta = document.createElement("p");
+    progressMeta.className = "history-progress-meta";
+    progressMeta.dataset.dayOutput = dayRow.dayKey;
+    progressMeta.textContent = `${dayRow.progress}/${routineSteps.length} pieces`;
+
+    progressRow.append(label, range, progressMeta);
+
+    const saveButton = document.createElement("button");
+    saveButton.type = "button";
+    saveButton.className = "history-save-btn";
+    saveButton.dataset.saveDay = dayRow.dayKey;
+    saveButton.textContent = "Save day";
+
+    editor.append(progressRow, saveButton);
+    details.append(summary, editor);
+    item.append(details);
     historyDays.append(item);
   });
 }
@@ -385,7 +462,7 @@ function formatDateTime(isoString) {
   });
 }
 
-function buildRecentDayRows(sessionDays, sessionLog, numberOfDays) {
+function buildRecentDayRows(sessionDays, sessionLog, dayProgressEdits, numberOfDays) {
   const rows = [];
   const byDay = new Map();
 
@@ -407,15 +484,79 @@ function buildRecentDayRows(sessionDays, sessionLog, numberOfDays) {
     day.setDate(cursor.getDate() - index);
     const dayKey = toDayKey(day);
     const value = byDay.get(dayKey) || { sessions: sessionDays.includes(dayKey) ? 1 : 0, minutes: 0 };
+    const defaultProgress = value.sessions > 0 ? routineSteps.length : 0;
+    const progress = getDayProgress(dayKey, defaultProgress, dayProgressEdits);
+    const effectiveSessions = progress > 0 ? Math.max(1, value.sessions) : 0;
 
     rows.push({
+      dayKey,
       label: day.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }),
-      sessions: value.sessions,
-      minutes: value.minutes
+      sessions: effectiveSessions,
+      minutes: value.minutes,
+      progress
     });
   }
 
   return rows;
+}
+
+function loadDayProgressEdits() {
+  try {
+    const raw = localStorage.getItem(DAY_PROGRESS_EDITS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    if (!parsed || typeof parsed !== "object") return {};
+
+    const normalized = {};
+    Object.entries(parsed).forEach(([dayKey, value]) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dayKey)) return;
+      normalized[dayKey] = clampProgress(Number(value));
+    });
+
+    return normalized;
+  } catch {
+    return {};
+  }
+}
+
+function saveDayProgressEdits(edits) {
+  try {
+    localStorage.setItem(DAY_PROGRESS_EDITS_KEY, JSON.stringify(edits));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function saveDayProgress(dayKey, progress) {
+  const current = { ...state.dayProgressEdits };
+  current[dayKey] = clampProgress(progress);
+  state.dayProgressEdits = current;
+  saveDayProgressEdits(state.dayProgressEdits);
+}
+
+function clampProgress(value) {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(routineSteps.length, Math.round(value)));
+}
+
+function getDayProgress(dayKey, defaultProgress, edits) {
+  if (Object.prototype.hasOwnProperty.call(edits, dayKey)) {
+    return clampProgress(edits[dayKey]);
+  }
+  return clampProgress(defaultProgress);
+}
+
+function computeActiveDayKeys(sessionDays, dayProgressEdits) {
+  const active = new Set(sessionDays);
+
+  Object.entries(dayProgressEdits).forEach(([dayKey, progress]) => {
+    if (clampProgress(progress) > 0) {
+      active.add(dayKey);
+    } else {
+      active.delete(dayKey);
+    }
+  });
+
+  return Array.from(active).sort();
 }
 
 function estimatedRoutineDurationSec() {

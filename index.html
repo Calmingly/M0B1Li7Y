@@ -14,12 +14,6 @@
         <p class="subhead">Beginner-friendly flow with fitness-tech clarity</p>
       </header>
 
-      <nav class="tabs" aria-label="Primary tabs">
-        <button class="tab-btn active" data-view="routine-view">Routine</button>
-        <button class="tab-btn" data-view="history-view">History</button>
-        <button class="tab-btn" data-view="settings-view">Settings</button>
-      </nav>
-
       <section id="routine-view" class="view">
         <section class="metrics" aria-label="Progress metrics" aria-live="polite">
           <article class="metric-card metric-card--highlight">
@@ -145,6 +139,12 @@
           <p id="summary"></p>
         </section>
       </section>
+
+      <nav class="tabs" aria-label="Primary tabs">
+        <button class="tab-btn active" data-view="routine-view">Routine</button>
+        <button class="tab-btn" data-view="history-view">History</button>
+        <button class="tab-btn" data-view="settings-view">Settings</button>
+      </nav>
     </main>
 
     <script type="module" src="./src/app.js"></script>

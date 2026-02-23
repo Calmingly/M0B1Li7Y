@@ -55,6 +55,7 @@ body {
   width: min(94vw, 780px);
   margin: 1rem auto 2rem;
   padding: 1rem;
+  padding-bottom: 6rem;
   border: 1px solid var(--shell-border);
   border-radius: 16px;
   background: linear-gradient(160deg, var(--shell-surface-1) 0%, var(--shell-surface-2) 60%);
@@ -85,10 +86,20 @@ h1 {
 }
 
 .tabs {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(0.55rem, env(safe-area-inset-bottom));
+  width: min(94vw, 780px);
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-card) 90%, black);
+  box-shadow: 0 10px 30px rgba(1, 6, 20, 0.55);
+  z-index: 20;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.5rem;
-  margin-bottom: 0.9rem;
 }
 
 .tab-btn {
@@ -339,6 +350,60 @@ h1 {
   background: color-mix(in srgb, var(--surface-card) 92%, black);
 }
 
+.history-day-details {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-card) 92%, black);
+}
+
+.history-day-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.55rem;
+}
+
+.history-day-summary::-webkit-details-marker {
+  display: none;
+}
+
+.history-day-editor {
+  border-top: 1px solid var(--border);
+  padding: 0.55rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.history-progress-row {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.history-progress-row label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.history-progress-row input[type="range"] {
+  width: 100%;
+}
+
+.history-progress-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.history-save-btn {
+  justify-self: start;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, white);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 20%, var(--surface-card));
+  color: var(--text);
+  padding: 0.38rem 0.55rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
 .history-item-title,
 .history-day-title {
   margin: 0;
@@ -383,6 +448,10 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  .shell {
+    padding-bottom: 6.5rem;
+  }
+
   .controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
