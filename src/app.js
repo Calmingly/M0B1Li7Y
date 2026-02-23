@@ -31,7 +31,6 @@ const stepChip = document.getElementById("step-chip");
 const phaseProgress = document.getElementById("phase-progress");
 const stepName = document.getElementById("step-name");
 const stepCue = document.getElementById("step-cue");
-const coachTip = document.getElementById("coach-tip");
 const stepImage = document.getElementById("step-image");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
@@ -313,7 +312,6 @@ function renderStep() {
   phaseProgress.textContent = `${percentComplete}% complete`;
   stepName.textContent = step.name;
   stepCue.textContent = step.cue;
-  coachTip.textContent = getCoachTip(step);
   stepImage.src = `./img/${step.image}`;
   stepImage.alt = `${step.name} visual`;
   progressRing?.style.setProperty("--progress", `${percentComplete}%`);
@@ -717,19 +715,6 @@ function playTone(type) {
 
   oscillator.start();
   oscillator.stop(audio.currentTime + duration);
-}
-
-function getCoachTip(step) {
-  const tipsByPhase = {
-    Warmup: "Move slowly, stay below pain, and find smooth control first.",
-    Strength: "Keep form clean. Stop with 2 reps left in the tank.",
-    Mobility: "Use a gentle range and pair each movement with slow breaths.",
-    Reset: "Stand tall and relax your shoulders before the next move.",
-    Cooldown: "Let your breathing slow down naturally and avoid forcing stretch depth.",
-    Finish: "Hold steady pace and finish feeling better than you started."
-  };
-
-  return tipsByPhase[step.phase] || "Move with control and keep breathing naturally.";
 }
 
 function loadSessionDays() {
