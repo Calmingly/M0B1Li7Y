@@ -31,6 +31,8 @@ const stepChip = document.getElementById("step-chip");
 const phaseProgress = document.getElementById("phase-progress");
 const stepName = document.getElementById("step-name");
 const stepCue = document.getElementById("step-cue");
+const howtoStepName = document.getElementById("howto-step-name");
+const howtoText = document.getElementById("howto-text");
 const stepImage = document.getElementById("step-image");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
@@ -312,11 +314,32 @@ function renderStep() {
   phaseProgress.textContent = `${percentComplete}% complete`;
   stepName.textContent = step.name;
   stepCue.textContent = step.cue;
+  if (howtoStepName) howtoStepName.textContent = step.name;
+  if (howtoText) howtoText.textContent = getHowToByStep(step.name);
   stepImage.src = `./img/${step.image}`;
   stepImage.alt = `${step.name} visual`;
   progressRing?.style.setProperty("--progress", `${percentComplete}%`);
   triggerStepVisualRefresh();
   renderTimer();
+}
+
+function getHowToByStep(stepNameValue) {
+  const byStep = {
+    "Arm Circles": "Stand tall, make small circles first, then larger circles in both directions.",
+    "Trunk Rotations": "Keep hips forward, rotate your upper body left and right without forcing range.",
+    "Side Bends": "Slide one hand down your thigh, switch sides slowly, and keep chest lifted.",
+    "Leg Swings": "Hold support, swing one leg front/back with control, then switch legs.",
+    "Overhead Reach": "Reach both arms up, keep ribs down, and breathe slowly through each reach.",
+    "Counter Pushups": "Hands on counter, body straight, lower chest toward hands, then press back up.",
+    "Plank": "Elbows under shoulders, squeeze glutes/core, and keep neck and spine neutral.",
+    "Knees To Chest": "Lift one knee toward chest at a time while staying tall and steady.",
+    "Toe Touch Twist": "Reach across to opposite foot with a gentle twist; alternate sides smoothly.",
+    "Figure Four": "Cross ankle over opposite knee, hinge slightly, then switch sides halfway.",
+    "Child Pose": "Sit hips back, arms long, forehead down, and take slow deep breaths.",
+    "Brisk Walk": "Walk at a purposeful pace where you can talk, but feel your heart rate rise."
+  };
+
+  return byStep[stepNameValue] || "Move with control, stay pain-free, and keep breathing steadily.";
 }
 
 function renderTimer() {
