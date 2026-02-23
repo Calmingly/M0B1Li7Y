@@ -1605,320 +1605,268 @@
   }
 }
 
-/* FULL RESKIN OVERRIDE V2: BEND-LIKE MINIMAL */
+/* ORBITAL SLATE OVERRIDE v7 */
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(800px 420px at 8% -10%, color-mix(in srgb, var(--secondary) 12%, transparent), transparent 70%),
+    radial-gradient(900px 520px at 95% 0%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 72%),
+    linear-gradient(180deg, #0a1222 0%, #081020 100%);
 }
 
 .app-shell {
-  max-width: 980px;
-  background: transparent;
+  max-width: 1180px !important;
+  background: transparent !important;
 }
 
 .app-header {
-  margin: 0.45rem 0.55rem 0;
-  padding: 0.66rem 0.74rem;
-  border-radius: 0.62rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
-  background: color-mix(in srgb, var(--card-bg) 95%, black 5%);
-  box-shadow: none;
+  margin: 0.8rem 0.95rem 0 !important;
+  padding: 0.92rem 1rem !important;
+  border-radius: 0.9rem !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent) !important;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--card-bg-strong) 82%, black 18%), color-mix(in srgb, var(--card-bg) 88%, black 12%)) !important;
+  box-shadow: 0 12px 28px color-mix(in srgb, black 24%, transparent) !important;
 }
 
-.header-brand h1 { font-size: 1.2rem; }
-.header-brand p { font-size: 0.7rem; }
-
 .main-content {
-  padding: 0.56rem;
-  padding-bottom: 94px;
+  padding: 1rem !important;
+  padding-bottom: 108px !important;
 }
 
 .view {
-  width: min(100%, 900px);
-  margin: 0 auto;
+  width: min(100%, 1080px) !important;
+  margin: 0 auto !important;
 }
 
 #routine-view {
-  width: min(100%, 900px);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  width: min(100%, 1080px) !important;
+  display: grid !important;
+  grid-template-columns: minmax(300px, 0.92fr) minmax(500px, 1.08fr) !important;
   grid-template-areas:
-    "ring"
-    "hero"
-    "controls"
-    "walk"
-    "credit";
-  gap: 0.42rem;
-  padding: 0;
+    "ring hero"
+    "controls hero"
+    "walk hero"
+    "credit hero" !important;
+  gap: 0.86rem !important;
+  padding: 0.3rem !important;
 }
 
 #routine-view::before {
-  inset: 0;
-  height: 100%;
-  border-radius: 0.62rem;
-  background: color-mix(in srgb, var(--card-bg) 10%, transparent);
-  opacity: 0.26;
+  inset: -0.5rem !important;
+  height: 100% !important;
+  border-radius: 1rem !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--primary) 16%, transparent), transparent 45%),
+    linear-gradient(320deg, color-mix(in srgb, var(--secondary) 14%, transparent), transparent 50%) !important;
+  opacity: 1 !important;
 }
 
 .progress-container,
-.hero-card,
 .button-grid,
 .walk-picker,
+.hero-card,
 #history-view .section-header,
 #settings-view .section-header,
 .history-group,
 .settings-group {
-  border-radius: 0.62rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
-  box-shadow: none;
+  border-radius: 0.96rem !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent) !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, black 20%, transparent) !important;
 }
 
 .progress-container {
-  grid-area: ring;
-  margin: 0;
-  justify-content: flex-start;
-  padding: 0.44rem;
-  background: color-mix(in srgb, var(--card-bg-strong) 95%, black 5%);
+  grid-area: ring !important;
+  margin: 0 !important;
+  justify-content: center !important;
+  max-width: 380px !important;
+  padding: 0.78rem !important;
+  background: color-mix(in srgb, var(--card-bg-strong) 82%, black 18%) !important;
 }
 
 .progress-ring-wrapper {
-  width: 132px;
-  height: 132px;
-  border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
-  background: color-mix(in srgb, var(--card-bg) 94%, black 6%);
+  width: 190px !important;
+  height: 190px !important;
+  border-radius: 1rem !important;
+  border: 1px solid color-mix(in srgb, var(--primary-light) 26%, transparent) !important;
+  background: radial-gradient(circle at 48% 26%, color-mix(in srgb, var(--primary-light) 22%, transparent), transparent 56%), color-mix(in srgb, var(--card-bg) 88%, black 12%) !important;
 }
 
-.mission-orbit { inset: -3px; }
+.mission-orbit { inset: -8px !important; }
 
 .mission-node {
-  --orbit-radius: 64px;
-  --node-size: 0.5rem;
-  border-radius: 0.12rem;
-  border-color: color-mix(in srgb, var(--text-muted) 26%, transparent);
-  background: color-mix(in srgb, var(--card-bg) 82%, black 18%);
+  --orbit-radius: 92px !important;
+  --node-size: 0.62rem !important;
+  border-radius: 0.16rem !important;
 }
 
 .progress-text {
-  inset: 12px;
-  gap: 0.16rem;
-  border-radius: 0.36rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
-  background: color-mix(in srgb, var(--card-bg-strong) 96%, black 4%);
+  inset: 16px !important;
+  border-radius: 0.78rem !important;
+  gap: 0.24rem !important;
+  background: color-mix(in srgb, var(--card-bg-strong) 90%, black 10%) !important;
 }
 
 .large-timer {
-  font-size: clamp(0.98rem, 4.4vw, 1.6rem) !important;
-  font-weight: 650;
-  line-height: 1;
-  text-shadow: none;
-  filter: none;
+  font-size: clamp(1.3rem, 6.4vw, 2.6rem) !important;
+  font-weight: 700 !important;
 }
 
 .step-progress {
-  font-size: 0.66rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
 }
 
 .hero-card {
-  grid-area: hero;
-  margin: 0;
-  width: 100%;
-  background: color-mix(in srgb, var(--card-bg) 96%, black 4%);
+  grid-area: hero !important;
+  margin: 0 !important;
+  width: 100% !important;
+  background: linear-gradient(165deg, color-mix(in srgb, var(--card-bg-strong) 80%, black 20%), color-mix(in srgb, var(--card-bg) 88%, black 12%)) !important;
 }
 
 .media-frame--hero {
-  min-height: 156px;
-  padding: 0.24rem;
-  background: color-mix(in srgb, var(--card-bg-strong) 96%, black 4%);
+  min-height: 390px !important;
+  padding: 0.76rem !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 10%, transparent), transparent 56%), color-mix(in srgb, var(--card-bg-strong) 90%, black 10%) !important;
 }
 
 #step-image {
-  width: min(94%, 380px);
-  max-height: 150px;
-  object-fit: contain;
-  filter: none;
+  width: min(88%, 540px) !important;
+  max-height: 330px !important;
+  filter: saturate(1.06) contrast(1.03) brightness(1.02) !important;
 }
 
 .step-chip {
-  top: 0.32rem;
-  left: 0.32rem;
-  bottom: auto;
-  transform: none;
-  font-size: 0.58rem;
-  padding: 0.16rem 0.34rem;
-  border-radius: 0.3rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 16%, transparent);
+  top: auto !important;
+  bottom: 0.8rem !important;
+  left: 0.8rem !important;
+  border-radius: 999px !important;
+  padding: 0.22rem 0.5rem !important;
 }
 
 .card-overlay {
-  padding: 0.38rem 0.48rem 0.44rem;
-  border-top: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
-  background: color-mix(in srgb, var(--card-bg) 97%, black 3%);
+  padding: 0.82rem 0.92rem 0.9rem !important;
+  background: color-mix(in srgb, var(--card-bg) 88%, black 12%) !important;
 }
 
-.hero-title {
-  margin: 0 0 0.08rem;
-  font-size: 0.9rem;
-}
-
-.hero-cue {
-  font-size: 0.72rem;
-}
+.hero-title { font-size: 1.16rem !important; }
+.hero-cue { font-size: 0.84rem !important; }
 
 .button-grid {
-  grid-area: controls;
-  margin: 0;
-  width: 100%;
-  padding: 0.4rem;
-  background: color-mix(in srgb, var(--card-bg) 97%, black 3%);
-  gap: 0.34rem;
+  grid-area: controls !important;
+  margin: 0 !important;
+  max-width: 380px !important;
+  padding: 0.7rem !important;
+  gap: 0.5rem !important;
+  background: color-mix(in srgb, var(--card-bg) 90%, black 10%) !important;
 }
 
-.controls-section {
-  gap: 0.32rem;
-}
+.controls-section { gap: 0.46rem !important; }
 
 .control-btn {
-  border-radius: 0.4rem;
-  padding: 0.42rem 0.5rem;
-  font-size: 0.76rem;
-  font-weight: 600;
-  box-shadow: none;
-}
-
-#routine-view .control-btn--primary {
-  background: color-mix(in srgb, var(--primary) 24%, var(--card-bg));
-  border-color: color-mix(in srgb, var(--primary) 44%, transparent);
-}
-
-#routine-view .control-btn--secondary {
-  background: color-mix(in srgb, var(--card-bg) 98%, black 2%);
+  border-radius: 0.62rem !important;
+  padding: 0.56rem 0.62rem !important;
+  font-size: 0.8rem !important;
 }
 
 .walk-picker {
-  grid-area: walk;
-  margin: 0;
-  width: 100%;
-  padding: 0.42rem;
-  background: color-mix(in srgb, var(--card-bg) 97%, black 3%);
+  grid-area: walk !important;
+  margin: 0 !important;
+  max-width: 380px !important;
+  padding: 0.7rem !important;
+  background: color-mix(in srgb, var(--card-bg) 89%, black 11%) !important;
 }
 
-.walk-title {
-  margin: 0 0 0.36rem;
-  font-size: 0.74rem;
-}
-
-.walk-options {
-  gap: 0.3rem;
-}
+.walk-title { font-size: 0.88rem !important; }
 
 .walk-btn {
-  border-radius: 0.38rem;
-  font-size: 0.72rem;
-  padding: 0.4rem 0.3rem;
+  border-radius: 0.52rem !important;
+  font-size: 0.76rem !important;
+  padding: 0.48rem 0.34rem !important;
 }
 
 .image-credit {
-  grid-area: credit;
-  margin: 0;
-  font-size: 0.62rem;
+  grid-area: credit !important;
+  margin: 0.04rem 0 0 !important;
+  font-size: 0.66rem !important;
 }
 
 #history-view,
 #settings-view {
-  width: min(100%, 900px);
-  display: grid;
-  gap: 0.4rem;
-  padding: 0;
+  width: min(100%, 1080px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.72rem !important;
+  padding: 0.3rem !important;
 }
 
 #history-view .section-header,
 #settings-view .section-header {
-  margin: 0;
-  padding: 0.42rem 0.5rem;
-  background: color-mix(in srgb, var(--card-bg-strong) 95%, black 5%);
+  grid-column: 1 / -1 !important;
+  margin: 0 !important;
+  padding: 0.72rem 0.86rem !important;
+  background: color-mix(in srgb, var(--card-bg-strong) 84%, black 16%) !important;
 }
 
-.section-title {
-  font-size: 1.06rem;
-}
+.section-title { font-size: 1.28rem !important; }
 
 .history-group,
 .settings-group {
-  margin: 0;
-  background: color-mix(in srgb, var(--card-bg) 97%, black 3%);
+  margin: 0 !important;
+  padding: 0.64rem !important;
+  background: color-mix(in srgb, var(--card-bg) 91%, black 9%) !important;
 }
 
-.history-group { padding: 0.4rem; }
-.settings-group { padding: 0.5rem; }
-
 .history-group-toggle {
-  border-radius: 0.38rem;
-  padding: 0.4rem 0.46rem;
-  font-size: 0.74rem;
+  border-radius: 0.62rem !important;
+  padding: 0.52rem 0.6rem !important;
 }
 
 .bottom-nav {
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(96%, 560px);
-  border-radius: 0.62rem;
-  padding: 0.24rem;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
-  background: color-mix(in srgb, var(--card-bg-strong) 95%, black 5%);
-  box-shadow: none;
-  gap: 0.26rem;
+  width: min(96%, 740px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  border-radius: 0.92rem !important;
+  padding: 0.34rem !important;
+  gap: 0.34rem !important;
 }
 
 .nav-btn {
-  min-height: 46px;
-  border-radius: 0.44rem;
+  min-height: 54px !important;
+  border-radius: 0.62rem !important;
 }
 
 .nav-icon {
-  width: 1.46rem;
-  height: 1.46rem;
-  border-radius: 0.34rem;
+  width: 1.84rem !important;
+  height: 1.84rem !important;
+  border-radius: 0.46rem !important;
 }
 
-.nav-label {
-  font-size: 0.58rem;
-}
-
-@media (min-width: 980px) {
+@media (max-width: 979px) {
   #routine-view {
-    grid-template-columns: minmax(250px, 0.82fr) minmax(360px, 1.18fr);
+    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-areas:
-      "ring hero"
-      "controls hero"
-      "walk hero"
-      "credit hero";
-    gap: 0.38rem 0.48rem;
+      "ring"
+      "hero"
+      "controls"
+      "walk"
+      "credit" !important;
   }
 
   .progress-container,
   .button-grid,
   .walk-picker {
-    max-width: 290px;
+    max-width: none !important;
   }
 
   .media-frame--hero {
-    min-height: 210px;
+    min-height: 240px !important;
   }
 
   #step-image {
-    max-height: 190px;
+    max-height: 200px !important;
   }
 
   #history-view,
   #settings-view {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  #history-view .section-header,
-  #settings-view .section-header {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }
