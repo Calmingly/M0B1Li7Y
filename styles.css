@@ -207,12 +207,12 @@ h1 {
     var(--step-bg-image, none);
   background-position: center;
   background-size: cover;
-  filter: blur(16px) saturate(1.08);
-  transform: scale(1.07);
+  filter: blur(13px) saturate(1.04);
+  transform: scale(1.05);
 }
 
 .routine-view.backdrop-ready .step-backdrop {
-  opacity: 0.32;
+  opacity: 0.24;
 }
 
 .routine-view > *:not(.step-backdrop) {
@@ -229,7 +229,7 @@ h1 {
   border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
   background: color-mix(in srgb, var(--surface-card) 82%, black);
   color: color-mix(in srgb, var(--text) 95%, white);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.03em;
   opacity: 0;
   transform: translateY(-6px);
@@ -327,7 +327,7 @@ h1 {
   height: 100%;
   width: 8%;
   background: linear-gradient(90deg, color-mix(in srgb, var(--phase-accent) 72%, white), var(--phase-accent));
-  transition: width 240ms ease;
+  transition: width 220ms ease;
 }
 
 .metric-spark-dots,
@@ -425,7 +425,7 @@ h1 {
 .step-card.phase-cooldown,
 .step-card.phase-finish {
   border-color: color-mix(in srgb, var(--phase-accent) 55%, var(--border));
-  box-shadow: var(--shadow-soft), 0 0 0 1px color-mix(in srgb, var(--phase-accent) 16%, transparent);
+  box-shadow: var(--shadow-soft), 0 0 0 1px color-mix(in srgb, var(--phase-accent) 10%, transparent);
 }
 
 .step-refresh {
@@ -548,7 +548,7 @@ h1 {
   animation: ringSweep 2s linear infinite;
   box-shadow:
     0 10px 24px rgba(2, 8, 20, 0.62),
-    0 0 0 2px color-mix(in srgb, var(--phase-accent) 22%, transparent);
+    0 0 0 2px color-mix(in srgb, var(--phase-accent) 15%, transparent);
 }
 
 .progress-ring::before {
@@ -762,13 +762,13 @@ h1 {
   border-radius: inherit;
   background: radial-gradient(circle at center, color-mix(in srgb, var(--phase-accent) 35%, transparent), transparent 58%);
   opacity: 0;
-  transform: scale(0.86);
+  transform: scale(0.9);
   transition: opacity 180ms ease, transform 180ms ease;
   pointer-events: none;
 }
 
 .btn.btn-press::after {
-  opacity: 1;
+  opacity: 0.78;
   transform: scale(1);
 }
 
@@ -1021,7 +1021,7 @@ input[type="checkbox"] {
     filter: hue-rotate(0deg);
   }
   to {
-    filter: hue-rotate(14deg);
+    filter: hue-rotate(8deg);
   }
 }
 
@@ -1031,8 +1031,8 @@ input[type="checkbox"] {
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--phase-accent) 65%, transparent);
   }
   50% {
-    transform: scale(1.06);
-    box-shadow: 0 0 0 10px color-mix(in srgb, var(--phase-accent) 24%, transparent);
+    transform: scale(1.03);
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--phase-accent) 18%, transparent);
   }
   100% {
     transform: scale(1);
@@ -1045,7 +1045,7 @@ input[type="checkbox"] {
     box-shadow: var(--shadow-soft), 0 0 0 0 color-mix(in srgb, var(--phase-accent) 0%, transparent);
   }
   40% {
-    box-shadow: var(--shadow-soft), 0 0 0 14px color-mix(in srgb, var(--phase-accent) 20%, transparent);
+    box-shadow: var(--shadow-soft), 0 0 0 10px color-mix(in srgb, var(--phase-accent) 16%, transparent);
   }
   100% {
     box-shadow: var(--shadow-soft), 0 0 0 0 color-mix(in srgb, var(--phase-accent) 0%, transparent);
