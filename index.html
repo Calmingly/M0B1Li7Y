@@ -8,18 +8,35 @@
   </head>
   <body>
     <main class="shell">
-      <h1>M0B1Li7Y</h1>
-      <p>Fresh project scaffold is ready.</p>
-      <p id="summary" aria-live="polite"></p>
+      <header class="app-header">
+        <h1>M0B1Li7Y</h1>
+        <p class="subhead">Daily mobility routine</p>
+      </header>
 
-      <section>
-        <h2>Routine images</h2>
-        <div id="routine-grid" class="asset-grid" aria-label="Routine image previews"></div>
+      <section class="status" aria-live="polite">
+        <p id="progress-label">Step 1 of 12</p>
+        <p id="session-count">Sessions completed: 0</p>
       </section>
 
-      <section>
-        <h2>Icon images</h2>
-        <div id="icon-grid" class="asset-grid" aria-label="Icon image previews"></div>
+      <section class="step-card">
+        <p id="step-chip" class="chip">Warmup</p>
+        <h2 id="step-name">Arm Circles</h2>
+        <p id="step-cue">Smooth shoulder circles.</p>
+        <img id="step-image" alt="Routine step visual" />
+        <p id="timer" class="timer">00:30</p>
+      </section>
+
+      <section class="controls" aria-label="Routine controls">
+        <button id="start-btn" class="btn btn-primary">Start</button>
+        <button id="pause-btn" class="btn" disabled>Pause</button>
+        <button id="back-btn" class="btn" disabled>Back</button>
+        <button id="next-btn" class="btn" disabled>Next</button>
+        <button id="reset-btn" class="btn">Reset</button>
+      </section>
+
+      <section class="asset-check">
+        <h3>Saved assets check</h3>
+        <p id="summary"></p>
       </section>
     </main>
 

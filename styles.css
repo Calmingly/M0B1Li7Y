@@ -15,52 +15,130 @@ body {
 }
 
 .shell {
-  width: min(92vw, 560px);
-  margin: 1rem auto 2rem;
-  padding: 1.25rem;
+  width: min(92vw, 680px);
+  margin: 1rem auto 2.5rem;
+  padding: 1rem;
   border: 1px solid #334155;
   border-radius: 12px;
   background: #111827;
 }
 
+.app-header {
+  margin-bottom: 0.85rem;
+}
+
 h1 {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-size: 1.5rem;
 }
 
-p {
-  margin: 0.35rem 0;
+.subhead {
+  margin: 0.35rem 0 0;
+  color: #94a3b8;
 }
 
-h2 {
-  margin: 1rem 0 0.55rem;
-  font-size: 1rem;
+.status {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+  font-size: 0.95rem;
 }
 
-.asset-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 0.6rem;
-}
-
-.asset-card {
+.status p {
   margin: 0;
-  padding: 0.45rem;
+}
+
+.step-card {
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #0b1220;
+  padding: 0.85rem;
+}
+
+.chip {
+  margin: 0;
+  display: inline-block;
+  font-size: 0.78rem;
+  color: #a5b4fc;
+  border: 1px solid #4f46e5;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+}
+
+#step-name {
+  margin: 0.55rem 0 0.4rem;
+  font-size: 1.35rem;
+}
+
+#step-cue {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+#step-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  margin-top: 0.8rem;
   border: 1px solid #334155;
   border-radius: 8px;
-  background: #0b1220;
+  background: #020617;
 }
 
-.asset-card img {
-  width: 100%;
-  height: 72px;
-  object-fit: contain;
-  display: block;
+.timer {
+  margin: 0.75rem 0 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
-.asset-card figcaption {
-  margin-top: 0.35rem;
-  font-size: 0.72rem;
+.controls {
+  margin-top: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.btn {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.5rem;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background: #1d4ed8;
+  border-color: #2563eb;
+}
+
+.asset-check {
+  margin-top: 0.95rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #334155;
+}
+
+.asset-check h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.asset-check p {
+  margin: 0;
   color: #94a3b8;
-  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
