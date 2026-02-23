@@ -321,7 +321,7 @@ function resetRoutine(keepSessionCount = true) {
 
 function renderStep() {
   const step = routineSteps[state.stepIndex];
-  progressLabel.textContent = `Step ${state.stepIndex + 1} of ${routineSteps.length}`;
+  progressLabel.textContent = `${state.stepIndex + 1}/${routineSteps.length}`;
   const percentComplete = Math.round(((state.stepIndex + 1) / routineSteps.length) * 100);
   if (todayProgressFill) {
     todayProgressFill.style.width = `${percentComplete}%`;
@@ -436,8 +436,8 @@ function renderSessionMetrics() {
   const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
   const streak = computeStreakDays(activeDayKeys);
   const weekly = computeLast7DaysSessions(activeDayKeys);
-  streakCount.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
-  weekCount.textContent = `${weekly} session${weekly === 1 ? "" : "s"}`;
+  streakCount.textContent = `${streak}d`;
+  weekCount.textContent = `${weekly}/7`;
 }
 
 function renderHistoryView() {
