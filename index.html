@@ -14,23 +14,26 @@
       </header>
 
       <section id="routine-view" class="view">
-        <section class="metrics" aria-label="Progress metrics" aria-live="polite">
-          <article class="metric-card metric-card--highlight">
+        <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
+          <article class="today-card">
             <p class="metric-label">Today</p>
-            <p id="progress-label" class="metric-value">Step 1 of 12</p>
+            <p id="progress-label" class="today-value">Step 1 of 12</p>
+            <p class="today-helper">Your current guided progress</p>
           </article>
-          <article class="metric-card">
-            <p class="metric-label">Sessions</p>
-            <p id="session-count" class="metric-value">0</p>
-          </article>
-          <article class="metric-card">
-            <p class="metric-label">Streak</p>
-            <p id="streak-count" class="metric-value">0 days</p>
-          </article>
-          <article class="metric-card">
-            <p class="metric-label">Last 7 days</p>
-            <p id="week-count" class="metric-value">0 sessions</p>
-          </article>
+          <div class="stats-strip">
+            <article class="metric-pill">
+              <p class="metric-label">Sessions</p>
+              <p id="session-count" class="metric-value">0</p>
+            </article>
+            <article class="metric-pill">
+              <p class="metric-label">Streak</p>
+              <p id="streak-count" class="metric-value">0 days</p>
+            </article>
+            <article class="metric-pill">
+              <p class="metric-label">Last 7 days</p>
+              <p id="week-count" class="metric-value">0 sessions</p>
+            </article>
+          </div>
         </section>
 
         <section class="step-card">
@@ -58,23 +61,46 @@
 
         <section class="controls" aria-label="Routine controls">
           <button id="start-btn" class="btn btn-primary">
-            <span class="btn-icon" aria-hidden="true">▶</span>
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M8 6.5l10 5.5-10 5.5z"></path>
+              </svg>
+            </span>
             <span class="btn-label">Start Activity</span>
           </button>
           <button id="pause-btn" class="btn" disabled>
-            <span class="btn-icon" aria-hidden="true">⏸</span>
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M8 6h3v12H8z"></path>
+                <path d="M13 6h3v12h-3z"></path>
+              </svg>
+            </span>
             <span class="btn-label">Pause</span>
           </button>
           <button id="back-btn" class="btn" disabled>
-            <span class="btn-icon" aria-hidden="true">⏮</span>
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M7 6h2v12H7z"></path>
+                <path d="M18 6.5L9 12l9 5.5z"></path>
+              </svg>
+            </span>
             <span class="btn-label">Back</span>
           </button>
           <button id="next-btn" class="btn" disabled>
-            <span class="btn-icon" aria-hidden="true">⏭</span>
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M15 6h2v12h-2z"></path>
+                <path d="M6 6.5L15 12l-9 5.5z"></path>
+              </svg>
+            </span>
             <span class="btn-label">Next</span>
           </button>
           <button id="reset-btn" class="btn">
-            <span class="btn-icon" aria-hidden="true">↺</span>
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L14 10h6V4z"></path>
+              </svg>
+            </span>
             <span class="btn-label">Reset</span>
           </button>
         </section>
@@ -156,15 +182,37 @@
 
       <nav class="tabs" aria-label="Primary tabs">
         <button class="tab-btn active" data-view="routine-view">
-          <span class="tab-icon" aria-hidden="true">🧘</span>
+          <span class="tab-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <circle cx="12" cy="6.5" r="2"></circle>
+              <path d="M8.7 11.2l3.3-1.5 3.3 1.5-.8 2.3h-1.6V18h-2v-4.5H9.5z"></path>
+              <path d="M6 18h12v2H6z"></path>
+            </svg>
+          </span>
           <span>Routine</span>
         </button>
         <button class="tab-btn" data-view="history-view">
-          <span class="tab-icon" aria-hidden="true">📊</span>
+          <span class="tab-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4 18h16v2H4z"></path>
+              <path d="M7 10h2v8H7z"></path>
+              <path d="M11 6h2v12h-2z"></path>
+              <path d="M15 12h2v6h-2z"></path>
+            </svg>
+          </span>
           <span>History</span>
         </button>
         <button class="tab-btn" data-view="settings-view">
-          <span class="tab-icon" aria-hidden="true">⚙️</span>
+          <span class="tab-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4 6.5h16v2H4z"></path>
+              <circle cx="9" cy="7.5" r="2"></circle>
+              <path d="M4 11h16v2H4z"></path>
+              <circle cx="15" cy="12" r="2"></circle>
+              <path d="M4 15.5h16v2H4z"></path>
+              <circle cx="11" cy="16.5" r="2"></circle>
+            </svg>
+          </span>
           <span>Settings</span>
         </button>
       </nav>
