@@ -468,6 +468,45 @@ h1 {
   background: linear-gradient(135deg, color-mix(in srgb, var(--accent-strong) 26%, transparent), rgba(14, 116, 144, 0.15));
 }
 
+.coach-card-collapsible {
+  padding: 0;
+  overflow: hidden;
+}
+
+.coach-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.46rem 0.52rem;
+}
+
+.coach-summary::-webkit-details-marker {
+  display: none;
+}
+
+.coach-summary::after {
+  content: "▾";
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--text-muted) 80%, var(--accent));
+  transition: transform 140ms ease;
+}
+
+.coach-card-collapsible[open] .coach-summary::after {
+  transform: rotate(180deg);
+}
+
+.coach-summary-step {
+  margin: 0;
+  font-size: 0.66rem;
+  color: color-mix(in srgb, var(--text) 88%, white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .coach-title {
   margin: 0;
   font-size: 0.66rem;
@@ -477,7 +516,8 @@ h1 {
 }
 
 .coach-tip {
-  margin: 0.24rem 0 0;
+  margin: 0;
+  padding: 0 0.52rem 0.52rem;
   font-size: 0.82rem;
   color: color-mix(in srgb, var(--text) 90%, white);
 }
