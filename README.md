@@ -8,8 +8,10 @@ Small browser-based mobility routine app built from the preserved image assets.
 - Beginner Coach tips that adapt by movement phase
 - Countdown timer for timed steps and an untimed reps step (`Counter Pushups`)
 - Controls: `Start`, `Pause/Resume`, `Back`, `Next/Finish`, `Reset`
-- Compact analytics cards for sessions, streak, and last-7-days progress
-- Session history stored in `localStorage`
+- **Tabs**: `Routine`, `History`, and `Settings`
+- **History tab**: recent sessions, day-by-day activity rows, total sessions, streak, weekly stats, active minutes
+- **Settings tab**: progression mode (`Manual`/`Auto`), sound/haptics toggles, and app color schemes (`Default`, `Cobalt`, `Emerald`, `Sunset`)
+- Session history and settings persisted in `localStorage`
 
 ## Kept assets
 - Routine images in `img/`

@@ -1,8 +1,10 @@
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
 const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
+const SESSION_LOG_KEY = "m0b1li7y.sessionLog";
 const PROGRESSION_MODE_KEY = "m0b1li7y.progressionMode";
 const SOUND_ENABLED_KEY = "m0b1li7y.soundEnabled";
 const HAPTICS_ENABLED_KEY = "m0b1li7y.hapticsEnabled";
+const THEME_KEY = "m0b1li7y.theme";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -38,9 +40,21 @@ const pauseBtn = document.getElementById("pause-btn");
 const backBtn = document.getElementById("back-btn");
 const nextBtn = document.getElementById("next-btn");
 const resetBtn = document.getElementById("reset-btn");
+
+const historyTotalSessions = document.getElementById("history-total-sessions");
+const historyStreak = document.getElementById("history-streak");
+const historyWeek = document.getElementById("history-week");
+const historyActiveMinutes = document.getElementById("history-active-minutes");
+const historyList = document.getElementById("history-list");
+const historyDays = document.getElementById("history-days");
+
 const progressionMode = document.getElementById("progression-mode");
 const soundEnabled = document.getElementById("sound-enabled");
 const hapticsEnabled = document.getElementById("haptics-enabled");
+const themeSelect = document.getElementById("theme-select");
+
+const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
+const views = Array.from(document.querySelectorAll(".view"));
 
 const state = {
   stepIndex: 0,
@@ -50,9 +64,13 @@ const state = {
   timerRef: null,
   sessionsCompleted: loadSessionCount(),
   sessionDays: loadSessionDays(),
+  sessionLog: loadSessionLog(),
   progressionMode: loadProgressionMode(),
   soundEnabled: loadBoolean(SOUND_ENABLED_KEY, true),
-  hapticsEnabled: loadBoolean(HAPTICS_ENABLED_KEY, true)
+  hapticsEnabled: loadBoolean(HAPTICS_ENABLED_KEY, true),
+  theme: loadTheme(),
+  activeView: "routine-view",
+  sessionStartedAt: null
 };
 
 init();
@@ -60,9 +78,11 @@ init();
 function init() {
   wireEvents();
   syncOptionUI();
+  applyTheme(state.theme);
   renderSummary();
   renderStep();
   renderSessionMetrics();
+  renderHistoryView();
   updateControls();
 }
 
@@ -88,12 +108,43 @@ function wireEvents() {
     state.hapticsEnabled = hapticsEnabled.checked;
     localStorage.setItem(HAPTICS_ENABLED_KEY, String(state.hapticsEnabled));
   });
+
+  themeSelect?.addEventListener("change", () => {
+    state.theme = themeSelect.value;
+    localStorage.setItem(THEME_KEY, state.theme);
+    applyTheme(state.theme);
+  });
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      switchView(button.dataset.view);
+    });
+  });
+}
+
+function switchView(viewId) {
+  state.activeView = viewId;
+
+  views.forEach((view) => {
+    view.hidden = view.id !== viewId;
+  });
+
+  tabButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === viewId);
+  });
+
+  if (viewId === "history-view") {
+    renderHistoryView();
+  }
 }
 
 function startRoutine() {
   if (state.isRunning) return;
   state.isRunning = true;
   state.isPaused = false;
+  if (!state.sessionStartedAt) {
+    state.sessionStartedAt = Date.now();
+  }
   pauseBtn.textContent = "Pause";
   triggerFeedback("start");
   startTimer();
@@ -175,9 +226,26 @@ function completeRoutine() {
   state.isRunning = false;
   state.isPaused = false;
   state.sessionsCompleted += 1;
+
+  const durationSec = state.sessionStartedAt
+    ? Math.max(60, Math.round((Date.now() - state.sessionStartedAt) / 1000))
+    : estimatedRoutineDurationSec();
+
+  state.sessionStartedAt = null;
+
+  const sessionEntry = {
+    completedAt: new Date().toISOString(),
+    durationSec,
+    mode: state.progressionMode
+  };
+
+  state.sessionLog = [sessionEntry, ...state.sessionLog].slice(0, 60);
+  saveSessionLog(state.sessionLog);
+
   recordSessionDay();
   saveSessionCount(state.sessionsCompleted);
   renderSessionMetrics();
+  renderHistoryView();
   resetRoutine(false);
   triggerFeedback("sessionDone");
   alert("Routine complete. Great work.");
@@ -189,6 +257,7 @@ function resetRoutine(keepSessionCount = true) {
   state.isPaused = false;
   state.stepIndex = 0;
   state.remainingSec = routineSteps[0].durationSec;
+  state.sessionStartedAt = null;
   pauseBtn.textContent = "Pause";
   renderStep();
   updateControls();
@@ -244,10 +313,113 @@ function renderSessionMetrics() {
   weekCount.textContent = `${weekly} session${weekly === 1 ? "" : "s"}`;
 }
 
+function renderHistoryView() {
+  const streak = computeStreakDays(state.sessionDays);
+  const weekly = computeLast7DaysSessions(state.sessionDays);
+  const totalMinutes = Math.round(state.sessionLog.reduce((sum, entry) => sum + (entry.durationSec || 0), 0) / 60);
+
+  historyTotalSessions.textContent = String(state.sessionsCompleted);
+  historyStreak.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
+  historyWeek.textContent = `${weekly} session${weekly === 1 ? "" : "s"}`;
+  historyActiveMinutes.textContent = `${totalMinutes} min`;
+
+  historyList.innerHTML = "";
+
+  if (state.sessionLog.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "history-empty";
+    empty.textContent = "No sessions yet. Complete your first routine to start tracking.";
+    historyList.append(empty);
+  } else {
+    state.sessionLog.slice(0, 10).forEach((entry) => {
+      const item = document.createElement("li");
+      item.className = "history-item";
+
+      const title = document.createElement("p");
+      title.className = "history-item-title";
+      title.textContent = formatDateTime(entry.completedAt);
+
+      const meta = document.createElement("p");
+      meta.className = "history-item-meta";
+      meta.textContent = `${Math.max(1, Math.round(entry.durationSec / 60))} min • ${entry.mode === "auto" ? "Auto" : "Manual"} mode`;
+
+      item.append(title, meta);
+      historyList.append(item);
+    });
+  }
+
+  historyDays.innerHTML = "";
+
+  const recentDays = buildRecentDayRows(state.sessionDays, state.sessionLog, 14);
+  recentDays.forEach((dayRow) => {
+    const item = document.createElement("li");
+    item.className = "history-day-item";
+
+    const title = document.createElement("p");
+    title.className = "history-day-title";
+    title.textContent = dayRow.label;
+
+    const meta = document.createElement("p");
+    meta.className = "history-day-meta";
+    meta.textContent = `${dayRow.sessions} session${dayRow.sessions === 1 ? "" : "s"} • ${dayRow.minutes} min`;
+
+    item.append(title, meta);
+    historyDays.append(item);
+  });
+}
+
 function formatTime(totalSec) {
   const minutes = Math.floor(totalSec / 60);
   const seconds = totalSec % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function formatDateTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
+function buildRecentDayRows(sessionDays, sessionLog, numberOfDays) {
+  const rows = [];
+  const byDay = new Map();
+
+  sessionLog.forEach((entry) => {
+    const dayKey = toDayKey(entry.completedAt);
+    if (!byDay.has(dayKey)) {
+      byDay.set(dayKey, { sessions: 0, minutes: 0 });
+    }
+    const day = byDay.get(dayKey);
+    day.sessions += 1;
+    day.minutes += Math.max(1, Math.round((entry.durationSec || 0) / 60));
+  });
+
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  for (let index = 0; index < numberOfDays; index += 1) {
+    const day = new Date(cursor);
+    day.setDate(cursor.getDate() - index);
+    const dayKey = toDayKey(day);
+    const value = byDay.get(dayKey) || { sessions: sessionDays.includes(dayKey) ? 1 : 0, minutes: 0 };
+
+    rows.push({
+      label: day.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }),
+      sessions: value.sessions,
+      minutes: value.minutes
+    });
+  }
+
+  return rows;
+}
+
+function estimatedRoutineDurationSec() {
+  return routineSteps.reduce((sum, step) => sum + (step.durationSec || 45), 0);
 }
 
 function loadSessionCount() {
@@ -264,7 +436,26 @@ function saveSessionCount(value) {
   try {
     localStorage.setItem(SESSION_KEY, String(value));
   } catch {
-    // Ignore storage errors in private/restricted modes.
+    // Ignore storage errors.
+  }
+}
+
+function loadSessionLog() {
+  try {
+    const raw = localStorage.getItem(SESSION_LOG_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((entry) => entry && entry.completedAt);
+  } catch {
+    return [];
+  }
+}
+
+function saveSessionLog(entries) {
+  try {
+    localStorage.setItem(SESSION_LOG_KEY, JSON.stringify(entries));
+  } catch {
+    // Ignore storage errors.
   }
 }
 
@@ -272,11 +463,22 @@ function syncOptionUI() {
   if (progressionMode) progressionMode.value = state.progressionMode;
   if (soundEnabled) soundEnabled.checked = state.soundEnabled;
   if (hapticsEnabled) hapticsEnabled.checked = state.hapticsEnabled;
+  if (themeSelect) themeSelect.value = state.theme;
 }
 
 function loadProgressionMode() {
   const stored = localStorage.getItem(PROGRESSION_MODE_KEY);
   return stored === "auto" ? "auto" : "manual";
+}
+
+function loadTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  const allowed = new Set(["default", "cobalt", "emerald", "sunset"]);
+  return allowed.has(stored) ? stored : "default";
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
 }
 
 function loadBoolean(key, defaultValue) {
