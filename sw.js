@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v19";
+const VERSION = "m0b1li7y-v20";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const MAX_REMOTE_IMAGE_ENTRIES = 40;
@@ -9,7 +9,7 @@ const CORE_ASSETS = [
   "./styles.css?v=20260223r1",
   "./styles.css?v=20260223r2",
   "./styles.css?v=20260223r3",
-  "./styles.css?v=20260223r4",
+  "./styles.css?v=20260223r5",
   "./src/app.js",
   "./src/routineImages.js",
   "./manifest.webmanifest",
