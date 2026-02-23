@@ -1,17 +1,20 @@
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
 const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
+const PROGRESSION_MODE_KEY = "m0b1li7y.progressionMode";
+const SOUND_ENABLED_KEY = "m0b1li7y.soundEnabled";
+const HAPTICS_ENABLED_KEY = "m0b1li7y.hapticsEnabled";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
-  { name: "Leg Swings", cue: "Keep hips stable and controlled.", phase: "Warmup", image: "legswings.png", durationSec: 30 },
   { name: "Trunk Rotations", cue: "Rotate gently side to side.", phase: "Warmup", image: "trunkrotation.png", durationSec: 30 },
   { name: "Side Bends", cue: "Reach and lengthen each side.", phase: "Warmup", image: "sidebends.png", durationSec: 30 },
-  { name: "Counter Pushups", cue: "Complete 10 to 15 quality reps.", phase: "Strength", image: "counterpushups.png", durationSec: null },
-  { name: "Plank", cue: "Brace core and keep a straight line.", phase: "Strength", image: "plank.png", durationSec: 45 },
-  { name: "Knees To Chest", cue: "Alternate sides with steady posture.", phase: "Mobility", image: "kneestochest.png", durationSec: 30 },
-  { name: "Figure Four", cue: "Switch sides halfway and breathe.", phase: "Mobility", image: "lyingfigurefour.png", durationSec: 40 },
-  { name: "Toe Touch Twist", cue: "Move slowly and avoid bouncing.", phase: "Mobility", image: "toetouchtwist.png", durationSec: 30 },
+  { name: "Leg Swings", cue: "Keep hips stable and controlled.", phase: "Warmup", image: "legswings.png", durationSec: 30 },
   { name: "Overhead Reach", cue: "Stand tall and reach up smoothly.", phase: "Reset", image: "overheadreach.png", durationSec: 30 },
+  { name: "Counter Pushups", cue: "Complete 10 to 15 quality reps.", phase: "Strength", image: "counterpushups.png", durationSec: null },
+  { name: "Plank", cue: "Brace core and keep a straight line.", phase: "Strength", image: "plank.png", durationSec: 60 },
+  { name: "Knees To Chest", cue: "Alternate sides with steady posture.", phase: "Mobility", image: "kneestochest.png", durationSec: 30 },
+  { name: "Toe Touch Twist", cue: "Move slowly and avoid bouncing.", phase: "Mobility", image: "toetouchtwist.png", durationSec: 30 },
+  { name: "Figure Four", cue: "Switch sides halfway and breathe.", phase: "Mobility", image: "lyingfigurefour.png", durationSec: 40 },
   { name: "Child Pose", cue: "Relax your neck and breathe deeply.", phase: "Cooldown", image: "childspose.png", durationSec: 45 },
   { name: "Brisk Walk", cue: "Walk with intent to finish strong.", phase: "Finish", image: "briskwalk.png", durationSec: 180 }
 ];
@@ -35,6 +38,9 @@ const pauseBtn = document.getElementById("pause-btn");
 const backBtn = document.getElementById("back-btn");
 const nextBtn = document.getElementById("next-btn");
 const resetBtn = document.getElementById("reset-btn");
+const progressionMode = document.getElementById("progression-mode");
+const soundEnabled = document.getElementById("sound-enabled");
+const hapticsEnabled = document.getElementById("haptics-enabled");
 
 const state = {
   stepIndex: 0,
@@ -43,13 +49,17 @@ const state = {
   isPaused: false,
   timerRef: null,
   sessionsCompleted: loadSessionCount(),
-  sessionDays: loadSessionDays()
+  sessionDays: loadSessionDays(),
+  progressionMode: loadProgressionMode(),
+  soundEnabled: loadBoolean(SOUND_ENABLED_KEY, true),
+  hapticsEnabled: loadBoolean(HAPTICS_ENABLED_KEY, true)
 };
 
 init();
 
 function init() {
   wireEvents();
+  syncOptionUI();
   renderSummary();
   renderStep();
   renderSessionMetrics();
@@ -62,11 +72,30 @@ function wireEvents() {
   backBtn?.addEventListener("click", () => moveToStep(state.stepIndex - 1));
   nextBtn?.addEventListener("click", onNext);
   resetBtn?.addEventListener("click", resetRoutine);
+
+  progressionMode?.addEventListener("change", () => {
+    state.progressionMode = progressionMode.value === "auto" ? "auto" : "manual";
+    localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
+    updateControls();
+  });
+
+  soundEnabled?.addEventListener("change", () => {
+    state.soundEnabled = soundEnabled.checked;
+    localStorage.setItem(SOUND_ENABLED_KEY, String(state.soundEnabled));
+  });
+
+  hapticsEnabled?.addEventListener("change", () => {
+    state.hapticsEnabled = hapticsEnabled.checked;
+    localStorage.setItem(HAPTICS_ENABLED_KEY, String(state.hapticsEnabled));
+  });
 }
 
 function startRoutine() {
+  if (state.isRunning) return;
   state.isRunning = true;
   state.isPaused = false;
+  pauseBtn.textContent = "Pause";
+  triggerFeedback("start");
   startTimer();
   updateControls();
 }
@@ -75,6 +104,7 @@ function togglePause() {
   if (!state.isRunning) return;
   state.isPaused = !state.isPaused;
   pauseBtn.textContent = state.isPaused ? "Resume" : "Pause";
+  triggerFeedback(state.isPaused ? "pause" : "resume");
 }
 
 function onNext() {
@@ -88,15 +118,14 @@ function onNext() {
 function moveToStep(nextIndex) {
   if (nextIndex < 0 || nextIndex >= routineSteps.length) return;
 
+  stopTimer();
   state.stepIndex = nextIndex;
   state.remainingSec = routineSteps[nextIndex].durationSec;
+  state.isRunning = false;
+  state.isPaused = false;
+  pauseBtn.textContent = "Pause";
   renderStep();
-
-  if (state.isRunning) {
-    state.isPaused = false;
-    pauseBtn.textContent = "Pause";
-  }
-
+  triggerFeedback("stepChange");
   updateControls();
 }
 
@@ -112,9 +141,26 @@ function startTimer() {
     renderTimer();
 
     if (state.remainingSec <= 0) {
-      onNext();
+      handleStepFinished();
     }
   }, 1000);
+}
+
+function handleStepFinished() {
+  triggerFeedback("stepDone");
+
+  if (state.stepIndex >= routineSteps.length - 1) {
+    completeRoutine();
+    return;
+  }
+
+  if (state.progressionMode === "auto") {
+    moveToStep(state.stepIndex + 1);
+    startRoutine();
+    return;
+  }
+
+  moveToStep(state.stepIndex + 1);
 }
 
 function stopTimer() {
@@ -133,6 +179,7 @@ function completeRoutine() {
   saveSessionCount(state.sessionsCompleted);
   renderSessionMetrics();
   resetRoutine(false);
+  triggerFeedback("sessionDone");
   alert("Routine complete. Great work.");
 }
 
@@ -178,14 +225,15 @@ function renderTimer() {
 
 function updateControls() {
   startBtn.disabled = state.isRunning;
+  startBtn.textContent = state.isRunning ? "Running" : "Start Activity";
   pauseBtn.disabled = !state.isRunning;
   backBtn.disabled = state.stepIndex === 0;
-  nextBtn.disabled = !state.isRunning;
+  nextBtn.disabled = false;
   nextBtn.textContent = state.stepIndex === routineSteps.length - 1 ? "Finish" : "Next";
 }
 
 function renderSummary() {
-  summary.textContent = "Guided-first flow + fitness-tech metrics using your preserved routine and icon assets.";
+  summary.textContent = "Recommended beginner order: Warmup mobility → reset posture → strength → mobility decompression → cooldown → brisk walk finisher.";
 }
 
 function renderSessionMetrics() {
@@ -218,6 +266,71 @@ function saveSessionCount(value) {
   } catch {
     // Ignore storage errors in private/restricted modes.
   }
+}
+
+function syncOptionUI() {
+  if (progressionMode) progressionMode.value = state.progressionMode;
+  if (soundEnabled) soundEnabled.checked = state.soundEnabled;
+  if (hapticsEnabled) hapticsEnabled.checked = state.hapticsEnabled;
+}
+
+function loadProgressionMode() {
+  const stored = localStorage.getItem(PROGRESSION_MODE_KEY);
+  return stored === "auto" ? "auto" : "manual";
+}
+
+function loadBoolean(key, defaultValue) {
+  const raw = localStorage.getItem(key);
+  if (raw === null) return defaultValue;
+  return raw === "true";
+}
+
+function triggerFeedback(type) {
+  if (state.soundEnabled) {
+    playTone(type);
+  }
+
+  if (state.hapticsEnabled && "vibrate" in navigator) {
+    const patterns = {
+      start: 20,
+      pause: 30,
+      resume: 20,
+      stepChange: 15,
+      stepDone: [30, 30, 30],
+      sessionDone: [40, 40, 80]
+    };
+
+    navigator.vibrate(patterns[type] || 15);
+  }
+}
+
+function playTone(type) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  const toneMap = {
+    start: [660, 0.06],
+    pause: [320, 0.06],
+    resume: [520, 0.06],
+    stepChange: [460, 0.05],
+    stepDone: [780, 0.08],
+    sessionDone: [920, 0.12]
+  };
+
+  const [freq, duration] = toneMap[type] || [460, 0.05];
+  const audio = new AudioCtx();
+  const oscillator = audio.createOscillator();
+  const gain = audio.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.value = freq;
+  gain.gain.value = 0.04;
+
+  oscillator.connect(gain);
+  gain.connect(audio.destination);
+
+  oscillator.start();
+  oscillator.stop(audio.currentTime + duration);
 }
 
 function getCoachTip(step) {

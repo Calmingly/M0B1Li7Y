@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>M0B1Li7Y — Fresh Start</title>
+    <title>M0B1Li7Y — Guided Mobility</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -62,6 +62,24 @@
         <button id="back-btn" class="btn" disabled>Back</button>
         <button id="next-btn" class="btn" disabled>Next</button>
         <button id="reset-btn" class="btn">Reset</button>
+      </section>
+
+      <section class="session-options" aria-label="Routine options">
+        <label class="option-row" for="progression-mode">
+          <span>Progression mode</span>
+          <select id="progression-mode">
+            <option value="manual">Manual (start each activity)</option>
+            <option value="auto">Auto (continuous flow)</option>
+          </select>
+        </label>
+        <label class="option-check" for="sound-enabled">
+          <input id="sound-enabled" type="checkbox" checked />
+          <span>Sound cues</span>
+        </label>
+        <label class="option-check" for="haptics-enabled">
+          <input id="haptics-enabled" type="checkbox" checked />
+          <span>Haptic feedback</span>
+        </label>
       </section>
 
       <section class="asset-check">

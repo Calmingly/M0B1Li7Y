@@ -199,6 +199,40 @@ h1 {
   gap: 0.55rem;
 }
 
+.session-options {
+  margin-top: 0.7rem;
+  padding: 0.72rem;
+  border: 1px solid #25354d;
+  border-radius: 10px;
+  background: #0e1a2e;
+  display: grid;
+  gap: 0.62rem;
+}
+
+.option-row {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #d6e5fa;
+}
+
+.option-row select {
+  border: 1px solid #355077;
+  border-radius: 8px;
+  background: #12233c;
+  color: #dbe8f8;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.option-check {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #c7d8ef;
+  font-size: 0.9rem;
+}
+
 .btn {
   border: 1px solid #2f435f;
   border-radius: 9px;
@@ -246,6 +280,10 @@ h1 {
 @media (max-width: 640px) {
   .controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .session-options {
+    gap: 0.5rem;
   }
 
   #step-name {
