@@ -11,7 +11,6 @@
       <header class="app-header">
         <p class="eyebrow">M0B1Li7Y</p>
         <h1>Guided Mobility</h1>
-        <p class="subhead">Beginner-friendly flow with fitness-tech clarity</p>
       </header>
 
       <section id="routine-view" class="view">
@@ -58,11 +57,26 @@
         </section>
 
         <section class="controls" aria-label="Routine controls">
-          <button id="start-btn" class="btn btn-primary">Start</button>
-          <button id="pause-btn" class="btn" disabled>Pause</button>
-          <button id="back-btn" class="btn" disabled>Back</button>
-          <button id="next-btn" class="btn" disabled>Next</button>
-          <button id="reset-btn" class="btn">Reset</button>
+          <button id="start-btn" class="btn btn-primary">
+            <span class="btn-icon" aria-hidden="true">▶</span>
+            <span class="btn-label">Start Activity</span>
+          </button>
+          <button id="pause-btn" class="btn" disabled>
+            <span class="btn-icon" aria-hidden="true">⏸</span>
+            <span class="btn-label">Pause</span>
+          </button>
+          <button id="back-btn" class="btn" disabled>
+            <span class="btn-icon" aria-hidden="true">⏮</span>
+            <span class="btn-label">Back</span>
+          </button>
+          <button id="next-btn" class="btn" disabled>
+            <span class="btn-icon" aria-hidden="true">⏭</span>
+            <span class="btn-label">Next</span>
+          </button>
+          <button id="reset-btn" class="btn">
+            <span class="btn-icon" aria-hidden="true">↺</span>
+            <span class="btn-label">Reset</span>
+          </button>
         </section>
       </section>
 

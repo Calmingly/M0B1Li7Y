@@ -178,7 +178,7 @@ function startRoutine() {
   if (!state.sessionStartedAt) {
     state.sessionStartedAt = Date.now();
   }
-  pauseBtn.textContent = "Pause";
+  setButtonLabel(pauseBtn, "Pause");
   triggerFeedback("start");
   startTimer();
   updateControls();
@@ -187,7 +187,7 @@ function startRoutine() {
 function togglePause() {
   if (!state.isRunning) return;
   state.isPaused = !state.isPaused;
-  pauseBtn.textContent = state.isPaused ? "Resume" : "Pause";
+  setButtonLabel(pauseBtn, state.isPaused ? "Resume" : "Pause");
   triggerFeedback(state.isPaused ? "pause" : "resume");
 }
 
@@ -207,7 +207,7 @@ function moveToStep(nextIndex) {
   state.remainingSec = routineSteps[nextIndex].durationSec;
   state.isRunning = false;
   state.isPaused = false;
-  pauseBtn.textContent = "Pause";
+  setButtonLabel(pauseBtn, "Pause");
   renderStep();
   triggerFeedback("stepChange");
   updateControls();
@@ -291,7 +291,7 @@ function resetRoutine(keepSessionCount = true) {
   state.stepIndex = 0;
   state.remainingSec = routineSteps[0].durationSec;
   state.sessionStartedAt = null;
-  pauseBtn.textContent = "Pause";
+  setButtonLabel(pauseBtn, "Pause");
   renderStep();
   updateControls();
 
@@ -327,11 +327,21 @@ function renderTimer() {
 
 function updateControls() {
   startBtn.disabled = state.isRunning;
-  startBtn.textContent = state.isRunning ? "Running" : "Start Activity";
+  setButtonLabel(startBtn, state.isRunning ? "Running" : "Start Activity");
   pauseBtn.disabled = !state.isRunning;
   backBtn.disabled = state.stepIndex === 0;
   nextBtn.disabled = false;
-  nextBtn.textContent = state.stepIndex === routineSteps.length - 1 ? "Finish" : "Next";
+  setButtonLabel(nextBtn, state.stepIndex === routineSteps.length - 1 ? "Finish" : "Next");
+}
+
+function setButtonLabel(button, label) {
+  if (!button) return;
+  const labelEl = button.querySelector(".btn-label");
+  if (labelEl) {
+    labelEl.textContent = label;
+    return;
+  }
+  button.textContent = label;
 }
 
 function renderSummary() {
