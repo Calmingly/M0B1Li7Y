@@ -872,11 +872,12 @@ input[type="checkbox"] {
   }
 
   .step-card {
-    padding: 0.52rem;
+    padding: 0.72rem;
   }
 
   .controls {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.34rem;
   }
 
   .metrics-routine .metric-value {
@@ -884,19 +885,44 @@ input[type="checkbox"] {
   }
 
   .btn {
-    min-height: 1.46rem;
-    padding: 0.2rem 0.24rem;
+    min-height: 1.8rem;
+    padding: 0.3rem 0.36rem;
+    font-size: 0.7rem;
+    gap: 0.22rem;
   }
 
-  .btn:not(.btn-primary) .btn-label {
-    display: none;
+  .btn-label {
+    display: inline;
   }
 
-  .btn:not(.btn-primary) {
-    gap: 0;
+  .btn-icon {
+    width: 0.78rem;
+    height: 0.78rem;
+  }
+
+  .btn-icon svg {
+    width: 0.78rem;
+    height: 0.78rem;
   }
 
   #step-name {
-    font-size: 1.12rem;
+    font-size: 1.2rem;
+  }
+
+  .step-cue {
+    font-size: 0.9rem;
+  }
+
+  #step-image {
+    max-height: 290px;
+  }
+
+  .progress-ring {
+    width: 94px;
+    height: 94px;
+  }
+
+  .timer {
+    font-size: 0.92rem;
   }
 }
