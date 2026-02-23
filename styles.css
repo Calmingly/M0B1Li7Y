@@ -197,21 +197,21 @@ h1 {
 .metrics-routine {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.4rem;
-  margin-bottom: 0.65rem;
+  gap: 0.34rem;
+  margin-bottom: 0.55rem;
   overflow: visible;
 }
 
 .metric-pill {
   margin: 0;
-  padding: 0.42rem 0.52rem;
+  padding: 0.36rem 0.46rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--surface-card);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
   min-height: 0;
   display: grid;
-  gap: 0.2rem;
+  gap: 0.14rem;
   min-width: 0;
 }
 
@@ -225,32 +225,38 @@ h1 {
 .metric-top {
   display: inline-flex;
   align-items: center;
-  gap: 0.32rem;
+  gap: 0.26rem;
   min-width: 0;
 }
 
 .metric-badge {
-  width: 1rem;
-  height: 1rem;
+  width: 0.84rem;
+  height: 0.84rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
-  background: color-mix(in srgb, var(--accent-soft) 80%, var(--surface-card));
+  color: color-mix(in srgb, var(--text) 82%, var(--accent) 18%);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface-card));
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
 }
 
+.metric-pill--today .metric-badge {
+  color: color-mix(in srgb, white 86%, var(--accent) 14%);
+}
+
 .metric-badge svg {
-  width: 0.62rem;
-  height: 0.62rem;
+  width: 0.5rem;
+  height: 0.5rem;
   fill: currentColor;
-  opacity: 0.9;
+  opacity: 0.78;
 }
 
 .metrics-routine .metric-label {
-  font-size: 0.6rem;
+  font-size: 0.56rem;
   margin: 0;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -258,8 +264,8 @@ h1 {
 
 .metrics-routine .metric-value {
   margin: 0;
-  font-size: 0.83rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 680;
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -267,7 +273,7 @@ h1 {
 }
 
 .metric-mini-track {
-  height: 4px;
+  height: 3px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--surface-card-2) 85%, black);
   border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--border));
@@ -812,6 +818,11 @@ input[type="checkbox"] {
 
   .metrics-routine {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.34rem;
+  }
+
+  .metric-pill--today {
+    grid-column: auto;
   }
 }
 
@@ -823,14 +834,14 @@ input[type="checkbox"] {
   .metrics-routine {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.38rem;
+    gap: 0.32rem;
     overflow: visible;
   }
 
   .metric-pill {
     min-height: 0;
-    padding: 0.4rem 0.48rem;
-    border-radius: 11px;
+    padding: 0.34rem 0.42rem;
+    border-radius: 10px;
   }
 
   .metric-pill--today {
@@ -838,7 +849,7 @@ input[type="checkbox"] {
   }
 
   .metrics-routine .metric-label {
-    font-size: 0.58rem;
+    font-size: 0.54rem;
   }
 
   .controls {
@@ -846,7 +857,7 @@ input[type="checkbox"] {
   }
 
   .metrics-routine .metric-value {
-    font-size: 0.8rem;
+    font-size: 0.74rem;
   }
 
   #step-name {
