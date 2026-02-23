@@ -81,6 +81,7 @@ init();
 
 function init() {
   wireEvents();
+  wireImageFallback();
   syncOptionUI();
   applyTheme(state.theme);
   renderSummary();
@@ -88,6 +89,17 @@ function init() {
   renderSessionMetrics();
   renderHistoryView();
   updateControls();
+}
+
+function wireImageFallback() {
+  if (!stepImage) return;
+
+  stepImage.addEventListener("error", () => {
+    const fallback = imageUrl("armcircles.png");
+    if (stepImage.src !== fallback) {
+      stepImage.src = fallback;
+    }
+  });
 }
 
 function wireEvents() {
@@ -315,19 +327,20 @@ function renderStep() {
   stepName.textContent = step.name;
   stepCue.textContent = step.cue;
   if (howtoStepName) howtoStepName.textContent = step.name;
+  if (howtoText) howtoText.textContent = getHowToByStep(step.name);
   progressRing?.style.setProperty("--step-progress", String(percentComplete));
-  stepImage.src = `./img/${step.image}`;
+  stepImage.src = imageUrl(step.image);
   stepImage.alt = `${step.name} visual`;
-  progressRing?.style.setProperty("--progress", `${percentComplete}%`);
   triggerStepVisualRefresh();
   renderTimer();
 }
 
+function imageUrl(fileName) {
+  return new URL(`../img/${fileName}`, import.meta.url).href;
+}
+
 function getHowToByStep(stepNameValue) {
   const byStep = {
-    progressRing?.classList.add("ring-reps");
-    progressRing?.classList.remove("ring-low");
-    progressRing?.style.setProperty("--time-progress", "100");
     "Arm Circles": "Stand tall, make small circles first, then larger circles in both directions.",
     "Trunk Rotations": "Keep hips forward, rotate your upper body left and right without forcing range.",
     "Side Bends": "Slide one hand down your thigh, switch sides slowly, and keep chest lifted.",
@@ -335,12 +348,6 @@ function getHowToByStep(stepNameValue) {
     "Overhead Reach": "Reach both arms up, keep ribs down, and breathe slowly through each reach.",
     "Counter Pushups": "Hands on counter, body straight, lower chest toward hands, then press back up.",
     "Plank": "Elbows under shoulders, squeeze glutes/core, and keep neck and spine neutral.",
-  progressRing?.classList.remove("ring-reps");
-  progressRing?.classList.toggle("ring-low", showWarning);
-
-  const totalDuration = Number(step.durationSec) || 1;
-  const timeProgress = Math.max(0, Math.min(100, Math.round((safeRemaining / totalDuration) * 100)));
-  progressRing?.style.setProperty("--time-progress", String(timeProgress));
     "Knees To Chest": "Lift one knee toward chest at a time while staying tall and steady.",
     "Toe Touch Twist": "Reach across to opposite foot with a gentle twist; alternate sides smoothly.",
     "Figure Four": "Cross ankle over opposite knee, hinge slightly, then switch sides halfway.",
@@ -356,6 +363,9 @@ function renderTimer() {
   if (step.durationSec === null) {
     timer.textContent = "REPS";
     timer.classList.remove("timer-warning");
+    progressRing?.classList.add("ring-reps");
+    progressRing?.classList.remove("ring-low");
+    progressRing?.style.setProperty("--time-progress", "100");
     return;
   }
 
@@ -363,6 +373,12 @@ function renderTimer() {
   timer.textContent = formatTime(safeRemaining);
   const showWarning = state.isRunning && !state.isPaused && safeRemaining > 0 && safeRemaining <= 5;
   timer.classList.toggle("timer-warning", showWarning);
+  progressRing?.classList.remove("ring-reps");
+  progressRing?.classList.toggle("ring-low", showWarning);
+
+  const totalDuration = Number(step.durationSec) || 1;
+  const timeProgress = Math.max(0, Math.min(100, Math.round((safeRemaining / totalDuration) * 100)));
+  progressRing?.style.setProperty("--time-progress", String(timeProgress));
 }
 
 function updateControls() {
