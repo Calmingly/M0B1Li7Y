@@ -1,4 +1,4 @@
-const VERSION = "m0b1li7y-v18";
+const VERSION = "m0b1li7y-v19";
 const APP_SHELL = `app-shell-${VERSION}`;
 const REMOTE_IMAGES = `remote-images-${VERSION}`;
 const MAX_REMOTE_IMAGE_ENTRIES = 40;
@@ -9,6 +9,7 @@ const CORE_ASSETS = [
   "./styles.css?v=20260223r1",
   "./styles.css?v=20260223r2",
   "./styles.css?v=20260223r3",
+  "./styles.css?v=20260223r4",
   "./src/app.js",
   "./src/routineImages.js",
   "./manifest.webmanifest",
@@ -65,6 +66,11 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   if (event.request.method !== "GET") return;
 
+  if (event.request.mode === "navigate") {
+    event.respondWith(networkFirst(event.request, APP_SHELL));
+    return;
+  }
+
   const isRemoteBendImage =
     requestUrl.hostname.includes("bend.com") &&
     event.request.destination === "image";
@@ -76,9 +82,28 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (requestUrl.origin === self.location.origin) {
+    const destination = event.request.destination;
+    if (destination === "style" || destination === "script" || destination === "document") {
+      event.respondWith(networkFirst(event.request, APP_SHELL));
+      return;
+    }
     event.respondWith(staleWhileRevalidate(event.request, APP_SHELL));
   }
 });
+
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    if (response?.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    const cached = await cache.match(request);
+    return cached || Response.error();
+  }
+}
 
 async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);

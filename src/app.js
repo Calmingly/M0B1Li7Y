@@ -1,6 +1,6 @@
 import { loadRoutineImages } from "./routineImages.js";
 
-const APP_VERSION = "v7";
+const APP_VERSION = "v8";
 const SETTINGS_KEY = "m0b1li7y.settings";
 const HISTORY_KEY = "m0b1li7y.history";
 const HISTORY_DAY_EDITS_KEY = "m0b1li7y.historyDayEdits";
@@ -1508,6 +1508,11 @@ function registerServiceWorker() {
     .register("./sw.js")
     .then((registration) => {
       notifyServiceWorkerSettings();
+      registration.update().catch(() => undefined);
+
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
 
       // Listen for updates found (new SW installing).
       registration.addEventListener("updatefound", () => {
@@ -1515,7 +1520,7 @@ function registerServiceWorker() {
         if (!installing) return;
         installing.addEventListener("statechange", () => {
           if (installing.state === "installed" && navigator.serviceWorker.controller) {
-            // New service worker is ready in the background.
+            registration.waiting?.postMessage({ type: "SKIP_WAITING" });
           }
         });
       });
