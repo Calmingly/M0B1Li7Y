@@ -345,23 +345,46 @@ h1 {
 }
 
 .progress-ring {
-  width: 86px;
-  height: 86px;
+  width: 104px;
+  height: 104px;
   border-radius: 50%;
-  background: conic-gradient(var(--accent) var(--progress, 8%), #1f2a3d var(--progress, 8%));
+  position: relative;
+  --step-progress: 8;
+  --time-progress: 100;
+  background: conic-gradient(
+    from -90deg,
+    color-mix(in srgb, var(--accent) 55%, white) 0 calc(var(--step-progress) * 1%),
+    color-mix(in srgb, var(--surface-card) 80%, black) calc(var(--step-progress) * 1%) 100%
+  );
   display: grid;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, white);
   box-shadow: 0 10px 24px rgba(2, 8, 20, 0.62);
+  overflow: hidden;
 }
 
 .progress-ring::before {
   content: "";
-  width: 66px;
-  height: 66px;
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -90deg,
+    var(--accent) 0 calc(var(--time-progress) * 1%),
+    color-mix(in srgb, var(--surface-card) 78%, black) calc(var(--time-progress) * 1%) 100%
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.progress-ring::after {
+  content: "";
+  position: absolute;
+  inset: 22px;
   border-radius: 50%;
   background: var(--surface-card-2);
-  position: absolute;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .timer {
@@ -372,6 +395,25 @@ h1 {
   position: relative;
   z-index: 1;
   transition: color 180ms ease, text-shadow 180ms ease;
+}
+
+.progress-ring.ring-low {
+  animation: ringLowPulse 760ms ease-in-out infinite;
+  box-shadow:
+    0 10px 24px rgba(2, 8, 20, 0.62),
+    0 0 0 4px color-mix(in srgb, var(--warning) 18%, transparent);
+}
+
+.progress-ring.ring-reps {
+  background: repeating-conic-gradient(
+    from -90deg,
+    color-mix(in srgb, var(--accent) 45%, transparent) 0deg 14deg,
+    color-mix(in srgb, var(--surface-card) 84%, black) 14deg 24deg
+  );
+}
+
+.progress-ring.ring-reps::before {
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, var(--surface-card) 88%, black));
 }
 
 .timer-warning {
@@ -685,6 +727,16 @@ input[type="checkbox"] {
   }
   50% {
     transform: scale(1.03);
+  }
+}
+
+@keyframes ringLowPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
   }
 }
 
