@@ -872,7 +872,7 @@ input[type="checkbox"] {
   }
 
   .step-card {
-    padding: 0.72rem;
+    padding: 0.62rem;
   }
 
   .controls {
@@ -906,23 +906,10 @@ input[type="checkbox"] {
   }
 
   #step-name {
-    font-size: 1.2rem;
+    font-size: 1.12rem;
   }
 
   .step-cue {
-    font-size: 0.9rem;
-  }
-
-  #step-image {
-    max-height: 290px;
-  }
-
-  .progress-ring {
-    width: 94px;
-    height: 94px;
-  }
-
-  .timer {
-    font-size: 0.92rem;
+    font-size: 0.84rem;
   }
 }
