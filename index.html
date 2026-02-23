@@ -13,19 +13,25 @@
         <h1>Guided Mobility</h1>
       </header>
 
-      <section id="routine-view" class="view">
+      <section id="routine-view" class="view routine-view">
+        <div id="step-backdrop" class="step-backdrop" aria-hidden="true"></div>
+        <div id="feedback-banner" class="feedback-banner" role="status" aria-live="polite"></div>
         <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
           <article class="metric-pill metric-pill--today" aria-label="Today progress">
             <p id="progress-label" class="metric-value">1/12</p>
+            <div class="metric-spark" aria-hidden="true"><span id="spark-today"></span></div>
           </article>
           <article class="metric-pill" aria-label="Sessions">
             <p id="session-count" class="metric-value">0</p>
+            <div class="metric-spark metric-spark-dots" id="spark-sessions" aria-hidden="true"></div>
           </article>
           <article class="metric-pill" aria-label="Streak">
             <p id="streak-count" class="metric-value">0d</p>
+            <div class="metric-spark metric-spark-dots" id="spark-streak" aria-hidden="true"></div>
           </article>
           <article class="metric-pill" aria-label="Last 7 days">
             <p id="week-count" class="metric-value">0/7</p>
+            <div class="metric-spark metric-spark-bars" id="spark-week" aria-hidden="true"></div>
           </article>
         </section>
 
@@ -36,6 +42,14 @@
           </div>
           <h2 id="step-name">Arm Circles</h2>
           <p id="step-cue" class="step-cue">Smooth shoulder circles.</p>
+          <div id="phase-track" class="phase-track" aria-label="Routine phases">
+            <span class="phase-dot">Warmup</span>
+            <span class="phase-dot">Reset</span>
+            <span class="phase-dot">Strength</span>
+            <span class="phase-dot">Mobility</span>
+            <span class="phase-dot">Cooldown</span>
+            <span class="phase-dot">Finish</span>
+          </div>
 
           <div class="hero-media">
             <img id="step-image" alt="Routine step visual" />
@@ -45,6 +59,17 @@
               </div>
             </div>
           </div>
+
+          <article class="next-up" aria-live="polite">
+            <p class="next-up-label">Next up</p>
+            <div class="next-up-content">
+              <img id="next-up-image" alt="Next routine step" />
+              <div>
+                <p id="next-up-name" class="next-up-name">Trunk Rotations</p>
+                <p id="next-up-meta" class="next-up-meta">00:30</p>
+              </div>
+            </div>
+          </article>
 
           <details class="coach-card coach-card-collapsible" aria-label="How to use the routine">
             <summary class="coach-summary">

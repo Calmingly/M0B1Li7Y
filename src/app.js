@@ -27,14 +27,24 @@ const progressLabel = document.getElementById("progress-label");
 const sessionCount = document.getElementById("session-count");
 const streakCount = document.getElementById("streak-count");
 const weekCount = document.getElementById("week-count");
+const sparkToday = document.getElementById("spark-today");
+const sparkSessions = document.getElementById("spark-sessions");
+const sparkStreak = document.getElementById("spark-streak");
+const sparkWeek = document.getElementById("spark-week");
+const routineView = document.getElementById("routine-view");
+const feedbackBanner = document.getElementById("feedback-banner");
 const stepChip = document.getElementById("step-chip");
 const phaseProgress = document.getElementById("phase-progress");
+const phaseTrack = document.getElementById("phase-track");
 const stepName = document.getElementById("step-name");
 const stepCue = document.getElementById("step-cue");
 const howtoStepName = document.getElementById("howto-step-name");
 const howtoText = document.getElementById("howto-text");
 const howtoCard = document.querySelector(".coach-card-collapsible");
 const stepImage = document.getElementById("step-image");
+const nextUpImage = document.getElementById("next-up-image");
+const nextUpName = document.getElementById("next-up-name");
+const nextUpMeta = document.getElementById("next-up-meta");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
 const stepCard = document.querySelector("#routine-view .step-card");
@@ -60,6 +70,17 @@ const themeSelect = document.getElementById("theme-select");
 const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
 const views = Array.from(document.querySelectorAll(".view"));
 
+const phaseOrder = ["Warmup", "Reset", "Strength", "Mobility", "Cooldown", "Finish"];
+
+const phaseAccentByName = {
+  Warmup: "#38bdf8",
+  Reset: "#22d3ee",
+  Strength: "#a78bfa",
+  Mobility: "#34d399",
+  Cooldown: "#f59e0b",
+  Finish: "#60a5fa"
+};
+
 const state = {
   stepIndex: 0,
   remainingSec: routineSteps[0].durationSec,
@@ -83,6 +104,8 @@ init();
 function init() {
   wireEvents();
   wireImageFallback();
+  wireButtonPressEffects();
+  initMetricSparkSkeletons();
   syncOptionUI();
   applyTheme(state.theme);
   renderSummary();
@@ -170,6 +193,47 @@ function wireEvents() {
   });
 }
 
+function wireButtonPressEffects() {
+  const pressableButtons = [startBtn, pauseBtn, backBtn, nextBtn, resetBtn].filter(Boolean);
+  pressableButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      button.classList.remove("btn-press");
+      requestAnimationFrame(() => {
+        button.classList.add("btn-press");
+      });
+      window.setTimeout(() => {
+        button.classList.remove("btn-press");
+      }, 220);
+    });
+  });
+}
+
+function initMetricSparkSkeletons() {
+  buildDotSpark(sparkSessions);
+  buildDotSpark(sparkStreak);
+  buildBarSpark(sparkWeek);
+}
+
+function buildDotSpark(container) {
+  if (!container) return;
+  container.innerHTML = "";
+  for (let index = 0; index < 7; index += 1) {
+    const dot = document.createElement("span");
+    dot.className = "metric-dot";
+    container.append(dot);
+  }
+}
+
+function buildBarSpark(container) {
+  if (!container) return;
+  container.innerHTML = "";
+  for (let index = 0; index < 7; index += 1) {
+    const bar = document.createElement("span");
+    bar.className = "metric-bar";
+    container.append(bar);
+  }
+}
+
 function switchView(viewId) {
   state.activeView = viewId;
 
@@ -251,6 +315,8 @@ function startTimer() {
 }
 
 function handleStepFinished() {
+  flashRingComplete();
+  showFeedbackBanner("Step complete");
   triggerFeedback("stepDone");
 
   if (state.stepIndex >= routineSteps.length - 1) {
@@ -300,8 +366,9 @@ function completeRoutine() {
   renderSessionMetrics();
   renderHistoryView();
   resetRoutine(false);
+  celebrateRoutineFinish();
+  showFeedbackBanner("Routine complete. Great work.");
   triggerFeedback("sessionDone");
-  alert("Routine complete. Great work.");
 }
 
 function resetRoutine(keepSessionCount = true) {
@@ -325,10 +392,20 @@ function renderStep() {
   const step = routineSteps[state.stepIndex];
   progressLabel.textContent = `${state.stepIndex + 1}/${routineSteps.length}`;
   const percentComplete = Math.round(((state.stepIndex + 1) / routineSteps.length) * 100);
+  const phaseAccent = phaseAccentByName[step.phase] || "#60a5fa";
+  document.documentElement.style.setProperty("--phase-accent", phaseAccent);
+  stepCard?.classList.remove("phase-warmup", "phase-reset", "phase-strength", "phase-mobility", "phase-cooldown", "phase-finish");
+  stepCard?.classList.add(`phase-${step.phase.toLowerCase()}`);
   stepChip.textContent = step.phase;
   phaseProgress.textContent = `${percentComplete}% complete`;
   stepName.textContent = step.name;
   stepCue.textContent = step.cue;
+  renderPhaseTrack(step.phase);
+  renderStepBackdrop(step.image);
+  renderNextUp();
+  if (sparkToday) {
+    sparkToday.style.width = `${percentComplete}%`;
+  }
   if (howtoStepName) howtoStepName.textContent = step.name;
   if (howtoText) howtoText.textContent = getHowToByStep(step.name);
   progressRing?.style.setProperty("--step-progress", String(percentComplete));
@@ -367,6 +444,7 @@ function renderTimer() {
     timer.textContent = "REPS";
     timer.classList.remove("timer-warning");
     progressRing?.classList.add("ring-reps");
+    progressRing?.classList.remove("ring-running");
     progressRing?.classList.remove("ring-low");
     progressRing?.style.setProperty("--time-progress", "100");
     return;
@@ -375,8 +453,10 @@ function renderTimer() {
   const safeRemaining = Math.max(0, Number(state.remainingSec));
   timer.textContent = formatTime(safeRemaining);
   const showWarning = state.isRunning && !state.isPaused && safeRemaining > 0 && safeRemaining <= 5;
+  const showRunning = state.isRunning && !state.isPaused && safeRemaining > 5;
   timer.classList.toggle("timer-warning", showWarning);
   progressRing?.classList.remove("ring-reps");
+  progressRing?.classList.toggle("ring-running", showRunning);
   progressRing?.classList.toggle("ring-low", showWarning);
 
   const totalDuration = Number(step.durationSec) || 1;
@@ -426,6 +506,67 @@ function triggerStepVisualRefresh() {
   }
 }
 
+function renderPhaseTrack(activePhase) {
+  if (!phaseTrack) return;
+  const dots = Array.from(phaseTrack.querySelectorAll(".phase-dot"));
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("active", phaseOrder[index] === activePhase);
+  });
+}
+
+function renderStepBackdrop(imageName) {
+  if (!routineView) return;
+  routineView.style.setProperty("--step-bg-image", `url('${imageUrl(imageName)}')`);
+  routineView.classList.add("backdrop-ready");
+}
+
+function renderNextUp() {
+  const nextIndex = Math.min(state.stepIndex + 1, routineSteps.length - 1);
+  const nextStep = routineSteps[nextIndex];
+  if (!nextUpName || !nextUpMeta || !nextUpImage) return;
+
+  const isLast = state.stepIndex >= routineSteps.length - 1;
+  nextUpName.textContent = isLast ? "Finish" : nextStep.name;
+  nextUpMeta.textContent = isLast
+    ? "Complete routine"
+    : nextStep.durationSec === null
+      ? "10-15 reps"
+      : formatTime(nextStep.durationSec);
+  nextUpImage.src = imageUrl(isLast ? routineSteps[state.stepIndex].image : nextStep.image);
+}
+
+function flashRingComplete() {
+  if (!progressRing) return;
+  progressRing.classList.remove("ring-complete");
+  requestAnimationFrame(() => {
+    progressRing.classList.add("ring-complete");
+  });
+  window.setTimeout(() => {
+    progressRing.classList.remove("ring-complete");
+  }, 520);
+}
+
+function celebrateRoutineFinish() {
+  if (!stepCard) return;
+  stepCard.classList.remove("celebrate");
+  requestAnimationFrame(() => {
+    stepCard.classList.add("celebrate");
+  });
+  window.setTimeout(() => {
+    stepCard.classList.remove("celebrate");
+  }, 650);
+}
+
+function showFeedbackBanner(message) {
+  if (!feedbackBanner) return;
+  feedbackBanner.textContent = message;
+  feedbackBanner.classList.add("show");
+  window.clearTimeout(showFeedbackBanner.hideTimeout);
+  showFeedbackBanner.hideTimeout = window.setTimeout(() => {
+    feedbackBanner.classList.remove("show");
+  }, 1100);
+}
+
 function renderSummary() {
   summary.textContent = "Recommended beginner order: Warmup mobility → reset posture → strength → mobility decompression → cooldown → brisk walk finisher.";
 }
@@ -437,6 +578,35 @@ function renderSessionMetrics() {
   const weekly = computeLast7DaysSessions(activeDayKeys);
   streakCount.textContent = `${streak}d`;
   weekCount.textContent = `${weekly}/7`;
+  renderDotSparkState(sparkSessions, Math.max(1, Math.min(7, state.sessionsCompleted || 1)));
+  renderDotSparkState(sparkStreak, Math.max(0, Math.min(7, streak)));
+  renderWeekBars(activeDayKeys);
+}
+
+function renderDotSparkState(container, activeCount) {
+  if (!container) return;
+  const dots = Array.from(container.querySelectorAll(".metric-dot"));
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("active", index < activeCount);
+  });
+}
+
+function renderWeekBars(activeDayKeys) {
+  if (!sparkWeek) return;
+  const bars = Array.from(sparkWeek.querySelectorAll(".metric-bar"));
+  const active = new Set(activeDayKeys);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 6);
+
+  bars.forEach((bar, index) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    const dayKey = toDayKey(day);
+    const isActive = active.has(dayKey);
+    bar.classList.toggle("active", isActive);
+    bar.style.height = isActive ? `${50 + index * 6}%` : "34%";
+  });
 }
 
 function renderHistoryView() {
