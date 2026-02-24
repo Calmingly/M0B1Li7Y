@@ -346,6 +346,15 @@ function wireEvents() {
     input?.addEventListener("change", saveReminderSettings);
   });
 
+  [top3Checkin, top3Session, top3Reflection].forEach((item) => {
+    item?.addEventListener("click", onTop3QuickAction);
+    item?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      onTop3QuickAction(event);
+    });
+  });
+
   historyDays?.addEventListener("input", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -376,6 +385,37 @@ function wireEvents() {
     renderHistoryView();
     triggerFeedback("stepChange");
   });
+}
+
+function onTop3QuickAction(event) {
+  const target = event.currentTarget;
+  if (!(target instanceof HTMLElement)) return;
+
+  const action = target.dataset.action;
+  switchView("today-view");
+
+  if (action === "checkin") {
+    focusAndReveal(saveCheckinBtn);
+    showFeedbackBanner("Jumped to check-in action.");
+    return;
+  }
+
+  if (action === "session") {
+    focusAndReveal(startRecommendedBtn);
+    showFeedbackBanner("Jumped to session start.");
+    return;
+  }
+
+  if (action === "reflection") {
+    focusAndReveal(saveReflectionBtn);
+    showFeedbackBanner("Jumped to reflection save.");
+  }
+}
+
+function focusAndReveal(element) {
+  if (!(element instanceof HTMLElement)) return;
+  element.scrollIntoView({ behavior: "smooth", block: "center" });
+  element.focus({ preventScroll: true });
 }
 
 function wireButtonPressEffects() {

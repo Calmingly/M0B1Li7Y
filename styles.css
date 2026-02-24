@@ -571,6 +571,22 @@ h1 {
   color: color-mix(in srgb, var(--text) 90%, white);
 }
 
+.top3-item[role="button"] {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.14rem 0.28rem;
+  transition: background-color 0.15s ease;
+}
+
+.top3-item[role="button"]:hover {
+  background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+}
+
+.top3-item[role="button"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 72%, white);
+  outline-offset: 2px;
+}
+
 .top3-item.done {
   color: color-mix(in srgb, var(--accent) 72%, white);
 }
