@@ -22,10 +22,7 @@
         <h1>Guided Mobility</h1>
       </header>
 
-      <section id="routine-view" class="view routine-view">
-        <div id="step-backdrop" class="step-backdrop" aria-hidden="true"></div>
-        <div id="feedback-banner" class="feedback-banner" role="status" aria-live="polite"></div>
-
+      <section id="today-view" class="view">
         <section class="today-hub" aria-label="Today dashboard">
           <div class="today-head">
             <div>
@@ -133,6 +130,11 @@
             </div>
           </section>
         </section>
+      </section>
+
+      <section id="routine-view" class="view routine-view" hidden>
+        <div id="step-backdrop" class="step-backdrop" aria-hidden="true"></div>
+        <div id="feedback-banner" class="feedback-banner" role="status" aria-live="polite"></div>
 
         <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
           <article class="metric-pill metric-pill--today" aria-label="Today progress">
@@ -320,7 +322,15 @@
       </section>
 
       <nav class="tabs" aria-label="Primary tabs">
-        <button class="tab-btn active" data-view="routine-view">
+        <button class="tab-btn active" data-view="today-view">
+          <span class="tab-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4 12l8-7 8 7v8h-5v-5H9v5H4z"></path>
+            </svg>
+          </span>
+          <span>Today</span>
+        </button>
+        <button class="tab-btn" data-view="routine-view">
           <span class="tab-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <circle cx="12" cy="6.5" r="2"></circle>

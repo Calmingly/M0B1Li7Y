@@ -153,7 +153,7 @@ const state = {
   reflectionLog: loadReflectionLog(),
   sessionPreset: "full",
   durationScale: 1,
-  activeView: "routine-view",
+  activeView: "today-view",
   sessionStartedAt: null
 };
 
