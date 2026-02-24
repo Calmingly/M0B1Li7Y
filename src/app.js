@@ -24,6 +24,7 @@ const BADGES_KEY = "m0b1li7y.badges";
 const LAST_BADGE_KEY = "m0b1li7y.lastBadge";
 const REMINDERS_KEY = "m0b1li7y.reminders";
 const VOICE_CUES_KEY = "m0b1li7y.voiceCues";
+const LAST_COMPLETION_PULSE_KEY = "m0b1li7y.lastCompletionPulse";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -464,6 +465,21 @@ function onSessionCompleteQuickAction() {
   switchView("history-view");
   focusAndReveal(historyTotalSessions);
   showFeedbackBanner("Jumped to history snapshot.");
+}
+
+function maybePulseSessionCompleteCard(latestSessionIso) {
+  if (!sessionCompleteCard || !latestSessionIso) return;
+  const lastPulsed = localStorage.getItem(LAST_COMPLETION_PULSE_KEY) || "";
+  if (lastPulsed === latestSessionIso) return;
+
+  sessionCompleteCard.classList.remove("session-complete-pulse");
+  void sessionCompleteCard.offsetWidth;
+  sessionCompleteCard.classList.add("session-complete-pulse");
+  localStorage.setItem(LAST_COMPLETION_PULSE_KEY, latestSessionIso);
+
+  window.setTimeout(() => {
+    sessionCompleteCard.classList.remove("session-complete-pulse");
+  }, 900);
 }
 
 function wireButtonPressEffects() {
@@ -998,6 +1014,7 @@ function renderTodayDashboard() {
         sessionCompleteActionBtn.textContent = label;
       }
     }
+    maybePulseSessionCompleteCard(latestSession.completedAt);
   } else if (sessionCompleteActionBtn) {
     const labelSpan = sessionCompleteActionBtn.querySelector(".btn-label");
     if (labelSpan) {
@@ -1005,6 +1022,7 @@ function renderTodayDashboard() {
     } else {
       sessionCompleteActionBtn.textContent = "Jump to Reflection";
     }
+    sessionCompleteCard?.classList.remove("session-complete-pulse");
   }
 
   if (buddyStatus) {

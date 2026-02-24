@@ -605,6 +605,28 @@ h1 {
   margin-top: 0.42rem;
 }
 
+.session-complete-pulse {
+  animation: session-complete-pulse 0.85s ease-out 1;
+}
+
+@keyframes session-complete-pulse {
+  0% {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    background: color-mix(in srgb, var(--surface-card-2) 90%, black);
+    transform: scale(1);
+  }
+  35% {
+    border-color: color-mix(in srgb, var(--accent) 78%, white);
+    background: color-mix(in srgb, var(--accent-soft) 52%, var(--surface-card-2));
+    transform: scale(1.01);
+  }
+  100% {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    background: color-mix(in srgb, var(--surface-card-2) 90%, black);
+    transform: scale(1);
+  }
+}
+
 .reflection-card {
   margin-top: 0.58rem;
   border: 1px solid color-mix(in srgb, var(--border) 88%, black);
