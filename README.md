@@ -3,6 +3,10 @@
 Small browser-based mobility routine app built from the preserved image assets.
 
 ## Features
+- **Today dashboard** with readiness score and adaptive coaching recommendation
+- **Readiness check-in** (energy, soreness, mood) persisted by day in `localStorage`
+- **Adaptive recommendation engine** that suggests session intensity, tempo scaling, and progression mode
+- **Quick actions**: save check-in, apply plan, start recommended session
 - Guided-first 12-step flow with a fitness-tech visual style
 - Large routine player with progress ring, timer, and step imagery
 - Beginner Coach tips that adapt by movement phase

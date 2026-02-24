@@ -6,6 +6,8 @@ const PROGRESSION_MODE_KEY = "m0b1li7y.progressionMode";
 const SOUND_ENABLED_KEY = "m0b1li7y.soundEnabled";
 const HAPTICS_ENABLED_KEY = "m0b1li7y.hapticsEnabled";
 const THEME_KEY = "m0b1li7y.theme";
+const READINESS_KEY = "m0b1li7y.readiness";
+const RECOMMENDATION_KEY = "m0b1li7y.recommendation";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -48,6 +50,19 @@ const nextUpMeta = document.getElementById("next-up-meta");
 const timer = document.getElementById("timer");
 const progressRing = document.getElementById("progress-ring");
 const stepCard = document.querySelector("#routine-view .step-card");
+const readinessScore = document.getElementById("readiness-score");
+const readinessHeadline = document.getElementById("readiness-headline");
+const recommendationText = document.getElementById("recommendation-text");
+const recommendationChips = document.getElementById("recommendation-chips");
+const readinessEnergy = document.getElementById("readiness-energy");
+const readinessSoreness = document.getElementById("readiness-soreness");
+const readinessMood = document.getElementById("readiness-mood");
+const readinessEnergyOutput = document.getElementById("readiness-energy-output");
+const readinessSorenessOutput = document.getElementById("readiness-soreness-output");
+const readinessMoodOutput = document.getElementById("readiness-mood-output");
+const saveCheckinBtn = document.getElementById("save-checkin-btn");
+const applyRecommendationBtn = document.getElementById("apply-recommendation-btn");
+const startRecommendedBtn = document.getElementById("start-recommended-btn");
 
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
@@ -83,7 +98,7 @@ const phaseAccentByName = {
 
 const state = {
   stepIndex: 0,
-  remainingSec: routineSteps[0].durationSec,
+  remainingSec: null,
   isRunning: false,
   isPaused: false,
   timerRef: null,
@@ -95,6 +110,9 @@ const state = {
   soundEnabled: loadBoolean(SOUND_ENABLED_KEY, true),
   hapticsEnabled: loadBoolean(HAPTICS_ENABLED_KEY, true),
   theme: loadTheme(),
+  readiness: loadReadiness(),
+  recommendation: loadRecommendation(),
+  durationScale: 1,
   activeView: "routine-view",
   sessionStartedAt: null
 };
@@ -102,13 +120,21 @@ const state = {
 init();
 
 function init() {
+  if (state.recommendation?.durationScale) {
+    state.durationScale = clampDurationScale(state.recommendation.durationScale);
+  }
+  state.remainingSec = getStepDurationSec(0);
+
   wireEvents();
   wireImageFallback();
   wireButtonPressEffects();
   initMetricSparkSkeletons();
+  seedReadinessInputs();
   syncOptionUI();
+  syncReadinessUI();
   applyTheme(state.theme);
   renderSummary();
+  renderTodayDashboard();
   renderStep();
   renderSessionMetrics();
   renderHistoryView();
@@ -161,6 +187,14 @@ function wireEvents() {
     });
   });
 
+  [readinessEnergy, readinessSoreness, readinessMood].forEach((input) => {
+    input?.addEventListener("input", syncReadinessUI);
+  });
+
+  saveCheckinBtn?.addEventListener("click", saveReadinessCheckin);
+  applyRecommendationBtn?.addEventListener("click", applyRecommendationPlan);
+  startRecommendedBtn?.addEventListener("click", startRecommendedSession);
+
   historyDays?.addEventListener("input", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -194,7 +228,16 @@ function wireEvents() {
 }
 
 function wireButtonPressEffects() {
-  const pressableButtons = [startBtn, pauseBtn, backBtn, nextBtn, resetBtn].filter(Boolean);
+  const pressableButtons = [
+    startBtn,
+    pauseBtn,
+    backBtn,
+    nextBtn,
+    resetBtn,
+    saveCheckinBtn,
+    applyRecommendationBtn,
+    startRecommendedBtn
+  ].filter(Boolean);
   pressableButtons.forEach((button) => {
     button.addEventListener("click", () => {
       button.classList.remove("btn-press");
@@ -232,6 +275,200 @@ function buildBarSpark(container) {
     bar.className = "metric-bar";
     container.append(bar);
   }
+}
+
+function syncReadinessUI() {
+  if (readinessEnergy && readinessEnergyOutput) {
+    readinessEnergyOutput.textContent = String(readinessEnergy.value);
+  }
+
+  if (readinessSoreness && readinessSorenessOutput) {
+    readinessSorenessOutput.textContent = String(readinessSoreness.value);
+  }
+
+  if (readinessMood && readinessMoodOutput) {
+    readinessMoodOutput.textContent = String(readinessMood.value);
+  }
+}
+
+function seedReadinessInputs() {
+  if (!state.readiness) return;
+
+  if (readinessEnergy) readinessEnergy.value = String(clampReadiness(state.readiness.energy));
+  if (readinessSoreness) readinessSoreness.value = String(clampReadiness(state.readiness.soreness));
+  if (readinessMood) readinessMood.value = String(clampReadiness(state.readiness.mood));
+}
+
+function saveReadinessCheckin() {
+  const energy = clampReadiness(readinessEnergy?.value);
+  const soreness = clampReadiness(readinessSoreness?.value);
+  const mood = clampReadiness(readinessMood?.value);
+
+  state.readiness = {
+    dayKey: toDayKey(new Date()),
+    energy,
+    soreness,
+    mood,
+    savedAt: new Date().toISOString()
+  };
+
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const recommendation = buildRecommendation(state.readiness, {
+    streak: computeStreakDays(activeDayKeys),
+    weekly: computeLast7DaysSessions(activeDayKeys),
+    sessionsCompleted: state.sessionsCompleted
+  });
+
+  state.recommendation = recommendation;
+  state.durationScale = recommendation.durationScale;
+
+  if (!state.isRunning) {
+    state.remainingSec = getStepDurationSec(state.stepIndex);
+  }
+
+  saveReadiness(state.readiness);
+  saveRecommendation(recommendation);
+  renderTodayDashboard();
+  renderStep();
+  updateControls();
+  showFeedbackBanner("Check-in saved. Plan updated.");
+  triggerFeedback("stepChange");
+}
+
+function applyRecommendationPlan() {
+  if (!state.recommendation) {
+    showFeedbackBanner("Save a check-in first.");
+    return;
+  }
+
+  state.progressionMode = state.recommendation.mode;
+  state.durationScale = clampDurationScale(state.recommendation.durationScale);
+  localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
+  saveRecommendation(state.recommendation);
+  syncOptionUI();
+
+  if (!state.isRunning) {
+    state.remainingSec = getStepDurationSec(state.stepIndex);
+  }
+
+  renderTodayDashboard();
+  renderStep();
+  updateControls();
+  showFeedbackBanner(`Applied ${state.recommendation.label} plan.`);
+  triggerFeedback("stepChange");
+}
+
+function startRecommendedSession() {
+  if (state.recommendation) {
+    applyRecommendationPlan();
+  }
+
+  if (!state.isRunning) {
+    startRoutine();
+  }
+}
+
+function renderTodayDashboard() {
+  if (!readinessScore || !readinessHeadline || !recommendationText || !recommendationChips) return;
+
+  const fallbackReadiness = state.readiness || {
+    dayKey: toDayKey(new Date()),
+    energy: 3,
+    soreness: 3,
+    mood: 3
+  };
+
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const fallbackRecommendation = buildRecommendation(fallbackReadiness, {
+    streak: computeStreakDays(activeDayKeys),
+    weekly: computeLast7DaysSessions(activeDayKeys),
+    sessionsCompleted: state.sessionsCompleted
+  });
+
+  const recommendation = state.recommendation || fallbackRecommendation;
+  const isToday = state.readiness?.dayKey === toDayKey(new Date());
+
+  readinessScore.textContent = `${recommendation.score}`;
+  readinessHeadline.textContent = isToday
+    ? `${recommendation.label} plan ready. ${recommendation.headline}`
+    : "Log today’s check-in to personalize your plan.";
+  recommendationText.textContent = recommendation.description;
+
+  recommendationChips.innerHTML = "";
+  [
+    `Intensity ${recommendation.intensity}`,
+    `Mode ${recommendation.mode === "auto" ? "Auto" : "Manual"}`,
+    `Tempo ${Math.round(recommendation.durationScale * 100)}%`
+  ].forEach((chipText) => {
+    const chip = document.createElement("span");
+    chip.className = "recommendation-chip";
+    chip.textContent = chipText;
+    recommendationChips.append(chip);
+  });
+}
+
+function buildRecommendation(readiness, stats) {
+  const energy = clampReadiness(readiness?.energy);
+  const soreness = clampReadiness(readiness?.soreness);
+  const mood = clampReadiness(readiness?.mood);
+
+  const score = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
+  const weeklyBonus = stats.weekly >= 3 ? 4 : 0;
+  const consistencyBonus = stats.streak >= 4 ? 4 : 0;
+  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus));
+
+  if (adjusted <= 45) {
+    return {
+      score: adjusted,
+      label: "Recovery",
+      intensity: "Low",
+      mode: "manual",
+      durationScale: 0.82,
+      headline: "Focus on quality movement and breath control.",
+      description: "Today’s coach call: slower tempo, controlled ranges, and smooth transitions to keep consistency without overload."
+    };
+  }
+
+  if (adjusted <= 75) {
+    return {
+      score: adjusted,
+      label: "Base Build",
+      intensity: "Moderate",
+      mode: stats.weekly >= 2 ? "auto" : "manual",
+      durationScale: 1,
+      headline: "Balanced mobility and strength flow.",
+      description: "Today’s coach call: standard durations with strong form cues. Keep rhythm steady and finish with intent."
+    };
+  }
+
+  return {
+    score: adjusted,
+    label: "Performance",
+    intensity: "High",
+    mode: "auto",
+    durationScale: 1.18,
+    headline: "Push quality and controlled intensity.",
+    description: "Today’s coach call: longer holds on timed steps and continuous flow. Stay crisp on posture throughout."
+  };
+}
+
+function clampReadiness(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 3;
+  return Math.max(1, Math.min(5, Math.round(parsed)));
+}
+
+function clampDurationScale(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 1;
+  return Math.max(0.75, Math.min(1.25, parsed));
+}
+
+function getStepDurationSec(stepIndex) {
+  const base = routineSteps[stepIndex]?.durationSec;
+  if (base === null || base === undefined) return null;
+  const scaled = Math.round(base * clampDurationScale(state.durationScale));
+  return Math.max(15, scaled);
 }
 
 function switchView(viewId) {
@@ -288,7 +525,7 @@ function moveToStep(nextIndex) {
   stopTimer();
   if (howtoCard) howtoCard.open = false;
   state.stepIndex = nextIndex;
-  state.remainingSec = routineSteps[nextIndex].durationSec;
+  state.remainingSec = getStepDurationSec(nextIndex);
   state.isRunning = false;
   state.isPaused = false;
   setButtonLabel(pauseBtn, "Pause");
@@ -302,8 +539,8 @@ function startTimer() {
   state.timerRef = window.setInterval(() => {
     if (!state.isRunning || state.isPaused) return;
 
-    const step = routineSteps[state.stepIndex];
-    if (step.durationSec === null) return;
+    const stepDuration = getStepDurationSec(state.stepIndex);
+    if (stepDuration === null) return;
 
     state.remainingSec -= 1;
     renderTimer();
@@ -364,6 +601,7 @@ function completeRoutine() {
   recordSessionDay();
   saveSessionCount(state.sessionsCompleted);
   renderSessionMetrics();
+  renderTodayDashboard();
   renderHistoryView();
   resetRoutine(false);
   celebrateRoutineFinish();
@@ -377,7 +615,7 @@ function resetRoutine(keepSessionCount = true) {
   state.isPaused = false;
   if (howtoCard) howtoCard.open = false;
   state.stepIndex = 0;
-  state.remainingSec = routineSteps[0].durationSec;
+  state.remainingSec = getStepDurationSec(0);
   state.sessionStartedAt = null;
   setButtonLabel(pauseBtn, "Pause");
   renderStep();
@@ -439,8 +677,8 @@ function getHowToByStep(stepNameValue) {
 }
 
 function renderTimer() {
-  const step = routineSteps[state.stepIndex];
-  if (step.durationSec === null) {
+  const stepDuration = getStepDurationSec(state.stepIndex);
+  if (stepDuration === null) {
     timer.textContent = "REPS";
     timer.classList.remove("timer-warning");
     progressRing?.classList.add("ring-reps");
@@ -459,7 +697,7 @@ function renderTimer() {
   progressRing?.classList.toggle("ring-running", showRunning);
   progressRing?.classList.toggle("ring-low", showWarning);
 
-  const totalDuration = Number(step.durationSec) || 1;
+  const totalDuration = Number(stepDuration) || 1;
   const timeProgress = Math.max(0, Math.min(100, Math.round((safeRemaining / totalDuration) * 100)));
   progressRing?.style.setProperty("--time-progress", String(timeProgress));
 }
@@ -471,6 +709,12 @@ function updateControls() {
   backBtn.disabled = state.stepIndex === 0;
   nextBtn.disabled = false;
   setButtonLabel(nextBtn, state.stepIndex === routineSteps.length - 1 ? "Finish" : "Next");
+  if (applyRecommendationBtn) {
+    applyRecommendationBtn.disabled = !state.recommendation;
+  }
+  if (startRecommendedBtn) {
+    startRecommendedBtn.disabled = state.isRunning;
+  }
 }
 
 function setButtonLabel(button, label) {
@@ -529,9 +773,9 @@ function renderNextUp() {
   nextUpName.textContent = isLast ? "Finish" : nextStep.name;
   nextUpMeta.textContent = isLast
     ? "Complete routine"
-    : nextStep.durationSec === null
+    : getStepDurationSec(nextIndex) === null
       ? "10-15 reps"
-      : formatTime(nextStep.durationSec);
+      : formatTime(getStepDurationSec(nextIndex));
   nextUpImage.src = imageUrl(isLast ? routineSteps[state.stepIndex].image : nextStep.image);
 }
 
@@ -568,7 +812,7 @@ function showFeedbackBanner(message) {
 }
 
 function renderSummary() {
-  summary.textContent = "Recommended beginner order: Warmup mobility → reset posture → strength → mobility decompression → cooldown → brisk walk finisher.";
+  summary.textContent = "Adaptive order: check-in readiness → recommend intensity and mode → guided routine flow → history insights and streak tracking.";
 }
 
 function renderSessionMetrics() {
@@ -581,6 +825,7 @@ function renderSessionMetrics() {
   renderDotSparkState(sparkSessions, Math.max(1, Math.min(7, state.sessionsCompleted || 1)));
   renderDotSparkState(sparkStreak, Math.max(0, Math.min(7, streak)));
   renderWeekBars(activeDayKeys);
+  renderTodayDashboard();
 }
 
 function renderDotSparkState(container, activeCount) {
@@ -822,7 +1067,7 @@ function computeActiveDayKeys(sessionDays, dayProgressEdits) {
 }
 
 function estimatedRoutineDurationSec() {
-  return routineSteps.reduce((sum, step) => sum + (step.durationSec || 45), 0);
+  return routineSteps.reduce((sum, _step, index) => sum + (getStepDurationSec(index) || 45), 0);
 }
 
 function loadSessionCount() {
@@ -878,6 +1123,61 @@ function loadTheme() {
   const stored = localStorage.getItem(THEME_KEY);
   const allowed = new Set(["default", "cobalt", "emerald", "sunset"]);
   return allowed.has(stored) ? stored : "default";
+}
+
+function loadReadiness() {
+  try {
+    const raw = localStorage.getItem(READINESS_KEY);
+    const parsed = JSON.parse(raw || "null");
+    if (!parsed || typeof parsed !== "object") return null;
+
+    return {
+      dayKey: /^\d{4}-\d{2}-\d{2}$/.test(parsed.dayKey) ? parsed.dayKey : toDayKey(new Date()),
+      energy: clampReadiness(parsed.energy),
+      soreness: clampReadiness(parsed.soreness),
+      mood: clampReadiness(parsed.mood),
+      savedAt: parsed.savedAt || null
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveReadiness(value) {
+  try {
+    localStorage.setItem(READINESS_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function loadRecommendation() {
+  try {
+    const raw = localStorage.getItem(RECOMMENDATION_KEY);
+    const parsed = JSON.parse(raw || "null");
+    if (!parsed || typeof parsed !== "object") return null;
+
+    const mode = parsed.mode === "auto" ? "auto" : "manual";
+    return {
+      score: Math.max(0, Math.min(100, Number(parsed.score) || 0)),
+      label: String(parsed.label || "Base Build"),
+      intensity: String(parsed.intensity || "Moderate"),
+      mode,
+      durationScale: clampDurationScale(parsed.durationScale),
+      headline: String(parsed.headline || "Balanced mobility and strength flow."),
+      description: String(parsed.description || "Today’s coach call: standard durations with strong form cues.")
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveRecommendation(value) {
+  try {
+    localStorage.setItem(RECOMMENDATION_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage errors.
+  }
 }
 
 function applyTheme(theme) {

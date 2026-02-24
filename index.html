@@ -25,6 +25,53 @@
       <section id="routine-view" class="view routine-view">
         <div id="step-backdrop" class="step-backdrop" aria-hidden="true"></div>
         <div id="feedback-banner" class="feedback-banner" role="status" aria-live="polite"></div>
+
+        <section class="today-hub" aria-label="Today dashboard">
+          <div class="today-head">
+            <div>
+              <p class="today-eyebrow">Today</p>
+              <h2 class="today-title">Readiness Check-In</h2>
+            </div>
+            <p id="readiness-score" class="today-score">--</p>
+          </div>
+
+          <p id="readiness-headline" class="today-headline">Log your readiness to generate a guided recommendation.</p>
+          <p id="recommendation-text" class="today-recommendation">Your adaptive coaching plan appears here.</p>
+          <div id="recommendation-chips" class="recommendation-chips" aria-live="polite"></div>
+
+          <div class="readiness-grid">
+            <label class="readiness-row" for="readiness-energy">
+              <span>Energy</span>
+              <input id="readiness-energy" type="range" min="1" max="5" step="1" value="3" />
+              <output id="readiness-energy-output" for="readiness-energy">3</output>
+            </label>
+
+            <label class="readiness-row" for="readiness-soreness">
+              <span>Soreness</span>
+              <input id="readiness-soreness" type="range" min="1" max="5" step="1" value="3" />
+              <output id="readiness-soreness-output" for="readiness-soreness">3</output>
+            </label>
+
+            <label class="readiness-row" for="readiness-mood">
+              <span>Mood</span>
+              <input id="readiness-mood" type="range" min="1" max="5" step="1" value="3" />
+              <output id="readiness-mood-output" for="readiness-mood">3</output>
+            </label>
+          </div>
+
+          <div class="today-actions" aria-label="Today actions">
+            <button id="save-checkin-btn" class="btn btn-primary" type="button">
+              <span class="btn-label">Save Check-In</span>
+            </button>
+            <button id="apply-recommendation-btn" class="btn" type="button">
+              <span class="btn-label">Apply Recommendation</span>
+            </button>
+            <button id="start-recommended-btn" class="btn" type="button">
+              <span class="btn-label">Start Recommended Session</span>
+            </button>
+          </div>
+        </section>
+
         <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
           <article class="metric-pill metric-pill--today" aria-label="Today progress">
             <p id="progress-label" class="metric-value">1/12</p>
