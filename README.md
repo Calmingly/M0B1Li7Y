@@ -7,6 +7,12 @@ Small browser-based mobility routine app built from the preserved image assets.
 - **Readiness check-in** (energy, soreness, mood) persisted by day in `localStorage`
 - **Adaptive recommendation engine** that suggests session intensity, tempo scaling, and progression mode
 - **Quick actions**: save check-in, apply plan, start recommended session
+- **Program tracks**: Beginner Momentum, Office Reset, Athletic Flow, Recovery Restore
+- **Consistency & quest system**: rolling consistency score plus weekly checkpoints
+- **Streak shield**: protect today’s streak day with earned shield tokens
+- **2-minute rescue mode**: fast auto-guided session for low-motivation days
+- **Post-session reflection**: effort/form logging with micro-coach adjustments for the next plan
+- **Accountability ping**: simple buddy check-in tracking for weekly momentum
 - Guided-first 12-step flow with a fitness-tech visual style
 - Large routine player with progress ring, timer, and step imagery
 - Beginner Coach tips that adapt by movement phase

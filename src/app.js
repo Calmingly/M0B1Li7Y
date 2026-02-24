@@ -8,6 +8,14 @@ const HAPTICS_ENABLED_KEY = "m0b1li7y.hapticsEnabled";
 const THEME_KEY = "m0b1li7y.theme";
 const READINESS_KEY = "m0b1li7y.readiness";
 const RECOMMENDATION_KEY = "m0b1li7y.recommendation";
+const PROGRAM_TRACK_KEY = "m0b1li7y.programTrack";
+const PROGRAM_STATE_KEY = "m0b1li7y.programState";
+const CHECKIN_DAYS_KEY = "m0b1li7y.checkinDays";
+const SHIELD_TOKENS_KEY = "m0b1li7y.shieldTokens";
+const SHIELD_DAYS_KEY = "m0b1li7y.shieldDays";
+const SHIELD_MILESTONE_KEY = "m0b1li7y.shieldMilestone";
+const BUDDY_PINGS_KEY = "m0b1li7y.buddyPings";
+const REFLECTION_LOG_KEY = "m0b1li7y.reflectionLog";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -63,6 +71,22 @@ const readinessMoodOutput = document.getElementById("readiness-mood-output");
 const saveCheckinBtn = document.getElementById("save-checkin-btn");
 const applyRecommendationBtn = document.getElementById("apply-recommendation-btn");
 const startRecommendedBtn = document.getElementById("start-recommended-btn");
+const startRescueBtn = document.getElementById("start-rescue-btn");
+const programTrack = document.getElementById("program-track");
+const programMeta = document.getElementById("program-meta");
+const consistencyScore = document.getElementById("consistency-score");
+const questStatus = document.getElementById("quest-status");
+const questProgress = document.getElementById("quest-progress");
+const shieldCount = document.getElementById("shield-count");
+const useShieldBtn = document.getElementById("use-shield-btn");
+const buddyPingBtn = document.getElementById("buddy-ping-btn");
+const buddyStatus = document.getElementById("buddy-status");
+const reflectionEffort = document.getElementById("reflection-effort");
+const reflectionForm = document.getElementById("reflection-form");
+const reflectionEffortOutput = document.getElementById("reflection-effort-output");
+const reflectionFormOutput = document.getElementById("reflection-form-output");
+const saveReflectionBtn = document.getElementById("save-reflection-btn");
+const reflectionCoachTip = document.getElementById("reflection-coach-tip");
 
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
@@ -96,6 +120,13 @@ const phaseAccentByName = {
   Finish: "#60a5fa"
 };
 
+const programProfiles = {
+  beginner: { label: "Beginner Momentum", tempoBias: -0.04, modeBias: "manual" },
+  "office-reset": { label: "Office Reset", tempoBias: -0.08, modeBias: "manual" },
+  athletic: { label: "Athletic Flow", tempoBias: 0.08, modeBias: "auto" },
+  recovery: { label: "Recovery Restore", tempoBias: -0.12, modeBias: "manual" }
+};
+
 const state = {
   stepIndex: 0,
   remainingSec: null,
@@ -112,6 +143,15 @@ const state = {
   theme: loadTheme(),
   readiness: loadReadiness(),
   recommendation: loadRecommendation(),
+  programTrack: loadProgramTrack(),
+  programState: loadProgramState(),
+  checkinDays: loadDayKeyArray(CHECKIN_DAYS_KEY),
+  shieldTokens: loadNonNegativeInt(SHIELD_TOKENS_KEY, 1, 3),
+  shieldDays: loadDayKeyArray(SHIELD_DAYS_KEY),
+  shieldMilestone: loadNonNegativeInt(SHIELD_MILESTONE_KEY, 0),
+  buddyPings: loadBuddyPings(),
+  reflectionLog: loadReflectionLog(),
+  sessionPreset: "full",
   durationScale: 1,
   activeView: "routine-view",
   sessionStartedAt: null
@@ -130,8 +170,11 @@ function init() {
   wireButtonPressEffects();
   initMetricSparkSkeletons();
   seedReadinessInputs();
+  seedReflectionInputs();
   syncOptionUI();
+  syncProgramUI();
   syncReadinessUI();
+  syncReflectionUI();
   applyTheme(state.theme);
   renderSummary();
   renderTodayDashboard();
@@ -194,6 +237,20 @@ function wireEvents() {
   saveCheckinBtn?.addEventListener("click", saveReadinessCheckin);
   applyRecommendationBtn?.addEventListener("click", applyRecommendationPlan);
   startRecommendedBtn?.addEventListener("click", startRecommendedSession);
+  startRescueBtn?.addEventListener("click", startRescueSession);
+  useShieldBtn?.addEventListener("click", useShieldForToday);
+  buddyPingBtn?.addEventListener("click", sendBuddyPing);
+  saveReflectionBtn?.addEventListener("click", saveSessionReflection);
+
+  programTrack?.addEventListener("change", () => {
+    state.programTrack = programTrack.value;
+    saveProgramTrack(state.programTrack);
+    renderTodayDashboard();
+  });
+
+  [reflectionEffort, reflectionForm].forEach((input) => {
+    input?.addEventListener("input", syncReflectionUI);
+  });
 
   historyDays?.addEventListener("input", (event) => {
     const target = event.target;
@@ -236,7 +293,11 @@ function wireButtonPressEffects() {
     resetBtn,
     saveCheckinBtn,
     applyRecommendationBtn,
-    startRecommendedBtn
+    startRecommendedBtn,
+    startRescueBtn,
+    useShieldBtn,
+    buddyPingBtn,
+    saveReflectionBtn
   ].filter(Boolean);
   pressableButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -299,6 +360,137 @@ function seedReadinessInputs() {
   if (readinessMood) readinessMood.value = String(clampReadiness(state.readiness.mood));
 }
 
+function seedReflectionInputs() {
+  const latest = getLatestReflection();
+  const effort = clampReadiness(latest?.effort || 3);
+  const form = clampReadiness(latest?.form || 3);
+
+  if (reflectionEffort) reflectionEffort.value = String(effort);
+  if (reflectionForm) reflectionForm.value = String(form);
+}
+
+function syncReflectionUI() {
+  if (reflectionEffort && reflectionEffortOutput) {
+    reflectionEffortOutput.textContent = String(reflectionEffort.value);
+  }
+
+  if (reflectionForm && reflectionFormOutput) {
+    reflectionFormOutput.textContent = String(reflectionForm.value);
+  }
+}
+
+function syncProgramUI() {
+  if (programTrack) {
+    programTrack.value = state.programTrack;
+  }
+}
+
+function startRescueSession() {
+  state.sessionPreset = "rescue";
+  state.stepIndex = 0;
+  state.durationScale = Math.min(state.durationScale, 0.75);
+  state.progressionMode = "auto";
+  localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
+  syncOptionUI();
+  state.remainingSec = getStepDurationSec(0);
+  renderStep();
+  updateControls();
+  startRoutine();
+  showFeedbackBanner("2-minute rescue started.");
+}
+
+function useShieldForToday() {
+  const todayKey = toDayKey(new Date());
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+
+  if (activeDayKeys.includes(todayKey)) {
+    showFeedbackBanner("Today is already protected by activity.");
+    return;
+  }
+
+  if (state.shieldTokens <= 0) {
+    showFeedbackBanner("No streak shields available.");
+    return;
+  }
+
+  state.shieldTokens -= 1;
+  state.shieldDays = Array.from(new Set([...state.shieldDays, todayKey])).sort();
+  saveShieldState();
+  renderSessionMetrics();
+  renderTodayDashboard();
+  showFeedbackBanner("Streak shield used for today.");
+  triggerFeedback("stepDone");
+}
+
+function sendBuddyPing() {
+  const nowIso = new Date().toISOString();
+  state.buddyPings = [nowIso, ...state.buddyPings].slice(0, 40);
+  saveBuddyPings(state.buddyPings);
+  renderTodayDashboard();
+  showFeedbackBanner("Buddy ping sent.");
+  triggerFeedback("stepChange");
+}
+
+function saveSessionReflection() {
+  const effort = clampReadiness(reflectionEffort?.value);
+  const form = clampReadiness(reflectionForm?.value);
+
+  const tip = buildReflectionTip({ effort, form });
+
+  const entry = {
+    dayKey: toDayKey(new Date()),
+    effort,
+    form,
+    tip,
+    createdAt: new Date().toISOString()
+  };
+
+  state.reflectionLog = [entry, ...state.reflectionLog].slice(0, 30);
+  saveReflectionLog(state.reflectionLog);
+
+  if (reflectionCoachTip) {
+    reflectionCoachTip.textContent = tip;
+  }
+
+  if (state.recommendation) {
+    const adjustment = effort >= 4 && form >= 4 ? 0.04 : effort >= 4 && form <= 2 ? -0.05 : 0;
+    state.recommendation.durationScale = clampDurationScale(state.recommendation.durationScale + adjustment);
+    state.durationScale = clampDurationScale(state.recommendation.durationScale);
+    state.recommendation.description = `${state.recommendation.description.split("Coach note:")[0].trim()} ${tip}`;
+    saveRecommendation(state.recommendation);
+  }
+
+  if (!state.isRunning) {
+    state.remainingSec = getStepDurationSec(state.stepIndex);
+    renderStep();
+  }
+
+  renderTodayDashboard();
+  updateControls();
+  showFeedbackBanner("Reflection saved. Coach plan adjusted.");
+  triggerFeedback("stepChange");
+}
+
+function getLatestReflection() {
+  return state.reflectionLog[0] || null;
+}
+
+function buildReflectionTip(reflection) {
+  if (reflection.form <= 2) {
+    return "Coach note: reduce range 10% and prioritize slower reps next session.";
+  }
+
+  if (reflection.effort >= 4 && reflection.form >= 4) {
+    return "Coach note: add controlled intensity on strength intervals tomorrow.";
+  }
+
+  if (reflection.effort <= 2) {
+    return "Coach note: use auto mode tomorrow to keep momentum and cadence.";
+  }
+
+  return "Coach note: hold this intensity and keep movement quality consistent.";
+}
+
 function saveReadinessCheckin() {
   const energy = clampReadiness(readinessEnergy?.value);
   const soreness = clampReadiness(readinessSoreness?.value);
@@ -311,6 +503,9 @@ function saveReadinessCheckin() {
     mood,
     savedAt: new Date().toISOString()
   };
+
+  state.checkinDays = Array.from(new Set([...state.checkinDays, state.readiness.dayKey])).sort();
+  saveDayKeyArray(CHECKIN_DAYS_KEY, state.checkinDays);
 
   const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
   const recommendation = buildRecommendation(state.readiness, {
@@ -342,6 +537,7 @@ function applyRecommendationPlan() {
   }
 
   state.progressionMode = state.recommendation.mode;
+  state.sessionPreset = "full";
   state.durationScale = clampDurationScale(state.recommendation.durationScale);
   localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
   saveRecommendation(state.recommendation);
@@ -359,6 +555,7 @@ function applyRecommendationPlan() {
 }
 
 function startRecommendedSession() {
+  state.sessionPreset = "full";
   if (state.recommendation) {
     applyRecommendationPlan();
   }
@@ -379,9 +576,11 @@ function renderTodayDashboard() {
   };
 
   const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const streak = computeStreakDays(activeDayKeys);
+  const weekly = computeLast7DaysSessions(activeDayKeys);
   const fallbackRecommendation = buildRecommendation(fallbackReadiness, {
-    streak: computeStreakDays(activeDayKeys),
-    weekly: computeLast7DaysSessions(activeDayKeys),
+    streak,
+    weekly,
     sessionsCompleted: state.sessionsCompleted
   });
 
@@ -394,11 +593,51 @@ function renderTodayDashboard() {
     : "Log today’s check-in to personalize your plan.";
   recommendationText.textContent = recommendation.description;
 
+  if (programMeta) {
+    programMeta.textContent = `Week ${state.programState.week} • ${state.programState.sessionsInWeek}/4 sessions in cycle`;
+  }
+
+  if (consistencyScore) {
+    consistencyScore.textContent = `${computeConsistencyScore(activeDayKeys, state.checkinDays, streak)}%`;
+  }
+
+  const quest = computeWeeklyQuest(activeDayKeys, state.checkinDays, state.buddyPings);
+  if (questStatus) {
+    questStatus.textContent = `${quest.percent}%`;
+  }
+  if (questProgress) {
+    questProgress.textContent = `${quest.done}/${quest.total} checkpoints`;
+  }
+
+  if (shieldCount) {
+    shieldCount.textContent = String(state.shieldTokens);
+  }
+
+  if (useShieldBtn) {
+    const todayKey = toDayKey(new Date());
+    const canUseShield = state.shieldTokens > 0 && !activeDayKeys.includes(todayKey);
+    useShieldBtn.disabled = !canUseShield;
+  }
+
+  if (buddyStatus) {
+    const buddyWeek = countInCurrentWeek(state.buddyPings.map((value) => toDayKey(value)));
+    buddyStatus.textContent = buddyWeek > 0
+      ? `${buddyWeek} accountability ping${buddyWeek === 1 ? "" : "s"} this week.`
+      : "No buddy pings this week yet.";
+  }
+
+  const latestReflection = getLatestReflection();
+  if (reflectionCoachTip && latestReflection) {
+    reflectionCoachTip.textContent = latestReflection.tip;
+  }
+
   recommendationChips.innerHTML = "";
   [
     `Intensity ${recommendation.intensity}`,
     `Mode ${recommendation.mode === "auto" ? "Auto" : "Manual"}`,
-    `Tempo ${Math.round(recommendation.durationScale * 100)}%`
+    `Tempo ${Math.round(recommendation.durationScale * 100)}%`,
+    `${programProfiles[state.programTrack]?.label || "Program"}`,
+    state.sessionPreset === "rescue" ? "Rescue Session" : "Full Session"
   ].forEach((chipText) => {
     const chip = document.createElement("span");
     chip.className = "recommendation-chip";
@@ -411,19 +650,22 @@ function buildRecommendation(readiness, stats) {
   const energy = clampReadiness(readiness?.energy);
   const soreness = clampReadiness(readiness?.soreness);
   const mood = clampReadiness(readiness?.mood);
+  const profile = programProfiles[state.programTrack] || programProfiles.beginner;
+  const latestReflection = getLatestReflection();
 
   const score = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
   const weeklyBonus = stats.weekly >= 3 ? 4 : 0;
   const consistencyBonus = stats.streak >= 4 ? 4 : 0;
-  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus));
+  const reflectionBias = latestReflection?.form <= 2 ? -6 : latestReflection?.effort >= 4 && latestReflection?.form >= 4 ? 4 : 0;
+  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus + reflectionBias));
 
   if (adjusted <= 45) {
     return {
       score: adjusted,
       label: "Recovery",
       intensity: "Low",
-      mode: "manual",
-      durationScale: 0.82,
+      mode: profile.modeBias === "auto" ? "manual" : profile.modeBias,
+      durationScale: clampDurationScale(0.82 + profile.tempoBias),
       headline: "Focus on quality movement and breath control.",
       description: "Today’s coach call: slower tempo, controlled ranges, and smooth transitions to keep consistency without overload."
     };
@@ -434,8 +676,8 @@ function buildRecommendation(readiness, stats) {
       score: adjusted,
       label: "Base Build",
       intensity: "Moderate",
-      mode: stats.weekly >= 2 ? "auto" : "manual",
-      durationScale: 1,
+      mode: profile.modeBias === "manual" ? "manual" : stats.weekly >= 2 ? "auto" : "manual",
+      durationScale: clampDurationScale(1 + profile.tempoBias),
       headline: "Balanced mobility and strength flow.",
       description: "Today’s coach call: standard durations with strong form cues. Keep rhythm steady and finish with intent."
     };
@@ -445,8 +687,8 @@ function buildRecommendation(readiness, stats) {
     score: adjusted,
     label: "Performance",
     intensity: "High",
-    mode: "auto",
-    durationScale: 1.18,
+    mode: profile.modeBias,
+    durationScale: clampDurationScale(1.18 + profile.tempoBias),
     headline: "Push quality and controlled intensity.",
     description: "Today’s coach call: longer holds on timed steps and continuous flow. Stay crisp on posture throughout."
   };
@@ -512,7 +754,8 @@ function togglePause() {
 }
 
 function onNext() {
-  if (state.stepIndex >= routineSteps.length - 1) {
+  const stepLimit = getSessionStepLimit();
+  if (state.stepIndex >= stepLimit - 1) {
     completeRoutine();
     return;
   }
@@ -520,7 +763,8 @@ function onNext() {
 }
 
 function moveToStep(nextIndex) {
-  if (nextIndex < 0 || nextIndex >= routineSteps.length) return;
+  const stepLimit = getSessionStepLimit();
+  if (nextIndex < 0 || nextIndex >= stepLimit) return;
 
   stopTimer();
   if (howtoCard) howtoCard.open = false;
@@ -556,7 +800,8 @@ function handleStepFinished() {
   showFeedbackBanner("Step complete");
   triggerFeedback("stepDone");
 
-  if (state.stepIndex >= routineSteps.length - 1) {
+  const stepLimit = getSessionStepLimit();
+  if (state.stepIndex >= stepLimit - 1) {
     completeRoutine();
     return;
   }
@@ -579,6 +824,7 @@ function stopTimer() {
 
 function completeRoutine() {
   stopTimer();
+  const completedPreset = state.sessionPreset;
   state.isRunning = false;
   state.isPaused = false;
   state.sessionsCompleted += 1;
@@ -592,20 +838,24 @@ function completeRoutine() {
   const sessionEntry = {
     completedAt: new Date().toISOString(),
     durationSec,
-    mode: state.progressionMode
+    mode: state.progressionMode,
+    preset: state.sessionPreset,
+    program: state.programTrack
   };
 
   state.sessionLog = [sessionEntry, ...state.sessionLog].slice(0, 60);
   saveSessionLog(state.sessionLog);
 
   recordSessionDay();
+  advanceProgramProgress();
+  rewardShieldMilestones();
   saveSessionCount(state.sessionsCompleted);
   renderSessionMetrics();
   renderTodayDashboard();
   renderHistoryView();
   resetRoutine(false);
   celebrateRoutineFinish();
-  showFeedbackBanner("Routine complete. Great work.");
+  showFeedbackBanner(completedPreset === "rescue" ? "Rescue session complete. Streak protected." : "Routine complete. Great work.");
   triggerFeedback("sessionDone");
 }
 
@@ -614,6 +864,7 @@ function resetRoutine(keepSessionCount = true) {
   state.isRunning = false;
   state.isPaused = false;
   if (howtoCard) howtoCard.open = false;
+  state.sessionPreset = "full";
   state.stepIndex = 0;
   state.remainingSec = getStepDurationSec(0);
   state.sessionStartedAt = null;
@@ -628,8 +879,9 @@ function resetRoutine(keepSessionCount = true) {
 
 function renderStep() {
   const step = routineSteps[state.stepIndex];
-  progressLabel.textContent = `${state.stepIndex + 1}/${routineSteps.length}`;
-  const percentComplete = Math.round(((state.stepIndex + 1) / routineSteps.length) * 100);
+  const stepLimit = getSessionStepLimit();
+  progressLabel.textContent = `${state.stepIndex + 1}/${stepLimit}`;
+  const percentComplete = Math.round(((state.stepIndex + 1) / stepLimit) * 100);
   const phaseAccent = phaseAccentByName[step.phase] || "#60a5fa";
   document.documentElement.style.setProperty("--phase-accent", phaseAccent);
   stepCard?.classList.remove("phase-warmup", "phase-reset", "phase-strength", "phase-mobility", "phase-cooldown", "phase-finish");
@@ -708,12 +960,15 @@ function updateControls() {
   pauseBtn.disabled = !state.isRunning;
   backBtn.disabled = state.stepIndex === 0;
   nextBtn.disabled = false;
-  setButtonLabel(nextBtn, state.stepIndex === routineSteps.length - 1 ? "Finish" : "Next");
+  setButtonLabel(nextBtn, state.stepIndex === getSessionStepLimit() - 1 ? "Finish" : "Next");
   if (applyRecommendationBtn) {
     applyRecommendationBtn.disabled = !state.recommendation;
   }
   if (startRecommendedBtn) {
     startRecommendedBtn.disabled = state.isRunning;
+  }
+  if (startRescueBtn) {
+    startRescueBtn.disabled = state.isRunning;
   }
 }
 
@@ -765,11 +1020,12 @@ function renderStepBackdrop(imageName) {
 }
 
 function renderNextUp() {
-  const nextIndex = Math.min(state.stepIndex + 1, routineSteps.length - 1);
+  const stepLimit = getSessionStepLimit();
+  const nextIndex = Math.min(state.stepIndex + 1, stepLimit - 1);
   const nextStep = routineSteps[nextIndex];
   if (!nextUpName || !nextUpMeta || !nextUpImage) return;
 
-  const isLast = state.stepIndex >= routineSteps.length - 1;
+  const isLast = state.stepIndex >= stepLimit - 1;
   nextUpName.textContent = isLast ? "Finish" : nextStep.name;
   nextUpMeta.textContent = isLast
     ? "Complete routine"
@@ -812,7 +1068,7 @@ function showFeedbackBanner(message) {
 }
 
 function renderSummary() {
-  summary.textContent = "Adaptive order: check-in readiness → recommend intensity and mode → guided routine flow → history insights and streak tracking.";
+  summary.textContent = "Adaptive order: readiness + program track → coached routine (full or rescue) → reflection-based micro-coaching → consistency quests and streak protection.";
 }
 
 function renderSessionMetrics() {
@@ -883,7 +1139,8 @@ function renderHistoryView() {
 
       const meta = document.createElement("p");
       meta.className = "history-item-meta";
-      meta.textContent = `${Math.max(1, Math.round(entry.durationSec / 60))} min • ${entry.mode === "auto" ? "Auto" : "Manual"} mode`;
+      const presetLabel = entry.preset === "rescue" ? "Rescue" : "Full";
+      meta.textContent = `${Math.max(1, Math.round(entry.durationSec / 60))} min • ${entry.mode === "auto" ? "Auto" : "Manual"} mode • ${presetLabel}`;
 
       item.append(title, meta);
       historyList.append(item);
@@ -1052,7 +1309,7 @@ function getDayProgress(dayKey, defaultProgress, edits) {
   return clampProgress(defaultProgress);
 }
 
-function computeActiveDayKeys(sessionDays, dayProgressEdits) {
+function computeActiveDayKeys(sessionDays, dayProgressEdits, shieldDays = state.shieldDays) {
   const active = new Set(sessionDays);
 
   Object.entries(dayProgressEdits).forEach(([dayKey, progress]) => {
@@ -1063,11 +1320,100 @@ function computeActiveDayKeys(sessionDays, dayProgressEdits) {
     }
   });
 
+  shieldDays.forEach((dayKey) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dayKey)) {
+      active.add(dayKey);
+    }
+  });
+
   return Array.from(active).sort();
 }
 
+function advanceProgramProgress() {
+  const nextSessions = state.programState.sessionsInWeek + 1;
+  if (nextSessions >= 4) {
+    state.programState = {
+      week: state.programState.week + 1,
+      sessionsInWeek: 0
+    };
+  } else {
+    state.programState = {
+      week: state.programState.week,
+      sessionsInWeek: nextSessions
+    };
+  }
+
+  saveProgramState(state.programState);
+}
+
+function rewardShieldMilestones() {
+  const milestone = Math.floor(state.sessionsCompleted / 5);
+  if (milestone <= state.shieldMilestone) return;
+
+  const gain = milestone - state.shieldMilestone;
+  state.shieldMilestone = milestone;
+  state.shieldTokens = Math.min(3, state.shieldTokens + gain);
+  saveShieldState();
+}
+
+function saveShieldState() {
+  localStorage.setItem(SHIELD_TOKENS_KEY, String(state.shieldTokens));
+  localStorage.setItem(SHIELD_MILESTONE_KEY, String(state.shieldMilestone));
+  saveDayKeyArray(SHIELD_DAYS_KEY, state.shieldDays);
+}
+
+function computeConsistencyScore(activeDayKeys, checkinDays, streak) {
+  const active14 = countInLastDays(activeDayKeys, 14);
+  const checkins14 = countInLastDays(checkinDays, 14);
+  const adherenceScore = (active14 / 14) * 55;
+  const checkinScore = (checkins14 / 14) * 25;
+  const streakScore = Math.min(1, streak / 10) * 20;
+  return Math.round(adherenceScore + checkinScore + streakScore);
+}
+
+function computeWeeklyQuest(activeDayKeys, checkinDays, buddyPings) {
+  const sessionsDone = Math.min(4, countInCurrentWeek(activeDayKeys));
+  const checkinsDone = Math.min(3, countInCurrentWeek(checkinDays));
+  const buddyDone = Math.min(2, countInCurrentWeek(buddyPings.map((iso) => toDayKey(iso))));
+  const done = sessionsDone + checkinsDone + buddyDone;
+  const total = 9;
+  return {
+    done,
+    total,
+    percent: Math.round((done / total) * 100)
+  };
+}
+
+function countInLastDays(dayKeys, numberOfDays) {
+  if (!Array.isArray(dayKeys)) return 0;
+  const end = new Date();
+  end.setHours(0, 0, 0, 0);
+  const start = new Date(end);
+  start.setDate(start.getDate() - (numberOfDays - 1));
+  const startKey = toDayKey(start);
+  const endKey = toDayKey(end);
+  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+}
+
+function countInCurrentWeek(dayKeys) {
+  if (!Array.isArray(dayKeys)) return 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayOfWeek = (today.getDay() + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dayOfWeek);
+  const mondayKey = toDayKey(monday);
+  const todayKey = toDayKey(today);
+  return dayKeys.filter((dayKey) => dayKey >= mondayKey && dayKey <= todayKey).length;
+}
+
 function estimatedRoutineDurationSec() {
-  return routineSteps.reduce((sum, _step, index) => sum + (getStepDurationSec(index) || 45), 0);
+  const stepLimit = getSessionStepLimit();
+  return routineSteps.slice(0, stepLimit).reduce((sum, _step, index) => sum + (getStepDurationSec(index) || 45), 0);
+}
+
+function getSessionStepLimit() {
+  return state.sessionPreset === "rescue" ? 4 : routineSteps.length;
 }
 
 function loadSessionCount() {
@@ -1117,6 +1463,87 @@ function syncOptionUI() {
 function loadProgressionMode() {
   const stored = localStorage.getItem(PROGRESSION_MODE_KEY);
   return stored === "auto" ? "auto" : "manual";
+}
+
+function loadProgramTrack() {
+  const stored = localStorage.getItem(PROGRAM_TRACK_KEY);
+  return Object.prototype.hasOwnProperty.call(programProfiles, stored) ? stored : "beginner";
+}
+
+function saveProgramTrack(track) {
+  localStorage.setItem(PROGRAM_TRACK_KEY, track);
+}
+
+function loadProgramState() {
+  try {
+    const raw = localStorage.getItem(PROGRAM_STATE_KEY);
+    const parsed = JSON.parse(raw || "null");
+    if (!parsed || typeof parsed !== "object") {
+      return { week: 1, sessionsInWeek: 0 };
+    }
+
+    return {
+      week: Math.max(1, Number(parsed.week) || 1),
+      sessionsInWeek: Math.max(0, Math.min(3, Number(parsed.sessionsInWeek) || 0))
+    };
+  } catch {
+    return { week: 1, sessionsInWeek: 0 };
+  }
+}
+
+function saveProgramState(programState) {
+  localStorage.setItem(PROGRAM_STATE_KEY, JSON.stringify(programState));
+}
+
+function loadDayKeyArray(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value)).sort();
+  } catch {
+    return [];
+  }
+}
+
+function saveDayKeyArray(key, values) {
+  localStorage.setItem(key, JSON.stringify(values));
+}
+
+function loadNonNegativeInt(key, fallback, cap = Number.POSITIVE_INFINITY) {
+  const parsed = Number(localStorage.getItem(key));
+  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
+  return Math.min(cap, Math.floor(parsed));
+}
+
+function loadBuddyPings() {
+  try {
+    const raw = localStorage.getItem(BUDDY_PINGS_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((value) => !Number.isNaN(new Date(value).getTime()));
+  } catch {
+    return [];
+  }
+}
+
+function saveBuddyPings(values) {
+  localStorage.setItem(BUDDY_PINGS_KEY, JSON.stringify(values));
+}
+
+function loadReflectionLog() {
+  try {
+    const raw = localStorage.getItem(REFLECTION_LOG_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((entry) => entry && entry.createdAt);
+  } catch {
+    return [];
+  }
+}
+
+function saveReflectionLog(values) {
+  localStorage.setItem(REFLECTION_LOG_KEY, JSON.stringify(values));
 }
 
 function loadTheme() {

@@ -310,6 +310,49 @@ h1 {
   padding: 0.18rem 0.46rem;
 }
 
+.today-program {
+  margin-top: 0.54rem;
+  padding: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--border) 85%, black);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-card-2) 88%, black);
+}
+
+.program-meta {
+  margin: 0.42rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.today-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.56rem;
+}
+
+.today-stat-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.44rem;
+  background: color-mix(in srgb, var(--surface-card) 90%, black);
+}
+
+.today-stat-sub {
+  margin: 0.18rem 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.today-stat-card .history-save-btn {
+  margin-top: 0.34rem;
+}
+
+.history-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .readiness-grid {
   display: grid;
   gap: 0.45rem;
@@ -345,6 +388,52 @@ h1 {
 .today-actions .btn {
   min-height: 2rem;
   font-size: 0.74rem;
+}
+
+.buddy-row {
+  margin-top: 0.56rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.buddy-row .btn {
+  min-height: 2rem;
+}
+
+.buddy-status {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.reflection-card {
+  margin-top: 0.58rem;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, black);
+  border-radius: 10px;
+  padding: 0.52rem;
+  background: color-mix(in srgb, var(--surface-card) 92%, black);
+}
+
+.reflection-title {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 65%, white);
+}
+
+.reflection-actions {
+  margin-top: 0.45rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.reflection-actions .btn {
+  min-height: 1.96rem;
 }
 
 .metrics {
@@ -1193,12 +1282,25 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 760px) {
+  .today-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .today-stat-card:last-child {
+    grid-column: span 2;
+  }
+
   .today-actions {
     grid-template-columns: 1fr;
   }
 
   .today-actions .btn {
     min-height: 2.12rem;
+  }
+
+  .buddy-row,
+  .reflection-actions {
+    grid-template-columns: 1fr;
   }
 
   .metrics {
@@ -1283,6 +1385,14 @@ input[type="checkbox"] {
   .readiness-row {
     grid-template-columns: 72px 1fr 22px;
     gap: 0.44rem;
+  }
+
+  .today-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .today-stat-card:last-child {
+    grid-column: auto;
   }
 
   .shell {

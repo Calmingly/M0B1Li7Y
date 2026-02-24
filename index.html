@@ -39,6 +39,36 @@
           <p id="recommendation-text" class="today-recommendation">Your adaptive coaching plan appears here.</p>
           <div id="recommendation-chips" class="recommendation-chips" aria-live="polite"></div>
 
+          <div class="today-program" aria-label="Program settings">
+            <label class="option-row" for="program-track">
+              <span>Program track</span>
+              <select id="program-track">
+                <option value="beginner">Beginner Momentum</option>
+                <option value="office-reset">Office Reset</option>
+                <option value="athletic">Athletic Flow</option>
+                <option value="recovery">Recovery Restore</option>
+              </select>
+            </label>
+            <p id="program-meta" class="program-meta">Week 1 • Foundation cycle</p>
+          </div>
+
+          <section class="today-stats" aria-label="Coaching stats">
+            <article class="today-stat-card">
+              <p class="metric-label">Consistency</p>
+              <p id="consistency-score" class="metric-value">0</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Weekly quest</p>
+              <p id="quest-status" class="metric-value">0%</p>
+              <p id="quest-progress" class="today-stat-sub">0/7 checkpoints</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Streak shield</p>
+              <p id="shield-count" class="metric-value">1</p>
+              <button id="use-shield-btn" class="history-save-btn" type="button">Use Shield Today</button>
+            </article>
+          </section>
+
           <div class="readiness-grid">
             <label class="readiness-row" for="readiness-energy">
               <span>Energy</span>
@@ -69,7 +99,39 @@
             <button id="start-recommended-btn" class="btn" type="button">
               <span class="btn-label">Start Recommended Session</span>
             </button>
+            <button id="start-rescue-btn" class="btn" type="button">
+              <span class="btn-label">Start 2-Min Rescue</span>
+            </button>
           </div>
+
+          <div class="buddy-row" aria-label="Accountability ping">
+            <button id="buddy-ping-btn" class="btn" type="button">
+              <span class="btn-label">Ping Accountability Buddy</span>
+            </button>
+            <p id="buddy-status" class="buddy-status">No buddy pings this week yet.</p>
+          </div>
+
+          <section class="reflection-card" aria-label="Post session reflection">
+            <p class="reflection-title">Post-Session Reflection</p>
+            <div class="readiness-grid">
+              <label class="readiness-row" for="reflection-effort">
+                <span>Effort</span>
+                <input id="reflection-effort" type="range" min="1" max="5" step="1" value="3" />
+                <output id="reflection-effort-output" for="reflection-effort">3</output>
+              </label>
+              <label class="readiness-row" for="reflection-form">
+                <span>Form</span>
+                <input id="reflection-form" type="range" min="1" max="5" step="1" value="3" />
+                <output id="reflection-form-output" for="reflection-form">3</output>
+              </label>
+            </div>
+            <div class="reflection-actions">
+              <button id="save-reflection-btn" class="btn" type="button">
+                <span class="btn-label">Save Reflection</span>
+              </button>
+              <p id="reflection-coach-tip" class="today-stat-sub">Your micro-coach adjustment appears here.</p>
+            </div>
+          </section>
         </section>
 
         <section class="metrics metrics-routine" aria-label="Progress metrics" aria-live="polite">
