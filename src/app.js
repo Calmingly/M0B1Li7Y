@@ -24,7 +24,7 @@ const BADGES_KEY = "m0b1li7y.badges";
 const LAST_BADGE_KEY = "m0b1li7y.lastBadge";
 const REMINDERS_KEY = "m0b1li7y.reminders";
 const VOICE_CUES_KEY = "m0b1li7y.voiceCues";
-const INVITE_CODE_KEY = "m0b1li7y.inviteCode";
+const FOCUS_PROMPT_KEY = "m0b1li7y.focusPrompt";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -98,9 +98,9 @@ const shieldCount = document.getElementById("shield-count");
 const useShieldBtn = document.getElementById("use-shield-btn");
 const buddyPingBtn = document.getElementById("buddy-ping-btn");
 const buddyStatus = document.getElementById("buddy-status");
-const generateInviteBtn = document.getElementById("generate-invite-btn");
-const copyInviteBtn = document.getElementById("copy-invite-btn");
-const buddyCode = document.getElementById("buddy-code");
+const generatePromptBtn = document.getElementById("generate-prompt-btn");
+const copyPromptBtn = document.getElementById("copy-prompt-btn");
+const focusPromptText = document.getElementById("focus-prompt-text");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
@@ -195,7 +195,7 @@ const state = {
   lastBadge: localStorage.getItem(LAST_BADGE_KEY) || "",
   reminders: loadReminders(),
   voiceCuesEnabled: loadBoolean(VOICE_CUES_KEY, false),
-  inviteCode: localStorage.getItem(INVITE_CODE_KEY) || "",
+  focusPrompt: localStorage.getItem(FOCUS_PROMPT_KEY) || "",
   sessionPreset: "full",
   durationScale: 1,
   activeView: "today-view",
@@ -288,8 +288,8 @@ function wireEvents() {
   useShieldBtn?.addEventListener("click", useShieldForToday);
   buddyPingBtn?.addEventListener("click", sendBuddyPing);
   saveReflectionBtn?.addEventListener("click", saveSessionReflection);
-  generateInviteBtn?.addEventListener("click", generateInviteCode);
-  copyInviteBtn?.addEventListener("click", copyInviteCard);
+  generatePromptBtn?.addEventListener("click", generateFocusPrompt);
+  copyPromptBtn?.addEventListener("click", copyFocusPrompt);
   requestNotificationBtn?.addEventListener("click", requestNotificationPermission);
   exportDataBtn?.addEventListener("click", exportProgressData);
   importDataBtn?.addEventListener("click", () => importDataFile?.click());
@@ -394,8 +394,8 @@ function wireButtonPressEffects() {
     useShieldBtn,
     buddyPingBtn,
     saveReflectionBtn,
-    generateInviteBtn,
-    copyInviteBtn,
+    generatePromptBtn,
+    copyPromptBtn,
     requestNotificationBtn,
     exportDataBtn,
     importDataBtn
@@ -591,25 +591,27 @@ function sendBuddyPing() {
   triggerFeedback("stepChange");
 }
 
-function generateInviteCode() {
-  const alpha = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const code = Array.from({ length: 6 }, () => alpha[Math.floor(Math.random() * alpha.length)]).join("");
-  state.inviteCode = code;
-  localStorage.setItem(INVITE_CODE_KEY, state.inviteCode);
+function generateFocusPrompt() {
+  const prompts = [
+    "Stack one high-quality rep at a time; momentum comes from consistency.",
+    "Stay tall, slow your breath, and own each transition.",
+    "Quality first today: smooth control beats speed.",
+    "Finish what you start — even a short session counts.",
+    "Treat recovery as training; move with intent.",
+    "Clean form now builds stronger sessions tomorrow."
+  ];
+
+  state.focusPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+  localStorage.setItem(FOCUS_PROMPT_KEY, state.focusPrompt);
   renderTodayDashboard();
-  showFeedbackBanner("Invite code generated.");
+  showFeedbackBanner("Focus cue generated.");
 }
 
-async function copyInviteCard() {
-  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
-  const streak = computeStreakDays(activeDayKeys);
-  const weekly = computeLast7DaysSessions(activeDayKeys);
-  const code = state.inviteCode || "GENERATE-ME";
-  const card = `M0B1Li7Y Buddy Card\nCode: ${code}\nStreak: ${streak}d\nThis week: ${weekly}/7 sessions\nJoin me for daily mobility.`;
-
+async function copyFocusPrompt() {
+  const prompt = state.focusPrompt || "Generate a focus cue first.";
   try {
-    await navigator.clipboard.writeText(card);
-    showFeedbackBanner("Buddy card copied.");
+    await navigator.clipboard.writeText(prompt);
+    showFeedbackBanner("Focus cue copied.");
   } catch {
     showFeedbackBanner("Copy unavailable. Select and copy manually.");
   }
@@ -884,10 +886,10 @@ function renderTodayDashboard() {
       : "No buddy pings this week yet.";
   }
 
-  if (buddyCode) {
-    buddyCode.textContent = state.inviteCode
-      ? `Invite code: ${state.inviteCode}`
-      : "Invite code: not generated";
+  if (focusPromptText) {
+    focusPromptText.textContent = state.focusPrompt
+      ? `Focus prompt: ${state.focusPrompt}`
+      : "Focus prompt: generate your daily cue.";
   }
 
   if (monthLevel) {
