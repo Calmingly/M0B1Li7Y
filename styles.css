@@ -107,7 +107,7 @@ body {
 
 .eyebrow {
   margin: 0;
-  font-size: clamp(1.4rem, 3.8vw, 1.95rem);
+  font-size: clamp(1.9rem, 5.2vw, 2.7rem);
   font-weight: 800;
   font-family: "Patrick Hand", "Segoe Print", "Bradley Hand", "Marker Felt", cursive;
   letter-spacing: 0.02em;
