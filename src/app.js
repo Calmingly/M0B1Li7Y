@@ -1234,6 +1234,7 @@ function completeRoutine() {
   renderTodayDashboard();
   renderHistoryView();
   resetRoutine(false);
+  switchView("today-view");
   celebrateRoutineFinish();
   showFeedbackBanner(completedPreset === "rescue" ? "Rescue session complete. Streak protected." : "Routine complete. Great work.");
   triggerFeedback("sessionDone");
