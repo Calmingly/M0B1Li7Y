@@ -417,6 +417,45 @@ h1 {
   padding: 0.18rem 0.46rem;
 }
 
+.session-planner,
+.timeline-card,
+.buddy-invite,
+.form-quality {
+  margin-top: 0.56rem;
+  padding: 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--border) 86%, black);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-card-2) 90%, black);
+}
+
+.timeline-card h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.86rem;
+  color: color-mix(in srgb, var(--accent) 70%, white);
+}
+
+.length-chips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.34rem;
+  margin-top: 0.46rem;
+}
+
+.length-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-card) 90%, black);
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+}
+
+.length-chip.active {
+  border-color: color-mix(in srgb, var(--accent) 65%, white);
+  background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+}
+
 .today-program {
   margin-top: 0.54rem;
   padding: 0.5rem;
@@ -443,6 +482,10 @@ h1 {
   border-radius: 10px;
   padding: 0.44rem;
   background: color-mix(in srgb, var(--surface-card) 90%, black);
+}
+
+.today-stat-card .metric-value {
+  font-size: 0.94rem;
 }
 
 .today-stat-sub {
@@ -541,6 +584,15 @@ h1 {
 
 .reflection-actions .btn {
   min-height: 1.96rem;
+}
+
+.option-row input[type="time"] {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, white);
+  border-radius: 8px;
+  background: #12233c;
+  color: var(--text);
+  padding: 0.45rem;
+  font-size: 0.88rem;
 }
 
 .metrics {
@@ -1389,6 +1441,10 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 760px) {
+  .length-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .today-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1495,6 +1551,10 @@ input[type="checkbox"] {
   }
 
   .today-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .length-chips {
     grid-template-columns: 1fr;
   }
 

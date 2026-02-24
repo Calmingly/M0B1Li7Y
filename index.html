@@ -36,6 +36,31 @@
           <p id="recommendation-text" class="today-recommendation">Your adaptive coaching plan appears here.</p>
           <div id="recommendation-chips" class="recommendation-chips" aria-live="polite"></div>
 
+          <section class="session-planner" aria-label="Session planner">
+            <label class="option-row" for="time-available">
+              <span>Time available today</span>
+              <select id="time-available">
+                <option value="2">2 minutes</option>
+                <option value="8">8 minutes</option>
+                <option value="15" selected>15 minutes</option>
+                <option value="25">25 minutes</option>
+              </select>
+            </label>
+            <div class="length-chips" role="group" aria-label="Session length options">
+              <button id="length-quick" class="length-chip" type="button" data-length="quick">Quick</button>
+              <button id="length-standard" class="length-chip active" type="button" data-length="standard">Standard</button>
+              <button id="length-deep" class="length-chip" type="button" data-length="deep">Deep</button>
+              <button id="length-full" class="length-chip" type="button" data-length="full">Full</button>
+            </div>
+          </section>
+
+          <section class="timeline-card" aria-label="Coach timeline">
+            <h3>Coach Timeline</h3>
+            <p id="timeline-yesterday" class="today-stat-sub">Yesterday: no session logged.</p>
+            <p id="timeline-today" class="today-stat-sub">Today: recommendation pending check-in.</p>
+            <p id="timeline-tomorrow" class="today-stat-sub">Tomorrow: stay consistent.</p>
+          </section>
+
           <div class="today-program" aria-label="Program settings">
             <label class="option-row" for="program-track">
               <span>Program track</span>
@@ -63,6 +88,24 @@
               <p class="metric-label">Streak shield</p>
               <p id="shield-count" class="metric-value">1</p>
               <button id="use-shield-btn" class="history-save-btn" type="button">Use Shield Today</button>
+            </article>
+          </section>
+
+          <section class="today-stats" aria-label="Challenge stats">
+            <article class="today-stat-card">
+              <p class="metric-label">Monthly level</p>
+              <p id="month-level" class="metric-value">Bronze</p>
+              <p id="month-progress" class="today-stat-sub">0/8 sessions</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Unlockable</p>
+              <p id="month-unlock" class="metric-value">Starter Pack</p>
+              <p class="today-stat-sub">Unlock visual flair by consistency.</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Latest badge</p>
+              <p id="badge-unlock" class="metric-value">None yet</p>
+              <p id="weekly-wrapup" class="today-stat-sub">Weekly wrap-up appears Sunday.</p>
             </article>
           </section>
 
@@ -107,6 +150,15 @@
             </button>
             <p id="buddy-status" class="buddy-status">No buddy pings this week yet.</p>
           </div>
+
+          <section class="buddy-invite" aria-label="Buddy invite">
+            <p class="reflection-title">Buddy Invite Card</p>
+            <p id="buddy-code" class="today-stat-sub">Invite code: not generated</p>
+            <div class="reflection-actions">
+              <button id="generate-invite-btn" class="btn" type="button"><span class="btn-label">Generate Invite</span></button>
+              <button id="copy-invite-btn" class="btn" type="button"><span class="btn-label">Copy Streak Card</span></button>
+            </div>
+          </section>
 
           <section class="reflection-card" aria-label="Post session reflection">
             <p class="reflection-title">Post-Session Reflection</p>
@@ -198,6 +250,16 @@
             </summary>
             <p id="howto-text" class="coach-tip">Keep circles smooth and controlled in both directions.</p>
           </details>
+
+          <section class="form-quality" aria-label="Form quality prompt">
+            <p class="reflection-title">Form Quality</p>
+            <div class="length-chips" role="group" aria-label="Rate form quality">
+              <button class="length-chip" type="button" data-form-rating="1">Needs Work</button>
+              <button class="length-chip" type="button" data-form-rating="2">Solid</button>
+              <button class="length-chip" type="button" data-form-rating="3">Sharp</button>
+            </div>
+            <p id="form-quality-note" class="today-stat-sub">Rate this step to tune tomorrow’s plan.</p>
+          </section>
         </section>
 
         <section class="controls" aria-label="Routine controls">
@@ -300,6 +362,31 @@
             <input id="haptics-enabled" type="checkbox" checked />
             <span>Haptic feedback</span>
           </label>
+          <label class="option-check" for="voice-cues-enabled">
+            <input id="voice-cues-enabled" type="checkbox" />
+            <span>Voice cues</span>
+          </label>
+        </section>
+
+        <section class="panel">
+          <h3>Smart reminders</h3>
+          <label class="option-check" for="reminders-enabled">
+            <input id="reminders-enabled" type="checkbox" />
+            <span>Enable reminders</span>
+          </label>
+          <label class="option-row" for="morning-reminder-time">
+            <span>Morning reminder</span>
+            <input id="morning-reminder-time" type="time" value="08:00" />
+          </label>
+          <label class="option-row" for="evening-reminder-time">
+            <span>Evening reminder</span>
+            <input id="evening-reminder-time" type="time" value="18:00" />
+          </label>
+          <label class="option-check" for="ifthen-reminder">
+            <input id="ifthen-reminder" type="checkbox" />
+            <span>If missed morning, remind at evening time</span>
+          </label>
+          <button id="request-notification-btn" class="history-save-btn" type="button">Enable Browser Notifications</button>
         </section>
 
         <section class="panel">
@@ -322,6 +409,15 @@
         <section class="asset-check">
           <h3>Routine strategy</h3>
           <p id="summary"></p>
+        </section>
+
+        <section class="panel">
+          <h3>Data tools</h3>
+          <div class="reflection-actions">
+            <button id="export-data-btn" class="btn" type="button"><span class="btn-label">Export Progress JSON</span></button>
+            <button id="import-data-btn" class="btn" type="button"><span class="btn-label">Import Progress JSON</span></button>
+          </div>
+          <input id="import-data-file" type="file" accept="application/json" hidden />
         </section>
       </section>
 

@@ -16,6 +16,15 @@ const SHIELD_DAYS_KEY = "m0b1li7y.shieldDays";
 const SHIELD_MILESTONE_KEY = "m0b1li7y.shieldMilestone";
 const BUDDY_PINGS_KEY = "m0b1li7y.buddyPings";
 const REFLECTION_LOG_KEY = "m0b1li7y.reflectionLog";
+const SESSION_LENGTH_KEY = "m0b1li7y.sessionLength";
+const TIME_AVAILABLE_KEY = "m0b1li7y.timeAvailableMin";
+const SORENESS_LOG_KEY = "m0b1li7y.sorenessLog";
+const FORM_RATINGS_KEY = "m0b1li7y.formRatings";
+const BADGES_KEY = "m0b1li7y.badges";
+const LAST_BADGE_KEY = "m0b1li7y.lastBadge";
+const REMINDERS_KEY = "m0b1li7y.reminders";
+const VOICE_CUES_KEY = "m0b1li7y.voiceCues";
+const INVITE_CODE_KEY = "m0b1li7y.inviteCode";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -62,6 +71,14 @@ const readinessScore = document.getElementById("readiness-score");
 const readinessHeadline = document.getElementById("readiness-headline");
 const recommendationText = document.getElementById("recommendation-text");
 const recommendationChips = document.getElementById("recommendation-chips");
+const timeAvailable = document.getElementById("time-available");
+const lengthQuick = document.getElementById("length-quick");
+const lengthStandard = document.getElementById("length-standard");
+const lengthDeep = document.getElementById("length-deep");
+const lengthFull = document.getElementById("length-full");
+const timelineYesterday = document.getElementById("timeline-yesterday");
+const timelineToday = document.getElementById("timeline-today");
+const timelineTomorrow = document.getElementById("timeline-tomorrow");
 const readinessEnergy = document.getElementById("readiness-energy");
 const readinessSoreness = document.getElementById("readiness-soreness");
 const readinessMood = document.getElementById("readiness-mood");
@@ -81,12 +98,22 @@ const shieldCount = document.getElementById("shield-count");
 const useShieldBtn = document.getElementById("use-shield-btn");
 const buddyPingBtn = document.getElementById("buddy-ping-btn");
 const buddyStatus = document.getElementById("buddy-status");
+const generateInviteBtn = document.getElementById("generate-invite-btn");
+const copyInviteBtn = document.getElementById("copy-invite-btn");
+const buddyCode = document.getElementById("buddy-code");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
 const reflectionFormOutput = document.getElementById("reflection-form-output");
 const saveReflectionBtn = document.getElementById("save-reflection-btn");
 const reflectionCoachTip = document.getElementById("reflection-coach-tip");
+const monthLevel = document.getElementById("month-level");
+const monthProgress = document.getElementById("month-progress");
+const monthUnlock = document.getElementById("month-unlock");
+const badgeUnlock = document.getElementById("badge-unlock");
+const weeklyWrapup = document.getElementById("weekly-wrapup");
+const formQualityNote = document.getElementById("form-quality-note");
+const formQualitySection = document.querySelector(".form-quality");
 
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
@@ -104,6 +131,15 @@ const historyDays = document.getElementById("history-days");
 const progressionMode = document.getElementById("progression-mode");
 const soundEnabled = document.getElementById("sound-enabled");
 const hapticsEnabled = document.getElementById("haptics-enabled");
+const voiceCuesEnabled = document.getElementById("voice-cues-enabled");
+const remindersEnabled = document.getElementById("reminders-enabled");
+const morningReminderTime = document.getElementById("morning-reminder-time");
+const eveningReminderTime = document.getElementById("evening-reminder-time");
+const ifthenReminder = document.getElementById("ifthen-reminder");
+const requestNotificationBtn = document.getElementById("request-notification-btn");
+const exportDataBtn = document.getElementById("export-data-btn");
+const importDataBtn = document.getElementById("import-data-btn");
+const importDataFile = document.getElementById("import-data-file");
 const themeSelect = document.getElementById("theme-select");
 
 const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
@@ -151,6 +187,15 @@ const state = {
   shieldMilestone: loadNonNegativeInt(SHIELD_MILESTONE_KEY, 0),
   buddyPings: loadBuddyPings(),
   reflectionLog: loadReflectionLog(),
+  sessionLength: loadSessionLength(),
+  timeAvailableMin: loadNonNegativeInt(TIME_AVAILABLE_KEY, 15, 25),
+  sorenessLog: loadSorenessLog(),
+  formRatings: loadFormRatings(),
+  badges: loadBadges(),
+  lastBadge: localStorage.getItem(LAST_BADGE_KEY) || "",
+  reminders: loadReminders(),
+  voiceCuesEnabled: loadBoolean(VOICE_CUES_KEY, false),
+  inviteCode: localStorage.getItem(INVITE_CODE_KEY) || "",
   sessionPreset: "full",
   durationScale: 1,
   activeView: "today-view",
@@ -171,10 +216,12 @@ function init() {
   initMetricSparkSkeletons();
   seedReadinessInputs();
   seedReflectionInputs();
+  seedPlanningInputs();
   syncOptionUI();
   syncProgramUI();
   syncReadinessUI();
   syncReflectionUI();
+  syncLengthChips();
   applyTheme(state.theme);
   renderSummary();
   renderTodayDashboard();
@@ -241,6 +288,46 @@ function wireEvents() {
   useShieldBtn?.addEventListener("click", useShieldForToday);
   buddyPingBtn?.addEventListener("click", sendBuddyPing);
   saveReflectionBtn?.addEventListener("click", saveSessionReflection);
+  generateInviteBtn?.addEventListener("click", generateInviteCode);
+  copyInviteBtn?.addEventListener("click", copyInviteCard);
+  requestNotificationBtn?.addEventListener("click", requestNotificationPermission);
+  exportDataBtn?.addEventListener("click", exportProgressData);
+  importDataBtn?.addEventListener("click", () => importDataFile?.click());
+  importDataFile?.addEventListener("change", importProgressData);
+
+  [lengthQuick, lengthStandard, lengthDeep, lengthFull].forEach((button) => {
+    button?.addEventListener("click", () => {
+      const lengthValue = button.getAttribute("data-length");
+      if (!lengthValue) return;
+      state.sessionLength = normalizeSessionLength(lengthValue);
+      localStorage.setItem(SESSION_LENGTH_KEY, state.sessionLength);
+      if (state.sessionPreset !== "rescue" && !state.isRunning) {
+        state.remainingSec = getStepDurationSec(state.stepIndex);
+      }
+      syncLengthChips();
+      renderTodayDashboard();
+      renderStep();
+    });
+  });
+
+  timeAvailable?.addEventListener("change", () => {
+    state.timeAvailableMin = Math.max(2, Math.min(25, Number(timeAvailable.value) || 15));
+    localStorage.setItem(TIME_AVAILABLE_KEY, String(state.timeAvailableMin));
+    renderTodayDashboard();
+  });
+
+  formQualitySection?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest("button[data-form-rating]");
+    if (!button) return;
+    const rating = Number(button.getAttribute("data-form-rating"));
+    if (!Number.isFinite(rating)) return;
+    saveStepFormRating(state.stepIndex, rating);
+    Array.from(formQualitySection.querySelectorAll("button[data-form-rating]")).forEach((chip) => {
+      chip.classList.toggle("active", chip === button);
+    });
+  });
 
   programTrack?.addEventListener("change", () => {
     state.programTrack = programTrack.value;
@@ -250,6 +337,15 @@ function wireEvents() {
 
   [reflectionEffort, reflectionForm].forEach((input) => {
     input?.addEventListener("input", syncReflectionUI);
+  });
+
+  voiceCuesEnabled?.addEventListener("change", () => {
+    state.voiceCuesEnabled = Boolean(voiceCuesEnabled.checked);
+    localStorage.setItem(VOICE_CUES_KEY, String(state.voiceCuesEnabled));
+  });
+
+  [remindersEnabled, morningReminderTime, eveningReminderTime, ifthenReminder].forEach((input) => {
+    input?.addEventListener("change", saveReminderSettings);
   });
 
   historyDays?.addEventListener("input", (event) => {
@@ -297,7 +393,12 @@ function wireButtonPressEffects() {
     startRescueBtn,
     useShieldBtn,
     buddyPingBtn,
-    saveReflectionBtn
+    saveReflectionBtn,
+    generateInviteBtn,
+    copyInviteBtn,
+    requestNotificationBtn,
+    exportDataBtn,
+    importDataBtn
   ].filter(Boolean);
   pressableButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -385,6 +486,65 @@ function syncProgramUI() {
   }
 }
 
+function seedPlanningInputs() {
+  if (timeAvailable) {
+    timeAvailable.value = String(state.timeAvailableMin);
+  }
+
+  if (state.reminders) {
+    if (remindersEnabled) remindersEnabled.checked = state.reminders.enabled;
+    if (morningReminderTime) morningReminderTime.value = state.reminders.morning;
+    if (eveningReminderTime) eveningReminderTime.value = state.reminders.evening;
+    if (ifthenReminder) ifthenReminder.checked = state.reminders.ifThen;
+  }
+}
+
+function syncLengthChips() {
+  const chips = [lengthQuick, lengthStandard, lengthDeep, lengthFull].filter(Boolean);
+  chips.forEach((chip) => {
+    const isActive = chip.getAttribute("data-length") === state.sessionLength;
+    chip.classList.toggle("active", isActive);
+  });
+}
+
+function saveReminderSettings() {
+  state.reminders = {
+    enabled: Boolean(remindersEnabled?.checked),
+    morning: morningReminderTime?.value || "08:00",
+    evening: eveningReminderTime?.value || "18:00",
+    ifThen: Boolean(ifthenReminder?.checked)
+  };
+
+  localStorage.setItem(REMINDERS_KEY, JSON.stringify(state.reminders));
+  renderTodayDashboard();
+}
+
+function saveStepFormRating(stepIndex, rating) {
+  const step = routineSteps[stepIndex];
+  if (!step) return;
+
+  const current = state.formRatings[step.name] || { total: 0, count: 0, last: 2 };
+  const updated = {
+    total: current.total + rating,
+    count: current.count + 1,
+    last: rating
+  };
+
+  state.formRatings = {
+    ...state.formRatings,
+    [step.name]: updated
+  };
+
+  localStorage.setItem(FORM_RATINGS_KEY, JSON.stringify(state.formRatings));
+
+  if (formQualityNote) {
+    const quality = rating === 1 ? "needs smoother control" : rating === 2 ? "looks solid" : "looks sharp";
+    formQualityNote.textContent = `${step.name} ${quality}. This will tune your next recommendation.`;
+  }
+
+  triggerFeedback("stepChange");
+}
+
 function startRescueSession() {
   state.sessionPreset = "rescue";
   state.stepIndex = 0;
@@ -429,6 +589,87 @@ function sendBuddyPing() {
   renderTodayDashboard();
   showFeedbackBanner("Buddy ping sent.");
   triggerFeedback("stepChange");
+}
+
+function generateInviteCode() {
+  const alpha = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const code = Array.from({ length: 6 }, () => alpha[Math.floor(Math.random() * alpha.length)]).join("");
+  state.inviteCode = code;
+  localStorage.setItem(INVITE_CODE_KEY, state.inviteCode);
+  renderTodayDashboard();
+  showFeedbackBanner("Invite code generated.");
+}
+
+async function copyInviteCard() {
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const streak = computeStreakDays(activeDayKeys);
+  const weekly = computeLast7DaysSessions(activeDayKeys);
+  const code = state.inviteCode || "GENERATE-ME";
+  const card = `M0B1Li7Y Buddy Card\nCode: ${code}\nStreak: ${streak}d\nThis week: ${weekly}/7 sessions\nJoin me for daily mobility.`;
+
+  try {
+    await navigator.clipboard.writeText(card);
+    showFeedbackBanner("Buddy card copied.");
+  } catch {
+    showFeedbackBanner("Copy unavailable. Select and copy manually.");
+  }
+}
+
+async function requestNotificationPermission() {
+  if (!("Notification" in window)) {
+    showFeedbackBanner("Notifications are not supported in this browser.");
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    showFeedbackBanner("Notifications enabled.");
+  } else {
+    showFeedbackBanner("Notification permission not granted.");
+  }
+}
+
+function exportProgressData() {
+  const payload = {};
+  Object.keys(localStorage)
+    .filter((key) => key.startsWith("m0b1li7y."))
+    .forEach((key) => {
+      payload[key] = localStorage.getItem(key);
+    });
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `m0b1li7y-progress-${toDayKey(new Date())}.json`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+  showFeedbackBanner("Progress exported.");
+}
+
+function importProgressData(event) {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement) || !target.files?.[0]) return;
+
+  const file = target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result || "{}"));
+      Object.entries(parsed).forEach(([key, value]) => {
+        if (!key.startsWith("m0b1li7y.")) return;
+        localStorage.setItem(key, String(value));
+      });
+      showFeedbackBanner("Progress imported. Reloading...");
+      window.setTimeout(() => window.location.reload(), 650);
+    } catch {
+      showFeedbackBanner("Import failed. Invalid JSON file.");
+    }
+  };
+
+  reader.readAsText(file);
+  target.value = "";
 }
 
 function saveSessionReflection() {
@@ -504,6 +745,11 @@ function saveReadinessCheckin() {
     savedAt: new Date().toISOString()
   };
 
+  state.sorenessLog = recordSoreness(state.sorenessLog, state.readiness.dayKey, soreness);
+  localStorage.setItem(SORENESS_LOG_KEY, JSON.stringify(state.sorenessLog));
+
+  maybeAutoSwitchProgramTrack();
+
   state.checkinDays = Array.from(new Set([...state.checkinDays, state.readiness.dayKey])).sort();
   saveDayKeyArray(CHECKIN_DAYS_KEY, state.checkinDays);
 
@@ -516,6 +762,8 @@ function saveReadinessCheckin() {
 
   state.recommendation = recommendation;
   state.durationScale = recommendation.durationScale;
+  state.sessionLength = normalizeSessionLength(recommendation.suggestedLength || state.sessionLength);
+  localStorage.setItem(SESSION_LENGTH_KEY, state.sessionLength);
 
   if (!state.isRunning) {
     state.remainingSec = getStepDurationSec(state.stepIndex);
@@ -523,6 +771,7 @@ function saveReadinessCheckin() {
 
   saveReadiness(state.readiness);
   saveRecommendation(recommendation);
+  syncLengthChips();
   renderTodayDashboard();
   renderStep();
   updateControls();
@@ -539,9 +788,12 @@ function applyRecommendationPlan() {
   state.progressionMode = state.recommendation.mode;
   state.sessionPreset = "full";
   state.durationScale = clampDurationScale(state.recommendation.durationScale);
+  state.sessionLength = normalizeSessionLength(state.recommendation.suggestedLength || state.sessionLength);
+  localStorage.setItem(SESSION_LENGTH_KEY, state.sessionLength);
   localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
   saveRecommendation(state.recommendation);
   syncOptionUI();
+  syncLengthChips();
 
   if (!state.isRunning) {
     state.remainingSec = getStepDurationSec(state.stepIndex);
@@ -586,12 +838,18 @@ function renderTodayDashboard() {
 
   const recommendation = state.recommendation || fallbackRecommendation;
   const isToday = state.readiness?.dayKey === toDayKey(new Date());
+  const monthly = computeMonthlyChallenge(state.sessionLog);
+  const timeline = buildCoachTimeline(recommendation, state.sessionLog);
 
   readinessScore.textContent = `${recommendation.score}`;
   readinessHeadline.textContent = isToday
     ? `${recommendation.label} plan ready. ${recommendation.headline}`
     : "Log today’s check-in to personalize your plan.";
   recommendationText.textContent = recommendation.description;
+
+  if (timelineYesterday) timelineYesterday.textContent = `Yesterday: ${timeline.yesterday}`;
+  if (timelineToday) timelineToday.textContent = `Today: ${timeline.today}`;
+  if (timelineTomorrow) timelineTomorrow.textContent = `Tomorrow: ${timeline.tomorrow}`;
 
   if (programMeta) {
     programMeta.textContent = `Week ${state.programState.week} • ${state.programState.sessionsInWeek}/4 sessions in cycle`;
@@ -626,6 +884,34 @@ function renderTodayDashboard() {
       : "No buddy pings this week yet.";
   }
 
+  if (buddyCode) {
+    buddyCode.textContent = state.inviteCode
+      ? `Invite code: ${state.inviteCode}`
+      : "Invite code: not generated";
+  }
+
+  if (monthLevel) {
+    monthLevel.textContent = monthly.level;
+  }
+
+  if (monthProgress) {
+    monthProgress.textContent = `${monthly.sessions}/${monthly.target} sessions`;
+  }
+
+  if (monthUnlock) {
+    monthUnlock.textContent = monthly.unlock;
+  }
+
+  if (badgeUnlock) {
+    badgeUnlock.textContent = state.lastBadge || "None yet";
+  }
+
+  if (weeklyWrapup) {
+    weeklyWrapup.textContent = buildWeeklyWrapup(activeDayKeys, state.sessionLog);
+  }
+
+  maybeShowReminderNudge(activeDayKeys);
+
   const latestReflection = getLatestReflection();
   if (reflectionCoachTip && latestReflection) {
     reflectionCoachTip.textContent = latestReflection.tip;
@@ -637,7 +923,7 @@ function renderTodayDashboard() {
     `Mode ${recommendation.mode === "auto" ? "Auto" : "Manual"}`,
     `Tempo ${Math.round(recommendation.durationScale * 100)}%`,
     `${programProfiles[state.programTrack]?.label || "Program"}`,
-    state.sessionPreset === "rescue" ? "Rescue Session" : "Full Session"
+    state.sessionPreset === "rescue" ? "Rescue Session" : `${labelForSessionLength(state.sessionLength)} Session`
   ].forEach((chipText) => {
     const chip = document.createElement("span");
     chip.className = "recommendation-chip";
@@ -646,27 +932,58 @@ function renderTodayDashboard() {
   });
 }
 
+function maybeShowReminderNudge(activeDayKeys) {
+  if (!state.reminders.enabled) return;
+  const todayKey = toDayKey(new Date());
+  if (activeDayKeys.includes(todayKey)) return;
+
+  const now = new Date();
+  const current = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  if (state.reminders.ifThen && current >= state.reminders.evening) {
+    const marker = `${todayKey}:evening`;
+    if (maybeShowReminderNudge.lastMarker !== marker) {
+      maybeShowReminderNudge.lastMarker = marker;
+      showFeedbackBanner("Evening plan: run a quick or rescue session to keep your streak alive.");
+    }
+  } else if (current >= state.reminders.morning) {
+    const marker = `${todayKey}:morning`;
+    if (maybeShowReminderNudge.lastMarker !== marker) {
+      maybeShowReminderNudge.lastMarker = marker;
+      showFeedbackBanner("Morning check-in reminder: log readiness to get your daily plan.");
+    }
+  }
+}
+
 function buildRecommendation(readiness, stats) {
   const energy = clampReadiness(readiness?.energy);
   const soreness = clampReadiness(readiness?.soreness);
   const mood = clampReadiness(readiness?.mood);
   const profile = programProfiles[state.programTrack] || programProfiles.beginner;
   const latestReflection = getLatestReflection();
+  const formAverage = computeRecentFormAverage();
+  const highSoreness = hasConsecutiveHighSoreness(state.sorenessLog, 2, 4);
+  const inDeloadWeek = state.programState.week % 4 === 0;
+  const suggestedLength = selectSessionLength(state.timeAvailableMin);
 
   const score = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
   const weeklyBonus = stats.weekly >= 3 ? 4 : 0;
   const consistencyBonus = stats.streak >= 4 ? 4 : 0;
   const reflectionBias = latestReflection?.form <= 2 ? -6 : latestReflection?.effort >= 4 && latestReflection?.form >= 4 ? 4 : 0;
-  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus + reflectionBias));
+  const formBias = formAverage <= 1.7 ? -5 : formAverage >= 2.7 ? 3 : 0;
+  const deloadBias = inDeloadWeek ? -8 : 0;
+  const sorenessBias = highSoreness ? -12 : 0;
+  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus + reflectionBias + formBias + deloadBias + sorenessBias));
 
-  if (adjusted <= 45) {
+  if (highSoreness || adjusted <= 45) {
     return {
       score: adjusted,
       label: "Recovery",
       intensity: "Low",
       mode: profile.modeBias === "auto" ? "manual" : profile.modeBias,
       durationScale: clampDurationScale(0.82 + profile.tempoBias),
-      headline: "Focus on quality movement and breath control.",
+      suggestedLength: suggestedLength === "full" ? "deep" : suggestedLength,
+      headline: highSoreness ? "High soreness detected. Switching to recovery pacing." : "Focus on quality movement and breath control.",
       description: "Today’s coach call: slower tempo, controlled ranges, and smooth transitions to keep consistency without overload."
     };
   }
@@ -678,6 +995,7 @@ function buildRecommendation(readiness, stats) {
       intensity: "Moderate",
       mode: profile.modeBias === "manual" ? "manual" : stats.weekly >= 2 ? "auto" : "manual",
       durationScale: clampDurationScale(1 + profile.tempoBias),
+      suggestedLength,
       headline: "Balanced mobility and strength flow.",
       description: "Today’s coach call: standard durations with strong form cues. Keep rhythm steady and finish with intent."
     };
@@ -689,6 +1007,7 @@ function buildRecommendation(readiness, stats) {
     intensity: "High",
     mode: profile.modeBias,
     durationScale: clampDurationScale(1.18 + profile.tempoBias),
+    suggestedLength: suggestedLength === "quick" ? "standard" : suggestedLength,
     headline: "Push quality and controlled intensity.",
     description: "Today’s coach call: longer holds on timed steps and continuous flow. Stay crisp on posture throughout."
   };
@@ -839,7 +1158,7 @@ function completeRoutine() {
     completedAt: new Date().toISOString(),
     durationSec,
     mode: state.progressionMode,
-    preset: state.sessionPreset,
+    preset: state.sessionPreset === "rescue" ? "rescue" : state.sessionLength,
     program: state.programTrack
   };
 
@@ -849,6 +1168,7 @@ function completeRoutine() {
   recordSessionDay();
   advanceProgramProgress();
   rewardShieldMilestones();
+  maybeUnlockBadges();
   saveSessionCount(state.sessionsCompleted);
   renderSessionMetrics();
   renderTodayDashboard();
@@ -903,6 +1223,13 @@ function renderStep() {
   stepImage.alt = `${step.name} visual`;
   triggerStepVisualRefresh();
   renderTimer();
+
+  if (formQualitySection) {
+    const lastRating = state.formRatings[step.name]?.last;
+    Array.from(formQualitySection.querySelectorAll("button[data-form-rating]")).forEach((chip) => {
+      chip.classList.toggle("active", Number(chip.getAttribute("data-form-rating")) === lastRating);
+    });
+  }
 }
 
 function imageUrl(fileName) {
@@ -1068,7 +1395,7 @@ function showFeedbackBanner(message) {
 }
 
 function renderSummary() {
-  summary.textContent = "Adaptive order: readiness + program track → coached routine (full or rescue) → reflection-based micro-coaching → consistency quests and streak protection.";
+  summary.textContent = "Adaptive order: readiness + time-aware session length → coached routine + form quality scoring → monthly levels, weekly wrap-up, and challenge unlocks.";
 }
 
 function renderSessionMetrics() {
@@ -1139,7 +1466,7 @@ function renderHistoryView() {
 
       const meta = document.createElement("p");
       meta.className = "history-item-meta";
-      const presetLabel = entry.preset === "rescue" ? "Rescue" : "Full";
+      const presetLabel = entry.preset === "rescue" ? "Rescue" : labelForSessionLength(entry.preset || "full");
       meta.textContent = `${Math.max(1, Math.round(entry.durationSec / 60))} min • ${entry.mode === "auto" ? "Auto" : "Manual"} mode • ${presetLabel}`;
 
       item.append(title, meta);
@@ -1344,6 +1671,39 @@ function advanceProgramProgress() {
   }
 
   saveProgramState(state.programState);
+
+  if (state.programState.week % 4 === 0 && state.programState.sessionsInWeek === 0) {
+    showFeedbackBanner("Deload week activated. Keep intensity controlled.");
+  }
+}
+
+function maybeUnlockBadges() {
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const streak = computeStreakDays(activeDayKeys);
+  const badges = new Set(state.badges);
+
+  const unlocks = [
+    { id: "First Win", check: state.sessionsCompleted >= 1 },
+    { id: "Consistency 7", check: streak >= 7 },
+    { id: "Quest Closer", check: computeWeeklyQuest(activeDayKeys, state.checkinDays, state.buddyPings).percent >= 80 },
+    { id: "Monthly Silver", check: computeMonthlyChallenge(state.sessionLog).level === "Silver" || computeMonthlyChallenge(state.sessionLog).level === "Gold" || computeMonthlyChallenge(state.sessionLog).level === "Elite" }
+  ];
+
+  let newest = "";
+  unlocks.forEach((unlock) => {
+    if (!unlock.check || badges.has(unlock.id)) return;
+    badges.add(unlock.id);
+    newest = unlock.id;
+  });
+
+  state.badges = Array.from(badges);
+  localStorage.setItem(BADGES_KEY, JSON.stringify(state.badges));
+
+  if (newest) {
+    state.lastBadge = newest;
+    localStorage.setItem(LAST_BADGE_KEY, newest);
+    showFeedbackBanner(`Badge unlocked: ${newest}`);
+  }
 }
 
 function rewardShieldMilestones() {
@@ -1384,6 +1744,116 @@ function computeWeeklyQuest(activeDayKeys, checkinDays, buddyPings) {
   };
 }
 
+function normalizeSessionLength(value) {
+  const allowed = new Set(["quick", "standard", "deep", "full"]);
+  return allowed.has(value) ? value : "standard";
+}
+
+function selectSessionLength(minutes) {
+  const safeMinutes = Number(minutes) || 15;
+  if (safeMinutes <= 3) return "quick";
+  if (safeMinutes <= 10) return "standard";
+  if (safeMinutes <= 18) return "deep";
+  return "full";
+}
+
+function labelForSessionLength(length) {
+  const labels = {
+    quick: "Quick",
+    standard: "Standard",
+    deep: "Deep",
+    full: "Full"
+  };
+  return labels[normalizeSessionLength(length)] || "Standard";
+}
+
+function recordSoreness(sorenessLog, dayKey, soreness) {
+  const withoutToday = sorenessLog.filter((entry) => entry.dayKey !== dayKey);
+  return [{ dayKey, soreness }, ...withoutToday].slice(0, 10);
+}
+
+function hasConsecutiveHighSoreness(sorenessLog, requiredDays, threshold) {
+  const sorted = [...sorenessLog]
+    .filter((entry) => /^\d{4}-\d{2}-\d{2}$/.test(entry.dayKey))
+    .sort((a, b) => (a.dayKey < b.dayKey ? 1 : -1));
+
+  if (sorted.length < requiredDays) return false;
+  return sorted.slice(0, requiredDays).every((entry) => Number(entry.soreness) >= threshold);
+}
+
+function computeRecentFormAverage() {
+  const rows = Object.values(state.formRatings || {});
+  if (rows.length === 0) return 2;
+  const total = rows.reduce((sum, row) => sum + (row.total || 0), 0);
+  const count = rows.reduce((sum, row) => sum + (row.count || 0), 0);
+  return count === 0 ? 2 : total / count;
+}
+
+function maybeAutoSwitchProgramTrack() {
+  const previousWeekSessions = countInPreviousWeek(computeActiveDayKeys(state.sessionDays, state.dayProgressEdits));
+  if (previousWeekSessions <= 1 && state.programTrack !== "recovery") {
+    state.programTrack = "recovery";
+    saveProgramTrack(state.programTrack);
+    syncProgramUI();
+  }
+}
+
+function countInPreviousWeek(dayKeys) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayOfWeek = (today.getDay() + 6) % 7;
+  const currentMonday = new Date(today);
+  currentMonday.setDate(today.getDate() - dayOfWeek);
+  const previousSunday = new Date(currentMonday);
+  previousSunday.setDate(currentMonday.getDate() - 1);
+  const previousMonday = new Date(previousSunday);
+  previousMonday.setDate(previousSunday.getDate() - 6);
+  const startKey = toDayKey(previousMonday);
+  const endKey = toDayKey(previousSunday);
+  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+}
+
+function buildCoachTimeline(recommendation, sessionLog) {
+  const latestSession = sessionLog[0];
+  const yesterday = latestSession
+    ? `${Math.max(1, Math.round((latestSession.durationSec || 0) / 60))} min ${latestSession.preset === "rescue" ? "Rescue" : "Flow"}`
+    : "No session logged";
+  const today = `${recommendation.label} • ${labelForSessionLength(state.sessionLength)} session`;
+  const tomorrow = recommendation.intensity === "High"
+    ? "Aim to hold quality under load"
+    : recommendation.intensity === "Moderate"
+      ? "Build consistency with clean reps"
+      : "Prioritize recovery and mobility range";
+
+  return { yesterday, today, tomorrow };
+}
+
+function computeMonthlyChallenge(sessionLog) {
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthSessions = sessionLog.filter((entry) => entry.completedAt?.slice(0, 7) === monthKey).length;
+
+  if (monthSessions >= 26) return { level: "Elite", target: 26, sessions: monthSessions, unlock: "Elite Aura Theme" };
+  if (monthSessions >= 20) return { level: "Gold", target: 20, sessions: monthSessions, unlock: "Gold Edge Badges" };
+  if (monthSessions >= 14) return { level: "Silver", target: 14, sessions: monthSessions, unlock: "Silver Coach Card" };
+  return { level: "Bronze", target: 8, sessions: monthSessions, unlock: "Starter Pack" };
+}
+
+function buildWeeklyWrapup(activeDayKeys, sessionLog) {
+  const today = new Date();
+  const isSunday = today.getDay() === 0;
+  if (!isSunday) return "Weekly wrap-up appears Sunday.";
+
+  const weeklySessions = countInCurrentWeek(activeDayKeys);
+  const weeklyMinutes = Math.round(
+    sessionLog
+      .filter((entry) => toDayKey(entry.completedAt) >= toDayKey(new Date(Date.now() - 6 * 86400000)))
+      .reduce((sum, entry) => sum + (entry.durationSec || 0), 0) / 60
+  );
+
+  return `Weekly wrap-up: ${weeklySessions} sessions • ${weeklyMinutes} minutes • keep momentum into next week.`;
+}
+
 function countInLastDays(dayKeys, numberOfDays) {
   if (!Array.isArray(dayKeys)) return 0;
   const end = new Date();
@@ -1413,7 +1883,16 @@ function estimatedRoutineDurationSec() {
 }
 
 function getSessionStepLimit() {
-  return state.sessionPreset === "rescue" ? 4 : routineSteps.length;
+  if (state.sessionPreset === "rescue") return 4;
+
+  const limits = {
+    quick: 4,
+    standard: 8,
+    deep: 10,
+    full: routineSteps.length
+  };
+
+  return limits[normalizeSessionLength(state.sessionLength)] || routineSteps.length;
 }
 
 function loadSessionCount() {
@@ -1457,6 +1936,11 @@ function syncOptionUI() {
   if (progressionMode) progressionMode.value = state.progressionMode;
   if (soundEnabled) soundEnabled.checked = state.soundEnabled;
   if (hapticsEnabled) hapticsEnabled.checked = state.hapticsEnabled;
+  if (voiceCuesEnabled) voiceCuesEnabled.checked = state.voiceCuesEnabled;
+  if (remindersEnabled) remindersEnabled.checked = state.reminders.enabled;
+  if (morningReminderTime) morningReminderTime.value = state.reminders.morning;
+  if (eveningReminderTime) eveningReminderTime.value = state.reminders.evening;
+  if (ifthenReminder) ifthenReminder.checked = state.reminders.ifThen;
   if (themeSelect) themeSelect.value = state.theme;
 }
 
@@ -1546,6 +2030,73 @@ function saveReflectionLog(values) {
   localStorage.setItem(REFLECTION_LOG_KEY, JSON.stringify(values));
 }
 
+function loadSessionLength() {
+  return normalizeSessionLength(localStorage.getItem(SESSION_LENGTH_KEY) || "standard");
+}
+
+function loadSorenessLog() {
+  try {
+    const raw = localStorage.getItem(SORENESS_LOG_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((entry) => entry && /^\d{4}-\d{2}-\d{2}$/.test(entry.dayKey))
+      .map((entry) => ({ dayKey: entry.dayKey, soreness: clampReadiness(entry.soreness) }));
+  } catch {
+    return [];
+  }
+}
+
+function loadFormRatings() {
+  try {
+    const raw = localStorage.getItem(FORM_RATINGS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    if (!parsed || typeof parsed !== "object") return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+function loadBadges() {
+  try {
+    const raw = localStorage.getItem(BADGES_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    return Array.isArray(parsed) ? parsed.map((value) => String(value)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadReminders() {
+  try {
+    const raw = localStorage.getItem(REMINDERS_KEY);
+    const parsed = JSON.parse(raw || "null");
+    if (!parsed || typeof parsed !== "object") {
+      return {
+        enabled: false,
+        morning: "08:00",
+        evening: "18:00",
+        ifThen: false
+      };
+    }
+
+    return {
+      enabled: Boolean(parsed.enabled),
+      morning: String(parsed.morning || "08:00"),
+      evening: String(parsed.evening || "18:00"),
+      ifThen: Boolean(parsed.ifThen)
+    };
+  } catch {
+    return {
+      enabled: false,
+      morning: "08:00",
+      evening: "18:00",
+      ifThen: false
+    };
+  }
+}
+
 function loadTheme() {
   const stored = localStorage.getItem(THEME_KEY);
   const allowed = new Set(["default", "cobalt", "emerald", "sunset", "neon", "voltage", "inferno", "aurora"]);
@@ -1622,6 +2173,18 @@ function triggerFeedback(type) {
     playTone(type);
   }
 
+  if (state.voiceCuesEnabled) {
+    const cueMap = {
+      start: `Starting ${routineSteps[state.stepIndex]?.name || "session"}.`,
+      pause: "Session paused.",
+      resume: "Session resumed.",
+      stepChange: `${routineSteps[state.stepIndex]?.name || "Next step"}.`,
+      stepDone: "Step complete.",
+      sessionDone: "Session complete. Great work."
+    };
+    speakCue(cueMap[type] || "");
+  }
+
   if (state.hapticsEnabled && "vibrate" in navigator) {
     const patterns = {
       start: 20,
@@ -1634,6 +2197,16 @@ function triggerFeedback(type) {
 
     navigator.vibrate(patterns[type] || 15);
   }
+}
+
+function speakCue(text) {
+  if (!text || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 0.85;
+  window.speechSynthesis.speak(utterance);
 }
 
 function playTone(type) {
