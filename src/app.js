@@ -593,25 +593,25 @@ function sendBuddyPing() {
 
 function generateCoachMantra() {
   const prompts = [
-    "Control the rep, control the day.",
-    "Discipline is built one clean set at a time.",
-    "Move with intent; finish with pride.",
-    "Consistency beats intensity when you show up daily.",
-    "Breathe, brace, and own each transition.",
-    "Strong form now creates strong sessions later."
+    "Mission: complete one clean session before noon.",
+    "Mission: move with control and finish every transition.",
+    "Mission: protect your streak with at least a quick flow.",
+    "Mission: prioritize form quality over speed today.",
+    "Mission: own your breathing cadence through each step.",
+    "Mission: finish strong with perfect posture on the last movement."
   ];
 
   state.focusPrompt = prompts[Math.floor(Math.random() * prompts.length)];
   localStorage.setItem(FOCUS_PROMPT_KEY, state.focusPrompt);
   renderTodayDashboard();
-  showFeedbackBanner("Coach mantra generated.");
+  showFeedbackBanner("Today's mission generated.");
 }
 
 async function copyCoachMantra() {
-  const prompt = state.focusPrompt || "Generate a mantra first.";
+  const prompt = state.focusPrompt || "Generate a mission first.";
   try {
     await navigator.clipboard.writeText(prompt);
-    showFeedbackBanner("Coach mantra copied.");
+    showFeedbackBanner("Today's mission copied.");
   } catch {
     showFeedbackBanner("Copy unavailable. Select and copy manually.");
   }
@@ -888,8 +888,8 @@ function renderTodayDashboard() {
 
   if (focusPromptText) {
     focusPromptText.textContent = state.focusPrompt
-      ? `Mantra: ${state.focusPrompt}`
-      : "Mantra: generate your daily line.";
+      ? `Mission: ${state.focusPrompt}`
+      : "Mission: generate today's objective.";
   }
 
   if (monthLevel) {
