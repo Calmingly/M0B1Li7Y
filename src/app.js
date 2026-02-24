@@ -24,7 +24,8 @@ const BADGES_KEY = "m0b1li7y.badges";
 const LAST_BADGE_KEY = "m0b1li7y.lastBadge";
 const REMINDERS_KEY = "m0b1li7y.reminders";
 const VOICE_CUES_KEY = "m0b1li7y.voiceCues";
-const FOCUS_PROMPT_KEY = "m0b1li7y.focusPrompt";
+const MISSION_TEXT_KEY = "m0b1li7y.missionText";
+const LEGACY_FOCUS_PROMPT_KEY = "m0b1li7y.focusPrompt";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -98,9 +99,9 @@ const shieldCount = document.getElementById("shield-count");
 const useShieldBtn = document.getElementById("use-shield-btn");
 const buddyPingBtn = document.getElementById("buddy-ping-btn");
 const buddyStatus = document.getElementById("buddy-status");
-const generatePromptBtn = document.getElementById("generate-prompt-btn");
-const copyPromptBtn = document.getElementById("copy-prompt-btn");
-const focusPromptText = document.getElementById("focus-prompt-text");
+const generateMissionBtn = document.getElementById("generate-mission-btn");
+const copyMissionBtn = document.getElementById("copy-mission-btn");
+const missionText = document.getElementById("mission-text");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
@@ -195,7 +196,7 @@ const state = {
   lastBadge: localStorage.getItem(LAST_BADGE_KEY) || "",
   reminders: loadReminders(),
   voiceCuesEnabled: loadBoolean(VOICE_CUES_KEY, false),
-  focusPrompt: localStorage.getItem(FOCUS_PROMPT_KEY) || "",
+  missionText: localStorage.getItem(MISSION_TEXT_KEY) || localStorage.getItem(LEGACY_FOCUS_PROMPT_KEY) || "",
   sessionPreset: "full",
   durationScale: 1,
   activeView: "today-view",
@@ -205,6 +206,13 @@ const state = {
 init();
 
 function init() {
+  if (!localStorage.getItem(MISSION_TEXT_KEY)) {
+    const legacyMission = localStorage.getItem(LEGACY_FOCUS_PROMPT_KEY);
+    if (legacyMission) {
+      localStorage.setItem(MISSION_TEXT_KEY, legacyMission);
+    }
+  }
+
   if (state.recommendation?.durationScale) {
     state.durationScale = clampDurationScale(state.recommendation.durationScale);
   }
@@ -288,8 +296,8 @@ function wireEvents() {
   useShieldBtn?.addEventListener("click", useShieldForToday);
   buddyPingBtn?.addEventListener("click", sendBuddyPing);
   saveReflectionBtn?.addEventListener("click", saveSessionReflection);
-  generatePromptBtn?.addEventListener("click", generateCoachMantra);
-  copyPromptBtn?.addEventListener("click", copyCoachMantra);
+  generateMissionBtn?.addEventListener("click", generateTodaysMission);
+  copyMissionBtn?.addEventListener("click", copyTodaysMission);
   requestNotificationBtn?.addEventListener("click", requestNotificationPermission);
   exportDataBtn?.addEventListener("click", exportProgressData);
   importDataBtn?.addEventListener("click", () => importDataFile?.click());
@@ -591,7 +599,7 @@ function sendBuddyPing() {
   triggerFeedback("stepChange");
 }
 
-function generateCoachMantra() {
+function generateTodaysMission() {
   const prompts = [
     "Mission: complete one clean session before noon.",
     "Mission: move with control and finish every transition.",
@@ -601,14 +609,14 @@ function generateCoachMantra() {
     "Mission: finish strong with perfect posture on the last movement."
   ];
 
-  state.focusPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-  localStorage.setItem(FOCUS_PROMPT_KEY, state.focusPrompt);
+  state.missionText = prompts[Math.floor(Math.random() * prompts.length)];
+  localStorage.setItem(MISSION_TEXT_KEY, state.missionText);
   renderTodayDashboard();
   showFeedbackBanner("Today's mission generated.");
 }
 
-async function copyCoachMantra() {
-  const prompt = state.focusPrompt || "Generate a mission first.";
+async function copyTodaysMission() {
+  const prompt = state.missionText || "Generate a mission first.";
   try {
     await navigator.clipboard.writeText(prompt);
     showFeedbackBanner("Today's mission copied.");
@@ -886,9 +894,9 @@ function renderTodayDashboard() {
       : "No buddy pings this week yet.";
   }
 
-  if (focusPromptText) {
-    focusPromptText.textContent = state.focusPrompt
-      ? `Mission: ${state.focusPrompt}`
+  if (missionText) {
+    missionText.textContent = state.missionText
+      ? `Mission: ${state.missionText}`
       : "Mission: generate today's objective.";
   }
 
