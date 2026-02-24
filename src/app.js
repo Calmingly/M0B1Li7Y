@@ -1548,7 +1548,7 @@ function saveReflectionLog(values) {
 
 function loadTheme() {
   const stored = localStorage.getItem(THEME_KEY);
-  const allowed = new Set(["default", "cobalt", "emerald", "sunset"]);
+  const allowed = new Set(["default", "cobalt", "emerald", "sunset", "neon", "voltage", "inferno", "aurora"]);
   return allowed.has(stored) ? stored : "default";
 }
 
