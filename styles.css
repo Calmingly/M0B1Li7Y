@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap");
+
 :root {
   color-scheme: dark;
   --bg-1: #030712;
@@ -107,8 +109,9 @@ body {
   margin: 0;
   font-size: clamp(1.4rem, 3.8vw, 1.95rem);
   font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-family: "Caveat", "Segoe Print", "Bradley Hand", "Marker Felt", cursive;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: color-mix(in srgb, var(--accent) 65%, white);
 }
 
