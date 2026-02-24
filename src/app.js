@@ -288,8 +288,8 @@ function wireEvents() {
   useShieldBtn?.addEventListener("click", useShieldForToday);
   buddyPingBtn?.addEventListener("click", sendBuddyPing);
   saveReflectionBtn?.addEventListener("click", saveSessionReflection);
-  generatePromptBtn?.addEventListener("click", generateFocusPrompt);
-  copyPromptBtn?.addEventListener("click", copyFocusPrompt);
+  generatePromptBtn?.addEventListener("click", generateCoachMantra);
+  copyPromptBtn?.addEventListener("click", copyCoachMantra);
   requestNotificationBtn?.addEventListener("click", requestNotificationPermission);
   exportDataBtn?.addEventListener("click", exportProgressData);
   importDataBtn?.addEventListener("click", () => importDataFile?.click());
@@ -591,27 +591,27 @@ function sendBuddyPing() {
   triggerFeedback("stepChange");
 }
 
-function generateFocusPrompt() {
+function generateCoachMantra() {
   const prompts = [
-    "Stack one high-quality rep at a time; momentum comes from consistency.",
-    "Stay tall, slow your breath, and own each transition.",
-    "Quality first today: smooth control beats speed.",
-    "Finish what you start — even a short session counts.",
-    "Treat recovery as training; move with intent.",
-    "Clean form now builds stronger sessions tomorrow."
+    "Control the rep, control the day.",
+    "Discipline is built one clean set at a time.",
+    "Move with intent; finish with pride.",
+    "Consistency beats intensity when you show up daily.",
+    "Breathe, brace, and own each transition.",
+    "Strong form now creates strong sessions later."
   ];
 
   state.focusPrompt = prompts[Math.floor(Math.random() * prompts.length)];
   localStorage.setItem(FOCUS_PROMPT_KEY, state.focusPrompt);
   renderTodayDashboard();
-  showFeedbackBanner("Focus cue generated.");
+  showFeedbackBanner("Coach mantra generated.");
 }
 
-async function copyFocusPrompt() {
-  const prompt = state.focusPrompt || "Generate a focus cue first.";
+async function copyCoachMantra() {
+  const prompt = state.focusPrompt || "Generate a mantra first.";
   try {
     await navigator.clipboard.writeText(prompt);
-    showFeedbackBanner("Focus cue copied.");
+    showFeedbackBanner("Coach mantra copied.");
   } catch {
     showFeedbackBanner("Copy unavailable. Select and copy manually.");
   }
@@ -888,8 +888,8 @@ function renderTodayDashboard() {
 
   if (focusPromptText) {
     focusPromptText.textContent = state.focusPrompt
-      ? `Focus prompt: ${state.focusPrompt}`
-      : "Focus prompt: generate your daily cue.";
+      ? `Mantra: ${state.focusPrompt}`
+      : "Mantra: generate your daily line.";
   }
 
   if (monthLevel) {
