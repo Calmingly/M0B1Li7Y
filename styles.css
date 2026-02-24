@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap");
 
 :root {
   color-scheme: dark;
@@ -109,7 +109,7 @@ body {
   margin: 0;
   font-size: clamp(1.4rem, 3.8vw, 1.95rem);
   font-weight: 800;
-  font-family: "Caveat", "Segoe Print", "Bradley Hand", "Marker Felt", cursive;
+  font-family: "Kalam", "Segoe Print", "Bradley Hand", "Marker Felt", cursive;
   letter-spacing: 0.02em;
   text-transform: none;
   color: color-mix(in srgb, var(--accent) 65%, white);
@@ -118,7 +118,7 @@ body {
 h1 {
   margin: 0.2rem 0 0;
   font-size: clamp(1.05rem, 2.3vw, 1.25rem);
-  font-weight: 650;
+  font-weight: 400;
   letter-spacing: 0.01em;
   text-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
 }
