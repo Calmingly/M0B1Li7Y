@@ -102,6 +102,10 @@ const top3Session = document.getElementById("top3-session");
 const top3Reflection = document.getElementById("top3-reflection");
 const top3Summary = document.getElementById("top3-summary");
 const top3NextAction = document.getElementById("top3-next-action");
+const sessionCompleteCard = document.getElementById("session-complete-card");
+const sessionCompleteTime = document.getElementById("session-complete-time");
+const sessionCompleteMeta = document.getElementById("session-complete-meta");
+const sessionCompleteNext = document.getElementById("session-complete-next");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
@@ -941,6 +945,31 @@ function renderTodayDashboard() {
       : !top3Items[1].done
       ? "Next: Complete your recommended session (or rescue)."
       : "Next: Save post-session reflection to lock in tomorrow’s adjustment.";
+  }
+
+  const latestSession = state.sessionLog[0] || null;
+  const latestSessionIsToday = latestSession ? toDayKey(latestSession.completedAt) === todayKey : false;
+  if (sessionCompleteCard) {
+    sessionCompleteCard.hidden = !latestSessionIsToday;
+  }
+
+  if (latestSessionIsToday && latestSession) {
+    const minutes = Math.max(1, Math.round((latestSession.durationSec || 0) / 60));
+    const modeLabel = latestSession.mode === "auto" ? "Auto" : "Manual";
+    const presetLabel = latestSession.preset === "rescue" ? "Rescue" : labelForSessionLength(latestSession.preset || "full");
+    const reflectionDoneToday = state.reflectionLog.some((entry) => entry.dayKey === todayKey);
+
+    if (sessionCompleteTime) {
+      sessionCompleteTime.textContent = `Completed ${formatDateTime(latestSession.completedAt)}.`;
+    }
+    if (sessionCompleteMeta) {
+      sessionCompleteMeta.textContent = `${minutes} min • ${modeLabel} mode • ${presetLabel}`;
+    }
+    if (sessionCompleteNext) {
+      sessionCompleteNext.textContent = reflectionDoneToday
+        ? "Next: Review your coach tip and keep momentum tomorrow."
+        : "Next: Save post-session reflection to personalize your next plan.";
+    }
   }
 
   if (buddyStatus) {

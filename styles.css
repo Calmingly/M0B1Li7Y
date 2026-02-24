@@ -591,6 +591,16 @@ h1 {
   color: color-mix(in srgb, var(--accent) 72%, white);
 }
 
+#session-complete-time {
+  margin-top: 0.4rem;
+  color: color-mix(in srgb, var(--accent) 62%, white);
+}
+
+#session-complete-meta,
+#session-complete-next {
+  margin-top: 0.22rem;
+}
+
 .reflection-card {
   margin-top: 0.58rem;
   border: 1px solid color-mix(in srgb, var(--border) 88%, black);
