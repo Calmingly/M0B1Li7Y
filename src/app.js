@@ -97,6 +97,11 @@ const shieldCount = document.getElementById("shield-count");
 const useShieldBtn = document.getElementById("use-shield-btn");
 const buddyPingBtn = document.getElementById("buddy-ping-btn");
 const buddyStatus = document.getElementById("buddy-status");
+const top3Checkin = document.getElementById("top3-checkin");
+const top3Session = document.getElementById("top3-session");
+const top3Reflection = document.getElementById("top3-reflection");
+const top3Summary = document.getElementById("top3-summary");
+const top3NextAction = document.getElementById("top3-next-action");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
@@ -806,6 +811,7 @@ function renderTodayDashboard() {
   });
 
   const recommendation = state.recommendation || fallbackRecommendation;
+  const todayKey = toDayKey(new Date());
   const isToday = state.readiness?.dayKey === toDayKey(new Date());
   const monthly = computeMonthlyChallenge(state.sessionLog);
   const timeline = buildCoachTimeline(recommendation, state.sessionLog);
@@ -841,9 +847,35 @@ function renderTodayDashboard() {
   }
 
   if (useShieldBtn) {
-    const todayKey = toDayKey(new Date());
     const canUseShield = state.shieldTokens > 0 && !activeDayKeys.includes(todayKey);
     useShieldBtn.disabled = !canUseShield;
+  }
+
+  const top3Items = [
+    { element: top3Checkin, label: "Check-in saved", done: state.readiness?.dayKey === todayKey },
+    { element: top3Session, label: "Session completed", done: activeDayKeys.includes(todayKey) },
+    { element: top3Reflection, label: "Reflection logged", done: state.reflectionLog.some((entry) => entry.dayKey === todayKey) }
+  ];
+
+  top3Items.forEach((item) => {
+    if (!item.element) return;
+    item.element.textContent = `${item.done ? "✓" : "○"} ${item.label}`;
+    item.element.classList.toggle("done", item.done);
+  });
+
+  const top3Completed = top3Items.filter((item) => item.done).length;
+  if (top3Summary) {
+    top3Summary.textContent = `${top3Completed}/3 complete today`;
+  }
+
+  if (top3NextAction) {
+    top3NextAction.textContent = top3Completed === 3
+      ? "All core actions complete. Nice work."
+      : !top3Items[0].done
+      ? "Next: Save your check-in to personalize today’s plan."
+      : !top3Items[1].done
+      ? "Next: Complete your recommended session (or rescue)."
+      : "Next: Save post-session reflection to lock in tomorrow’s adjustment.";
   }
 
   if (buddyStatus) {

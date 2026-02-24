@@ -558,6 +558,23 @@ h1 {
   color: var(--text-muted);
 }
 
+.top3-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.48rem 0 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.top3-item {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--text) 90%, white);
+}
+
+.top3-item.done {
+  color: color-mix(in srgb, var(--accent) 72%, white);
+}
+
 .reflection-card {
   margin-top: 0.58rem;
   border: 1px solid color-mix(in srgb, var(--border) 88%, black);
