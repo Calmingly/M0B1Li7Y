@@ -392,11 +392,31 @@ function onTop3QuickAction(event) {
   if (!(target instanceof HTMLElement)) return;
 
   const action = target.dataset.action;
+  const todayKey = toDayKey(new Date());
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const status = {
+    checkin: state.readiness?.dayKey === todayKey,
+    session: activeDayKeys.includes(todayKey),
+    reflection: state.reflectionLog.some((entry) => entry.dayKey === todayKey)
+  };
+
+  if (action === "session" && status.session) {
+    switchView("history-view");
+    focusAndReveal(historyTotalSessions);
+    showFeedbackBanner("Session already done. Jumped to history snapshot.");
+    return;
+  }
+
   switchView("today-view");
 
   if (action === "checkin") {
-    focusAndReveal(saveCheckinBtn);
-    showFeedbackBanner("Jumped to check-in action.");
+    if (status.checkin) {
+      focusAndReveal(readinessHeadline);
+      showFeedbackBanner("Check-in already saved. Jumped to today’s plan review.");
+    } else {
+      focusAndReveal(saveCheckinBtn);
+      showFeedbackBanner("Jumped to check-in action.");
+    }
     return;
   }
 
@@ -407,8 +427,13 @@ function onTop3QuickAction(event) {
   }
 
   if (action === "reflection") {
-    focusAndReveal(saveReflectionBtn);
-    showFeedbackBanner("Jumped to reflection save.");
+    if (status.reflection) {
+      focusAndReveal(reflectionCoachTip);
+      showFeedbackBanner("Reflection already logged. Jumped to coach tip review.");
+    } else {
+      focusAndReveal(saveReflectionBtn);
+      showFeedbackBanner("Jumped to reflection save.");
+    }
   }
 }
 
