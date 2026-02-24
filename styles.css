@@ -601,6 +601,10 @@ h1 {
   margin-top: 0.22rem;
 }
 
+#session-complete-action-btn {
+  margin-top: 0.42rem;
+}
+
 .reflection-card {
   margin-top: 0.58rem;
   border: 1px solid color-mix(in srgb, var(--border) 88%, black);

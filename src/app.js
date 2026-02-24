@@ -106,6 +106,7 @@ const sessionCompleteCard = document.getElementById("session-complete-card");
 const sessionCompleteTime = document.getElementById("session-complete-time");
 const sessionCompleteMeta = document.getElementById("session-complete-meta");
 const sessionCompleteNext = document.getElementById("session-complete-next");
+const sessionCompleteActionBtn = document.getElementById("session-complete-action-btn");
 const reflectionEffort = document.getElementById("reflection-effort");
 const reflectionForm = document.getElementById("reflection-form");
 const reflectionEffortOutput = document.getElementById("reflection-effort-output");
@@ -359,6 +360,8 @@ function wireEvents() {
     });
   });
 
+  sessionCompleteActionBtn?.addEventListener("click", onSessionCompleteQuickAction);
+
   historyDays?.addEventListener("input", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -445,6 +448,22 @@ function focusAndReveal(element) {
   if (!(element instanceof HTMLElement)) return;
   element.scrollIntoView({ behavior: "smooth", block: "center" });
   element.focus({ preventScroll: true });
+}
+
+function onSessionCompleteQuickAction() {
+  const todayKey = toDayKey(new Date());
+  const reflectionDoneToday = state.reflectionLog.some((entry) => entry.dayKey === todayKey);
+
+  if (!reflectionDoneToday) {
+    switchView("today-view");
+    focusAndReveal(saveReflectionBtn);
+    showFeedbackBanner("Jumped to reflection save.");
+    return;
+  }
+
+  switchView("history-view");
+  focusAndReveal(historyTotalSessions);
+  showFeedbackBanner("Jumped to history snapshot.");
 }
 
 function wireButtonPressEffects() {
@@ -969,6 +988,22 @@ function renderTodayDashboard() {
       sessionCompleteNext.textContent = reflectionDoneToday
         ? "Next: Review your coach tip and keep momentum tomorrow."
         : "Next: Save post-session reflection to personalize your next plan.";
+    }
+    if (sessionCompleteActionBtn) {
+      const label = reflectionDoneToday ? "View History" : "Jump to Reflection";
+      const labelSpan = sessionCompleteActionBtn.querySelector(".btn-label");
+      if (labelSpan) {
+        labelSpan.textContent = label;
+      } else {
+        sessionCompleteActionBtn.textContent = label;
+      }
+    }
+  } else if (sessionCompleteActionBtn) {
+    const labelSpan = sessionCompleteActionBtn.querySelector(".btn-label");
+    if (labelSpan) {
+      labelSpan.textContent = "Jump to Reflection";
+    } else {
+      sessionCompleteActionBtn.textContent = "Jump to Reflection";
     }
   }
 
