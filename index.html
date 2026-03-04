@@ -20,6 +20,7 @@
       <header class="app-header">
         <p class="eyebrow">M0B1Li7Y</p>
         <h1>Guided Mobility</h1>
+        <p id="app-connectivity" class="app-status" role="status" aria-live="polite">Checking connection...</p>
       </header>
 
       <section id="today-view" class="view">
@@ -34,7 +35,7 @@
 
           <p id="readiness-headline" class="today-headline">Log your readiness to generate a guided recommendation.</p>
           <p id="recommendation-text" class="today-recommendation">Your adaptive coaching plan appears here.</p>
-          <div id="recommendation-chips" class="recommendation-chips" aria-live="polite"></div>
+          <div id="recommendation-chips" class="recommendation-chips"></div>
 
           <section class="session-planner" aria-label="Session planner">
             <label class="option-row" for="time-available">
@@ -153,7 +154,7 @@
 
           <section class="focus-card" aria-label="Today's top 3 checklist">
             <p class="reflection-title">Today's Top 3</p>
-            <ul class="top3-list" aria-live="polite">
+            <ul class="top3-list">
               <li id="top3-checkin" class="top3-item" role="button" tabindex="0" data-action="checkin">○ Check-in saved</li>
               <li id="top3-session" class="top3-item" role="button" tabindex="0" data-action="session">○ Session completed</li>
               <li id="top3-reflection" class="top3-item" role="button" tabindex="0" data-action="reflection">○ Reflection logged</li>
@@ -350,6 +351,28 @@
           <h3>Daily activity</h3>
           <ul id="history-days" class="history-days"></ul>
         </section>
+
+        <section class="panel">
+          <h3>Insights</h3>
+          <div class="today-stats insights-grid" aria-label="Performance insights">
+            <article class="today-stat-card">
+              <p class="metric-label">Readiness trend</p>
+              <p id="insight-readiness" class="metric-value">No trend yet</p>
+              <p id="insight-readiness-meta" class="today-stat-sub">Save check-ins to unlock.</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Best time</p>
+              <p id="insight-best-time" class="metric-value">Not enough data</p>
+              <p id="insight-best-time-meta" class="today-stat-sub">Complete more sessions to learn your pattern.</p>
+            </article>
+            <article class="today-stat-card">
+              <p class="metric-label">Most skipped phase</p>
+              <p id="insight-skipped-phase" class="metric-value">No signal yet</p>
+              <p id="insight-skipped-phase-meta" class="today-stat-sub">Tracked from partial-day edits.</p>
+            </article>
+          </div>
+          <p id="insight-why-plan" class="today-stat-sub">Why this plan: log readiness and reflection to personalize recommendation logic.</p>
+        </section>
       </section>
 
       <section id="settings-view" class="view" hidden>
@@ -398,7 +421,19 @@
             <input id="ifthen-reminder" type="checkbox" />
             <span>If missed morning, remind at evening time</span>
           </label>
-          <button id="request-notification-btn" class="history-save-btn" type="button">Enable Browser Notifications</button>
+          <div class="inline-actions">
+            <button id="request-notification-btn" class="history-save-btn" type="button">Enable Browser Notifications</button>
+            <button id="test-reminder-btn" class="history-save-btn" type="button">Test Reminder Now</button>
+          </div>
+          <p id="notification-status" class="today-stat-sub">Notification permission: unknown.</p>
+        </section>
+
+        <section class="panel">
+          <h3>App install</h3>
+          <div class="inline-actions">
+            <button id="install-app-btn" class="history-save-btn" type="button" disabled>Install App</button>
+          </div>
+          <p id="install-status" class="today-stat-sub">Install prompt not available yet.</p>
         </section>
 
         <section class="panel">
@@ -429,11 +464,16 @@
             <button id="export-data-btn" class="btn" type="button"><span class="btn-label">Export Progress JSON</span></button>
             <button id="import-data-btn" class="btn" type="button"><span class="btn-label">Import Progress JSON</span></button>
           </div>
+          <div class="inline-actions">
+            <button id="reset-today-btn" class="history-save-btn" type="button">Reset Today Data</button>
+          </div>
+          <p id="save-status" class="today-stat-sub">No recent save yet.</p>
+          <p id="import-status" class="today-stat-sub">Import status will appear here.</p>
           <input id="import-data-file" type="file" accept="application/json" hidden />
         </section>
       </section>
 
-      <nav class="tabs" aria-label="Primary tabs">
+      <nav class="tabs" aria-label="Primary tabs" role="tablist">
         <button class="tab-btn active" data-view="today-view">
           <span class="tab-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">

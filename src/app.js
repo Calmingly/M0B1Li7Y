@@ -1,3 +1,27 @@
+import {
+  countInCurrentWeek as countInCurrentWeekUtil,
+  countInLastDays as countInLastDaysUtil,
+  countInPreviousWeek as countInPreviousWeekUtil,
+  computeLast7DaysSessions as computeLast7DaysSessionsUtil,
+  computeStreakDays as computeStreakDaysUtil,
+  toDayKey as toDayKeyUtil
+} from "./modules/date-utils.js";
+import {
+  buildRecommendationPlan,
+  clampDurationScale as clampDurationScaleUtil,
+  labelForSessionLength as labelForSessionLengthUtil,
+  normalizeSessionLength as normalizeSessionLengthUtil,
+  selectSessionLength as selectSessionLengthUtil
+} from "./modules/recommendation.js";
+import {
+  buildCoachTimeline as buildCoachTimelineUtil,
+  buildWeeklyWrapup as buildWeeklyWrapupUtil,
+  computeConsistencyScore as computeConsistencyScoreUtil,
+  computeHistoryInsights,
+  computeMonthlyChallenge as computeMonthlyChallengeUtil,
+  computeWeeklyQuest as computeWeeklyQuestUtil
+} from "./modules/insights.js";
+
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
 const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
 const SESSION_LOG_KEY = "m0b1li7y.sessionLog";
@@ -25,6 +49,8 @@ const LAST_BADGE_KEY = "m0b1li7y.lastBadge";
 const REMINDERS_KEY = "m0b1li7y.reminders";
 const VOICE_CUES_KEY = "m0b1li7y.voiceCues";
 const LAST_COMPLETION_PULSE_KEY = "m0b1li7y.lastCompletionPulse";
+const REMINDER_MARKERS_KEY = "m0b1li7y.reminderMarkers";
+const READINESS_LOG_KEY = "m0b1li7y.readinessLog";
 
 const routineSteps = [
   { name: "Arm Circles", cue: "Smooth shoulder circles.", phase: "Warmup", image: "armcircles.png", durationSec: 30 },
@@ -42,6 +68,7 @@ const routineSteps = [
 ];
 
 const summary = document.getElementById("summary");
+const appConnectivity = document.getElementById("app-connectivity");
 const progressLabel = document.getElementById("progress-label");
 const sessionCount = document.getElementById("session-count");
 const streakCount = document.getElementById("streak-count");
@@ -144,10 +171,24 @@ const morningReminderTime = document.getElementById("morning-reminder-time");
 const eveningReminderTime = document.getElementById("evening-reminder-time");
 const ifthenReminder = document.getElementById("ifthen-reminder");
 const requestNotificationBtn = document.getElementById("request-notification-btn");
+const testReminderBtn = document.getElementById("test-reminder-btn");
+const notificationStatus = document.getElementById("notification-status");
+const installAppBtn = document.getElementById("install-app-btn");
+const installStatus = document.getElementById("install-status");
 const exportDataBtn = document.getElementById("export-data-btn");
 const importDataBtn = document.getElementById("import-data-btn");
+const resetTodayBtn = document.getElementById("reset-today-btn");
+const saveStatus = document.getElementById("save-status");
+const importStatus = document.getElementById("import-status");
 const importDataFile = document.getElementById("import-data-file");
 const themeSelect = document.getElementById("theme-select");
+const insightReadiness = document.getElementById("insight-readiness");
+const insightReadinessMeta = document.getElementById("insight-readiness-meta");
+const insightBestTime = document.getElementById("insight-best-time");
+const insightBestTimeMeta = document.getElementById("insight-best-time-meta");
+const insightSkippedPhase = document.getElementById("insight-skipped-phase");
+const insightSkippedPhaseMeta = document.getElementById("insight-skipped-phase-meta");
+const insightWhyPlan = document.getElementById("insight-why-plan");
 
 const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
 const views = Array.from(document.querySelectorAll(".view"));
@@ -201,11 +242,16 @@ const state = {
   badges: loadBadges(),
   lastBadge: localStorage.getItem(LAST_BADGE_KEY) || "",
   reminders: loadReminders(),
+  reminderMarkers: loadReminderMarkers(),
+  readinessLog: loadReadinessLog(),
   voiceCuesEnabled: loadBoolean(VOICE_CUES_KEY, false),
   sessionPreset: "full",
   durationScale: 1,
   activeView: "today-view",
-  sessionStartedAt: null
+  sessionStartedAt: null,
+  installPromptEvent: null,
+  lastSaveAt: null,
+  lastImportStatus: ""
 };
 
 init();
@@ -223,17 +269,28 @@ function init() {
   seedReadinessInputs();
   seedReflectionInputs();
   seedPlanningInputs();
+  wireConnectivityStatus();
+  wireInstallPrompt();
   syncOptionUI();
   syncProgramUI();
   syncReadinessUI();
   syncReflectionUI();
   syncLengthChips();
+  syncNotificationStatus();
+  syncSaveStatus();
+  syncImportStatus();
   applyTheme(state.theme);
   renderSummary();
   renderTodayDashboard();
   renderStep();
   renderSessionMetrics();
   renderHistoryView();
+  renderInsights();
+  registerServiceWorker();
+  scheduleReminderPolling();
+  tabButtons.forEach((button) => {
+    button.setAttribute("role", "tab");
+  });
   updateControls();
 }
 
@@ -281,6 +338,7 @@ function wireEvents() {
     button.addEventListener("click", () => {
       switchView(button.dataset.view);
     });
+    button.addEventListener("keydown", onTabKeydown);
   });
 
   [readinessEnergy, readinessSoreness, readinessMood].forEach((input) => {
@@ -295,9 +353,12 @@ function wireEvents() {
   buddyPingBtn?.addEventListener("click", sendBuddyPing);
   saveReflectionBtn?.addEventListener("click", saveSessionReflection);
   requestNotificationBtn?.addEventListener("click", requestNotificationPermission);
+  testReminderBtn?.addEventListener("click", sendTestReminder);
+  installAppBtn?.addEventListener("click", promptInstallApp);
   exportDataBtn?.addEventListener("click", exportProgressData);
   importDataBtn?.addEventListener("click", () => importDataFile?.click());
   importDataFile?.addEventListener("change", importProgressData);
+  resetTodayBtn?.addEventListener("click", resetTodayData);
 
   [lengthQuick, lengthStandard, lengthDeep, lengthFull].forEach((button) => {
     button?.addEventListener("click", () => {
@@ -496,11 +557,12 @@ function wireButtonPressEffects() {
     useShieldBtn,
     buddyPingBtn,
     saveReflectionBtn,
-    generatePromptBtn,
-    copyPromptBtn,
     requestNotificationBtn,
+    testReminderBtn,
+    installAppBtn,
     exportDataBtn,
-    importDataBtn
+    importDataBtn,
+    resetTodayBtn
   ].filter(Boolean);
   pressableButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -511,6 +573,205 @@ function wireButtonPressEffects() {
       window.setTimeout(() => {
         button.classList.remove("btn-press");
       }, 220);
+    });
+  });
+}
+
+function onTabKeydown(event) {
+  const currentIndex = tabButtons.findIndex((button) => button === event.currentTarget);
+  if (currentIndex < 0) return;
+
+  const key = event.key;
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(key)) return;
+  event.preventDefault();
+
+  let nextIndex = currentIndex;
+  if (key === "ArrowLeft") {
+    nextIndex = (currentIndex - 1 + tabButtons.length) % tabButtons.length;
+  } else if (key === "ArrowRight") {
+    nextIndex = (currentIndex + 1) % tabButtons.length;
+  } else if (key === "Home") {
+    nextIndex = 0;
+  } else if (key === "End") {
+    nextIndex = tabButtons.length - 1;
+  }
+
+  const nextButton = tabButtons[nextIndex];
+  if (!nextButton) return;
+  nextButton.focus();
+  switchView(nextButton.dataset.view);
+}
+
+function wireConnectivityStatus() {
+  const updateStatus = () => {
+    if (!appConnectivity) return;
+    appConnectivity.textContent = navigator.onLine
+      ? "Online. Sync and install are available."
+      : "Offline mode. Core routine still works.";
+  };
+
+  updateStatus();
+  window.addEventListener("online", () => {
+    updateStatus();
+    showFeedbackBanner("Back online.");
+  });
+  window.addEventListener("offline", () => {
+    updateStatus();
+    showFeedbackBanner("You are offline. Using cached data.");
+  });
+}
+
+function wireInstallPrompt() {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    state.installPromptEvent = event;
+    if (installAppBtn) installAppBtn.disabled = false;
+    if (installStatus) installStatus.textContent = "Install is ready for this device/browser.";
+  });
+
+  window.addEventListener("appinstalled", () => {
+    state.installPromptEvent = null;
+    if (installAppBtn) installAppBtn.disabled = true;
+    if (installStatus) installStatus.textContent = "App installed successfully.";
+  });
+}
+
+async function promptInstallApp() {
+  if (!state.installPromptEvent) {
+    if (installStatus) installStatus.textContent = "Install prompt unavailable in this browser context.";
+    return;
+  }
+
+  await state.installPromptEvent.prompt();
+  const result = await state.installPromptEvent.userChoice;
+  if (installStatus) {
+    installStatus.textContent = result.outcome === "accepted"
+      ? "Install accepted."
+      : "Install dismissed.";
+  }
+  state.installPromptEvent = null;
+  if (installAppBtn) installAppBtn.disabled = true;
+}
+
+function syncNotificationStatus() {
+  if (!notificationStatus) return;
+  if (!("Notification" in window)) {
+    notificationStatus.textContent = "Notification permission: not supported in this browser.";
+    return;
+  }
+  notificationStatus.textContent = `Notification permission: ${Notification.permission}.`;
+}
+
+function markSave(label) {
+  state.lastSaveAt = new Date().toISOString();
+  if (saveStatus) {
+    saveStatus.textContent = `${label} saved ${formatDateTime(state.lastSaveAt)}.`;
+  }
+}
+
+function syncSaveStatus() {
+  if (!saveStatus) return;
+  if (!state.lastSaveAt) {
+    saveStatus.textContent = "No recent save yet.";
+    return;
+  }
+  saveStatus.textContent = `Last save ${formatDateTime(state.lastSaveAt)}.`;
+}
+
+function syncImportStatus() {
+  if (!importStatus) return;
+  importStatus.textContent = state.lastImportStatus || "Import status will appear here.";
+}
+
+function loadReminderMarkers() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(REMINDER_MARKERS_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveReminderMarkers() {
+  localStorage.setItem(REMINDER_MARKERS_KEY, JSON.stringify(state.reminderMarkers));
+}
+
+function loadReadinessLog() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(READINESS_LOG_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((entry) => entry && entry.dayKey) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveReadinessLog(entries) {
+  localStorage.setItem(READINESS_LOG_KEY, JSON.stringify(entries));
+}
+
+function scheduleReminderPolling() {
+  window.setInterval(() => {
+    maybeDispatchScheduledReminder();
+  }, 60000);
+  maybeDispatchScheduledReminder();
+}
+
+function maybeDispatchScheduledReminder() {
+  if (!state.reminders.enabled) return;
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const now = new Date();
+  const dayKey = toDayKey(now);
+  const current = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  if (activeDayKeys.includes(dayKey)) return;
+
+  if (current >= state.reminders.morning && !state.reminderMarkers[`${dayKey}:morning`]) {
+    notifyReminder("Morning check-in: log readiness to get today’s coaching plan.");
+    state.reminderMarkers[`${dayKey}:morning`] = true;
+    saveReminderMarkers();
+    return;
+  }
+
+  if (state.reminders.ifThen && current >= state.reminders.evening && !state.reminderMarkers[`${dayKey}:evening`]) {
+    notifyReminder("Evening rescue: a quick 2-minute session protects your streak.");
+    state.reminderMarkers[`${dayKey}:evening`] = true;
+    saveReminderMarkers();
+  }
+}
+
+function notifyReminder(body) {
+  try {
+    const notification = new Notification("M0B1Li7Y", {
+      body,
+      icon: "./icons/icon-192.png"
+    });
+    notification.onclick = () => window.focus();
+  } catch {
+    // Notification may fail in some browser contexts.
+  }
+}
+
+function sendTestReminder() {
+  if (!("Notification" in window)) {
+    showFeedbackBanner("Notifications are not supported in this browser.");
+    return;
+  }
+
+  if (Notification.permission !== "granted") {
+    showFeedbackBanner("Enable notification permission first.");
+    return;
+  }
+
+  notifyReminder("Test reminder from M0B1Li7Y.");
+  showFeedbackBanner("Test reminder sent.");
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {
+      // Keep app functional even when SW registration fails.
     });
   });
 }
@@ -618,6 +879,7 @@ function saveReminderSettings() {
   };
 
   localStorage.setItem(REMINDERS_KEY, JSON.stringify(state.reminders));
+  markSave("Reminder settings");
   renderTodayDashboard();
 }
 
@@ -688,6 +950,7 @@ function sendBuddyPing() {
   const nowIso = new Date().toISOString();
   state.buddyPings = [nowIso, ...state.buddyPings].slice(0, 40);
   saveBuddyPings(state.buddyPings);
+  markSave("Buddy ping");
   renderTodayDashboard();
   showFeedbackBanner("Buddy ping sent.");
   triggerFeedback("stepChange");
@@ -696,6 +959,7 @@ function sendBuddyPing() {
 async function requestNotificationPermission() {
   if (!("Notification" in window)) {
     showFeedbackBanner("Notifications are not supported in this browser.");
+    syncNotificationStatus();
     return;
   }
 
@@ -705,6 +969,7 @@ async function requestNotificationPermission() {
   } else {
     showFeedbackBanner("Notification permission not granted.");
   }
+  syncNotificationStatus();
 }
 
 function exportProgressData() {
@@ -722,6 +987,7 @@ function exportProgressData() {
   anchor.download = `m0b1li7y-progress-${toDayKey(new Date())}.json`;
   anchor.click();
   URL.revokeObjectURL(url);
+  markSave("Export snapshot");
   showFeedbackBanner("Progress exported.");
 }
 
@@ -735,19 +1001,68 @@ function importProgressData(event) {
   reader.onload = () => {
     try {
       const parsed = JSON.parse(String(reader.result || "{}"));
-      Object.entries(parsed).forEach(([key, value]) => {
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("Invalid import format");
+      }
+
+      const entries = Object.entries(parsed);
+      const importedKeys = [];
+      entries.forEach(([key, value]) => {
         if (!key.startsWith("m0b1li7y.")) return;
-        localStorage.setItem(key, String(value));
+        if (typeof value !== "string") return;
+        if (value.length > 200000) return;
+        localStorage.setItem(key, value);
+        importedKeys.push(key);
       });
+
+      if (importedKeys.length === 0) {
+        state.lastImportStatus = "Import rejected: no valid app keys found.";
+        syncImportStatus();
+        showFeedbackBanner("Import failed: no compatible keys.");
+        return;
+      }
+
+      state.lastImportStatus = `Imported ${importedKeys.length} keys. Reloading...`;
+      syncImportStatus();
+      markSave("Imported data");
       showFeedbackBanner("Progress imported. Reloading...");
       window.setTimeout(() => window.location.reload(), 650);
     } catch {
+      state.lastImportStatus = "Import failed: invalid JSON payload.";
+      syncImportStatus();
       showFeedbackBanner("Import failed. Invalid JSON file.");
     }
   };
 
   reader.readAsText(file);
   target.value = "";
+}
+
+function resetTodayData() {
+  const todayKey = toDayKey(new Date());
+
+  state.readiness = state.readiness?.dayKey === todayKey ? null : state.readiness;
+  state.checkinDays = state.checkinDays.filter((dayKey) => dayKey !== todayKey);
+  state.sessionDays = state.sessionDays.filter((dayKey) => dayKey !== todayKey);
+  state.shieldDays = state.shieldDays.filter((dayKey) => dayKey !== todayKey);
+  state.reflectionLog = state.reflectionLog.filter((entry) => entry.dayKey !== todayKey);
+  state.readinessLog = state.readinessLog.filter((entry) => entry.dayKey !== todayKey);
+  delete state.dayProgressEdits[todayKey];
+
+  saveReadiness(state.readiness);
+  saveDayKeyArray(CHECKIN_DAYS_KEY, state.checkinDays);
+  saveSessionDays(state.sessionDays);
+  saveDayKeyArray(SHIELD_DAYS_KEY, state.shieldDays);
+  saveReflectionLog(state.reflectionLog);
+  saveReadinessLog(state.readinessLog);
+  saveDayProgressEdits(state.dayProgressEdits);
+  markSave("Today data reset");
+
+  renderSessionMetrics();
+  renderTodayDashboard();
+  renderHistoryView();
+  renderInsights();
+  showFeedbackBanner("Today data reset.");
 }
 
 function saveSessionReflection() {
@@ -766,6 +1081,7 @@ function saveSessionReflection() {
 
   state.reflectionLog = [entry, ...state.reflectionLog].slice(0, 30);
   saveReflectionLog(state.reflectionLog);
+  markSave("Reflection");
 
   if (reflectionCoachTip) {
     reflectionCoachTip.textContent = tip;
@@ -785,6 +1101,7 @@ function saveSessionReflection() {
   }
 
   renderTodayDashboard();
+  renderInsights();
   updateControls();
   showFeedbackBanner("Reflection saved. Coach plan adjusted.");
   triggerFeedback("stepChange");
@@ -848,9 +1165,21 @@ function saveReadinessCheckin() {
   }
 
   saveReadiness(state.readiness);
+  const readinessScoreValue = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
+  state.readinessLog = [
+    {
+      dayKey: state.readiness.dayKey,
+      score: readinessScoreValue,
+      createdAt: state.readiness.savedAt
+    },
+    ...state.readinessLog.filter((entry) => entry.dayKey !== state.readiness.dayKey)
+  ].slice(0, 35);
+  saveReadinessLog(state.readinessLog);
   saveRecommendation(recommendation);
+  markSave("Readiness check-in");
   syncLengthChips();
   renderTodayDashboard();
+  renderInsights();
   renderStep();
   updateControls();
   showFeedbackBanner("Check-in saved. Plan updated.");
@@ -870,6 +1199,7 @@ function applyRecommendationPlan() {
   localStorage.setItem(SESSION_LENGTH_KEY, state.sessionLength);
   localStorage.setItem(PROGRESSION_MODE_KEY, state.progressionMode);
   saveRecommendation(state.recommendation);
+  markSave("Recommendation");
   syncOptionUI();
   syncLengthChips();
 
@@ -1052,6 +1382,10 @@ function renderTodayDashboard() {
     weeklyWrapup.textContent = buildWeeklyWrapup(activeDayKeys, state.sessionLog);
   }
 
+  if (insightWhyPlan) {
+    insightWhyPlan.textContent = `Why this plan: score ${recommendation.score} with ${recommendation.intensity.toLowerCase()} intensity, ${recommendation.mode} mode, and ${Math.round(recommendation.durationScale * 100)}% tempo.`;
+  }
+
   maybeShowReminderNudge(activeDayKeys);
 
   const latestReflection = getLatestReflection();
@@ -1098,61 +1432,16 @@ function maybeShowReminderNudge(activeDayKeys) {
 }
 
 function buildRecommendation(readiness, stats) {
-  const energy = clampReadiness(readiness?.energy);
-  const soreness = clampReadiness(readiness?.soreness);
-  const mood = clampReadiness(readiness?.mood);
-  const profile = programProfiles[state.programTrack] || programProfiles.beginner;
-  const latestReflection = getLatestReflection();
-  const formAverage = computeRecentFormAverage();
-  const highSoreness = hasConsecutiveHighSoreness(state.sorenessLog, 2, 4);
-  const inDeloadWeek = state.programState.week % 4 === 0;
-  const suggestedLength = selectSessionLength(state.timeAvailableMin);
-
-  const score = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
-  const weeklyBonus = stats.weekly >= 3 ? 4 : 0;
-  const consistencyBonus = stats.streak >= 4 ? 4 : 0;
-  const reflectionBias = latestReflection?.form <= 2 ? -6 : latestReflection?.effort >= 4 && latestReflection?.form >= 4 ? 4 : 0;
-  const formBias = formAverage <= 1.7 ? -5 : formAverage >= 2.7 ? 3 : 0;
-  const deloadBias = inDeloadWeek ? -8 : 0;
-  const sorenessBias = highSoreness ? -12 : 0;
-  const adjusted = Math.max(0, Math.min(100, score + weeklyBonus + consistencyBonus + reflectionBias + formBias + deloadBias + sorenessBias));
-
-  if (highSoreness || adjusted <= 45) {
-    return {
-      score: adjusted,
-      label: "Recovery",
-      intensity: "Low",
-      mode: profile.modeBias === "auto" ? "manual" : profile.modeBias,
-      durationScale: clampDurationScale(0.82 + profile.tempoBias),
-      suggestedLength: suggestedLength === "full" ? "deep" : suggestedLength,
-      headline: highSoreness ? "High soreness detected. Switching to recovery pacing." : "Focus on quality movement and breath control.",
-      description: "Today’s coach call: slower tempo, controlled ranges, and smooth transitions to keep consistency without overload."
-    };
-  }
-
-  if (adjusted <= 75) {
-    return {
-      score: adjusted,
-      label: "Base Build",
-      intensity: "Moderate",
-      mode: profile.modeBias === "manual" ? "manual" : stats.weekly >= 2 ? "auto" : "manual",
-      durationScale: clampDurationScale(1 + profile.tempoBias),
-      suggestedLength,
-      headline: "Balanced mobility and strength flow.",
-      description: "Today’s coach call: standard durations with strong form cues. Keep rhythm steady and finish with intent."
-    };
-  }
-
-  return {
-    score: adjusted,
-    label: "Performance",
-    intensity: "High",
-    mode: profile.modeBias,
-    durationScale: clampDurationScale(1.18 + profile.tempoBias),
-    suggestedLength: suggestedLength === "quick" ? "standard" : suggestedLength,
-    headline: "Push quality and controlled intensity.",
-    description: "Today’s coach call: longer holds on timed steps and continuous flow. Stay crisp on posture throughout."
-  };
+  return buildRecommendationPlan({
+    readiness,
+    stats,
+    profile: programProfiles[state.programTrack] || programProfiles.beginner,
+    latestReflection: getLatestReflection(),
+    formAverage: computeRecentFormAverage(),
+    highSoreness: hasConsecutiveHighSoreness(state.sorenessLog, 2, 4),
+    inDeloadWeek: state.programState.week % 4 === 0,
+    timeAvailableMin: state.timeAvailableMin
+  });
 }
 
 function clampReadiness(value) {
@@ -1162,9 +1451,7 @@ function clampReadiness(value) {
 }
 
 function clampDurationScale(value) {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return 1;
-  return Math.max(0.75, Math.min(1.25, parsed));
+  return clampDurationScaleUtil(value);
 }
 
 function getStepDurationSec(stepIndex) {
@@ -1186,7 +1473,10 @@ function switchView(viewId) {
   });
 
   tabButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.view === viewId);
+    const isActive = button.dataset.view === viewId;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+    button.tabIndex = isActive ? 0 : -1;
   });
 
   if (viewId === "history-view") {
@@ -1306,6 +1596,7 @@ function completeRoutine() {
 
   state.sessionLog = [sessionEntry, ...state.sessionLog].slice(0, 60);
   saveSessionLog(state.sessionLog);
+  markSave("Session");
 
   recordSessionDay();
   advanceProgramProgress();
@@ -1677,6 +1968,49 @@ function renderHistoryView() {
     item.append(details);
     historyDays.append(item);
   });
+
+  renderInsights();
+}
+
+function renderInsights() {
+  const insights = computeHistoryInsights({
+    readiness: state.readinessLog,
+    sessionLog: state.sessionLog,
+    dayProgressEdits: state.dayProgressEdits,
+    routineStepsLength: routineSteps.length
+  });
+
+  if (insightReadiness) {
+    insightReadiness.textContent = insights.readinessAvg === null
+      ? "No trend yet"
+      : `${Math.round(insights.readinessAvg)} avg score`;
+  }
+
+  if (insightReadinessMeta) {
+    insightReadinessMeta.textContent = insights.readinessAvg === null
+      ? "Save check-ins across the week to reveal trend direction."
+      : "Readiness trend uses your latest 7 check-ins.";
+  }
+
+  if (insightBestTime) {
+    insightBestTime.textContent = insights.bestHour === null
+      ? "Not enough data"
+      : `${String(insights.bestHour).padStart(2, "0")}:00`;
+  }
+
+  if (insightBestTimeMeta) {
+    insightBestTimeMeta.textContent = insights.bestHour === null
+      ? "Complete more sessions to detect your strongest window."
+      : `${insights.bestHourCount} session${insights.bestHourCount === 1 ? "" : "s"} logged in that hour.`;
+  }
+
+  if (insightSkippedPhase) {
+    insightSkippedPhase.textContent = insights.skippedPattern;
+  }
+
+  if (insightSkippedPhaseMeta) {
+    insightSkippedPhaseMeta.textContent = "Based on partial day edits and incomplete session signals.";
+  }
 }
 
 function formatTime(totalSec) {
@@ -1765,6 +2099,7 @@ function saveDayProgress(dayKey, progress) {
   current[dayKey] = clampProgress(progress);
   state.dayProgressEdits = current;
   saveDayProgressEdits(state.dayProgressEdits);
+  markSave("Day progress");
 }
 
 function clampProgress(value) {
@@ -1866,48 +2201,23 @@ function saveShieldState() {
 }
 
 function computeConsistencyScore(activeDayKeys, checkinDays, streak) {
-  const active14 = countInLastDays(activeDayKeys, 14);
-  const checkins14 = countInLastDays(checkinDays, 14);
-  const adherenceScore = (active14 / 14) * 55;
-  const checkinScore = (checkins14 / 14) * 25;
-  const streakScore = Math.min(1, streak / 10) * 20;
-  return Math.round(adherenceScore + checkinScore + streakScore);
+  return computeConsistencyScoreUtil(activeDayKeys, checkinDays, streak);
 }
 
 function computeWeeklyQuest(activeDayKeys, checkinDays, buddyPings) {
-  const sessionsDone = Math.min(4, countInCurrentWeek(activeDayKeys));
-  const checkinsDone = Math.min(3, countInCurrentWeek(checkinDays));
-  const buddyDone = Math.min(2, countInCurrentWeek(buddyPings.map((iso) => toDayKey(iso))));
-  const done = sessionsDone + checkinsDone + buddyDone;
-  const total = 9;
-  return {
-    done,
-    total,
-    percent: Math.round((done / total) * 100)
-  };
+  return computeWeeklyQuestUtil(activeDayKeys, checkinDays, buddyPings);
 }
 
 function normalizeSessionLength(value) {
-  const allowed = new Set(["quick", "standard", "deep", "full"]);
-  return allowed.has(value) ? value : "standard";
+  return normalizeSessionLengthUtil(value);
 }
 
 function selectSessionLength(minutes) {
-  const safeMinutes = Number(minutes) || 15;
-  if (safeMinutes <= 3) return "quick";
-  if (safeMinutes <= 10) return "standard";
-  if (safeMinutes <= 18) return "deep";
-  return "full";
+  return selectSessionLengthUtil(minutes);
 }
 
 function labelForSessionLength(length) {
-  const labels = {
-    quick: "Quick",
-    standard: "Standard",
-    deep: "Deep",
-    full: "Full"
-  };
-  return labels[normalizeSessionLength(length)] || "Standard";
+  return labelForSessionLengthUtil(length);
 }
 
 function recordSoreness(sorenessLog, dayKey, soreness) {
@@ -1942,82 +2252,27 @@ function maybeAutoSwitchProgramTrack() {
 }
 
 function countInPreviousWeek(dayKeys) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayOfWeek = (today.getDay() + 6) % 7;
-  const currentMonday = new Date(today);
-  currentMonday.setDate(today.getDate() - dayOfWeek);
-  const previousSunday = new Date(currentMonday);
-  previousSunday.setDate(currentMonday.getDate() - 1);
-  const previousMonday = new Date(previousSunday);
-  previousMonday.setDate(previousSunday.getDate() - 6);
-  const startKey = toDayKey(previousMonday);
-  const endKey = toDayKey(previousSunday);
-  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+  return countInPreviousWeekUtil(dayKeys);
 }
 
 function buildCoachTimeline(recommendation, sessionLog) {
-  const latestSession = sessionLog[0];
-  const yesterday = latestSession
-    ? `${Math.max(1, Math.round((latestSession.durationSec || 0) / 60))} min ${latestSession.preset === "rescue" ? "Rescue" : "Flow"}`
-    : "No session logged";
-  const today = `${recommendation.label} • ${labelForSessionLength(state.sessionLength)} session`;
-  const tomorrow = recommendation.intensity === "High"
-    ? "Aim to hold quality under load"
-    : recommendation.intensity === "Moderate"
-      ? "Build consistency with clean reps"
-      : "Prioritize recovery and mobility range";
-
-  return { yesterday, today, tomorrow };
+  return buildCoachTimelineUtil(recommendation, sessionLog, labelForSessionLength, state.sessionLength);
 }
 
 function computeMonthlyChallenge(sessionLog) {
-  const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const monthSessions = sessionLog.filter((entry) => entry.completedAt?.slice(0, 7) === monthKey).length;
-
-  if (monthSessions >= 26) return { level: "Elite", target: 26, sessions: monthSessions, unlock: "Elite Aura Theme" };
-  if (monthSessions >= 20) return { level: "Gold", target: 20, sessions: monthSessions, unlock: "Gold Edge Badges" };
-  if (monthSessions >= 14) return { level: "Silver", target: 14, sessions: monthSessions, unlock: "Silver Coach Card" };
-  return { level: "Bronze", target: 8, sessions: monthSessions, unlock: "Starter Pack" };
+  return computeMonthlyChallengeUtil(sessionLog);
 }
 
 function buildWeeklyWrapup(activeDayKeys, sessionLog) {
-  const today = new Date();
-  const isSunday = today.getDay() === 0;
-  if (!isSunday) return "Weekly wrap-up appears Sunday.";
-
-  const weeklySessions = countInCurrentWeek(activeDayKeys);
-  const weeklyMinutes = Math.round(
-    sessionLog
-      .filter((entry) => toDayKey(entry.completedAt) >= toDayKey(new Date(Date.now() - 6 * 86400000)))
-      .reduce((sum, entry) => sum + (entry.durationSec || 0), 0) / 60
-  );
-
-  return `Weekly wrap-up: ${weeklySessions} sessions • ${weeklyMinutes} minutes • keep momentum into next week.`;
+  return buildWeeklyWrapupUtil(activeDayKeys, sessionLog);
 }
 
 function countInLastDays(dayKeys, numberOfDays) {
-  if (!Array.isArray(dayKeys)) return 0;
-  const end = new Date();
-  end.setHours(0, 0, 0, 0);
-  const start = new Date(end);
-  start.setDate(start.getDate() - (numberOfDays - 1));
-  const startKey = toDayKey(start);
-  const endKey = toDayKey(end);
-  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+  return countInLastDaysUtil(dayKeys, numberOfDays);
 }
 
 function countInCurrentWeek(dayKeys) {
-  if (!Array.isArray(dayKeys)) return 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayOfWeek = (today.getDay() + 6) % 7;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - dayOfWeek);
-  const mondayKey = toDayKey(monday);
-  const todayKey = toDayKey(today);
-  return dayKeys.filter((dayKey) => dayKey >= mondayKey && dayKey <= todayKey).length;
+  return countInCurrentWeekUtil(dayKeys);
 }
 
 function estimatedRoutineDurationSec() {
@@ -2407,34 +2662,13 @@ function recordSessionDay() {
 }
 
 function toDayKey(dateValue) {
-  return new Date(dateValue).toISOString().slice(0, 10);
+  return toDayKeyUtil(dateValue);
 }
 
 function computeLast7DaysSessions(dayKeys) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const start = new Date(today);
-  start.setDate(start.getDate() - 6);
-
-  const startKey = toDayKey(start);
-  const endKey = toDayKey(today);
-  return dayKeys.filter((dayKey) => dayKey >= startKey && dayKey <= endKey).length;
+  return computeLast7DaysSessionsUtil(dayKeys);
 }
 
 function computeStreakDays(dayKeys) {
-  if (dayKeys.length === 0) return 0;
-  const byDay = new Set(dayKeys);
-
-  let streak = 0;
-  const current = new Date();
-  current.setHours(0, 0, 0, 0);
-
-  while (true) {
-    const key = toDayKey(current);
-    if (!byDay.has(key)) break;
-    streak += 1;
-    current.setDate(current.getDate() - 1);
-  }
-
-  return streak;
+  return computeStreakDaysUtil(dayKeys);
 }

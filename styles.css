@@ -207,6 +207,12 @@ body {
   z-index: 1;
 }
 
+.app-status {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--text-muted) 88%, white);
+}
+
 .eyebrow {
   margin: 0;
   font-size: clamp(1.9rem, 5.2vw, 2.7rem);
@@ -486,6 +492,11 @@ h1 {
 
 .today-stat-card .metric-value {
   font-size: 0.94rem;
+  color: color-mix(in srgb, var(--text) 96%, white);
+}
+
+.insights-grid {
+  margin-top: 0.4rem;
 }
 
 .today-stat-sub {
@@ -1357,6 +1368,13 @@ h1 {
   border-color: color-mix(in srgb, var(--accent) 80%, white);
 }
 
+.inline-actions {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .history-item-title,
 .history-day-title {
   margin: 0;
@@ -1398,8 +1416,18 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
+input[type="range"]:focus-visible,
+input[type="time"]:focus-visible,
+select:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 85%, white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, black 40%, transparent);
+}
+
 :focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 75%, white);
+  outline: 3px solid color-mix(in srgb, var(--accent) 85%, white);
   outline-offset: 2px;
 }
 
@@ -1533,6 +1561,15 @@ input[type="checkbox"] {
   .buddy-row,
   .reflection-actions {
     grid-template-columns: 1fr;
+  }
+
+  .inline-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inline-actions .history-save-btn {
+    width: 100%;
   }
 
   .metrics {
