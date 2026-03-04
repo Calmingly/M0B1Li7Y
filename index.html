@@ -60,6 +60,11 @@
             <p id="timeline-yesterday" class="today-stat-sub">Yesterday: no session logged.</p>
             <p id="timeline-today" class="today-stat-sub">Today: recommendation pending check-in.</p>
             <p id="timeline-tomorrow" class="today-stat-sub">Tomorrow: stay consistent.</p>
+            <div class="today-visual-strip" aria-label="Routine visuals">
+              <img src="./img/armcircles.png" alt="Arm circles move" loading="lazy" decoding="async" />
+              <img src="./img/plank.png" alt="Plank move" loading="lazy" decoding="async" />
+              <img src="./img/childspose.png" alt="Child pose move" loading="lazy" decoding="async" />
+            </div>
           </section>
 
           <div class="today-program" aria-label="Program settings">
@@ -132,15 +137,27 @@
 
           <div class="today-actions" aria-label="Today actions">
             <button id="save-checkin-btn" class="btn btn-primary" type="button">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M5 4h11l3 3v13H5zm2 2v12h10V8.2L15.2 6z"></path></svg>
+              </span>
               <span class="btn-label">Save Check-In</span>
             </button>
             <button id="apply-recommendation-btn" class="btn" type="button">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M3 5h18v2H3zm2 4h14v2H5zm2 4h10v2H7zm2 4h6v2H9z"></path></svg>
+              </span>
               <span class="btn-label">Apply Recommendation</span>
             </button>
             <button id="start-recommended-btn" class="btn" type="button">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M8 6.5l10 5.5-10 5.5z"></path></svg>
+              </span>
               <span class="btn-label">Start Recommended Session</span>
             </button>
             <button id="start-rescue-btn" class="btn" type="button">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M12 5a7 7 0 0 1 6.9 6H21l-3 3-3-3h1.9A4.9 4.9 0 1 0 17 15h2a7 7 0 1 1-7-10z"></path></svg>
+              </span>
               <span class="btn-label">Start 2-Min Rescue</span>
             </button>
           </div>
@@ -445,6 +462,8 @@
               <option value="cobalt">Cobalt</option>
               <option value="emerald">Emerald</option>
               <option value="sunset">Sunset</option>
+              <option value="robust">Robust Steel</option>
+              <option value="vibrant">Vibrant Burst</option>
               <option value="neon">Neon Pulse</option>
               <option value="voltage">Voltage Lime</option>
               <option value="inferno">Inferno Heat</option>

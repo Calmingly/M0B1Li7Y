@@ -78,6 +78,44 @@
   --accent-soft: rgba(255, 191, 128, 0.25);
 }
 
+:root[data-theme="robust"] {
+  --bg-1: #0a0f14;
+  --bg-2: #334155;
+  --bg-3: #0f172a;
+  --bg-glow-1: rgba(148, 163, 184, 0.34);
+  --bg-glow-2: rgba(56, 189, 248, 0.24);
+  --shell-border: #3b4d63;
+  --shell-surface-1: #101b2a;
+  --shell-surface-2: #0d1420;
+  --shell-glow: rgba(125, 211, 252, 0.2);
+  --surface-card: #1a2a3f;
+  --surface-card-2: #152236;
+  --surface-panel: #1d304a;
+  --border: #415976;
+  --accent: #7dd3fc;
+  --accent-strong: #38bdf8;
+  --accent-soft: rgba(125, 211, 252, 0.2);
+}
+
+:root[data-theme="vibrant"] {
+  --bg-1: #1a0522;
+  --bg-2: #ff6b00;
+  --bg-3: #ec4899;
+  --bg-glow-1: rgba(251, 146, 60, 0.42);
+  --bg-glow-2: rgba(236, 72, 153, 0.38);
+  --shell-border: #8a3e6b;
+  --shell-surface-1: #341238;
+  --shell-surface-2: #2a0e31;
+  --shell-glow: rgba(251, 191, 36, 0.24);
+  --surface-card: #3e1843;
+  --surface-card-2: #321338;
+  --surface-panel: #4b1a4a;
+  --border: #8f4778;
+  --accent: #fbbf24;
+  --accent-strong: #f97316;
+  --accent-soft: rgba(251, 191, 36, 0.24);
+}
+
 :root[data-theme="neon"] {
   --bg-1: #040409;
   --bg-2: #8b00ff;
@@ -438,6 +476,24 @@ h1 {
   margin: 0 0 0.3rem;
   font-size: 0.86rem;
   color: color-mix(in srgb, var(--accent) 70%, white);
+}
+
+.today-visual-strip {
+  margin-top: 0.45rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.today-visual-strip img {
+  width: 100%;
+  height: 62px;
+  object-fit: contain;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, black);
+  border-radius: 10px;
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--surface-card) 92%, black), color-mix(in srgb, var(--surface-card-2) 90%, black)),
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--accent-soft) 45%, transparent), transparent 55%);
 }
 
 .length-chips {
@@ -1662,6 +1718,14 @@ button:focus-visible,
 
   .length-chips {
     grid-template-columns: 1fr;
+  }
+
+  .today-visual-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .today-visual-strip img {
+    height: 72px;
   }
 
   .today-stat-card:last-child {

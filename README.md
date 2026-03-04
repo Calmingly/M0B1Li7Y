@@ -21,6 +21,8 @@ Small browser-based mobility routine app built from the preserved image assets.
 - **Tabs**: `Routine`, `History`, and `Settings`
 - **History tab**: recent sessions, day-by-day activity rows, total sessions, streak, weekly stats, active minutes
 - **Settings tab**: progression mode (`Manual`/`Auto`), sound/haptics toggles, and app color schemes (`Default`, `Cobalt`, `Emerald`, `Sunset`)
+- Expanded themes with gradient styles, including `Robust Steel` and `Vibrant Burst`
+- Enhanced visual efficiency with additional timeline image strip and icon-based quick actions
 - Session history and settings persisted in `localStorage`
 
 ## Kept assets
