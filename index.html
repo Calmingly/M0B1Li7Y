@@ -305,7 +305,9 @@
               <span class="coach-title">How To</span>
               <span class="coach-summary-step" id="howto-step-name">Arm Circles</span>
             </summary>
-            <p id="howto-text" class="coach-tip">Keep circles smooth and controlled in both directions.</p>
+            <div class="coach-card-body">
+              <p id="howto-text" class="coach-tip">Keep circles smooth and controlled in both directions.</p>
+            </div>
           </details>
 
           <section class="form-quality" aria-label="Form quality prompt">
@@ -411,6 +413,11 @@
         <section class="panel calendar-panel" aria-label="Monthly calendar">
           <h3 id="calendar-title">March 2026</h3>
           <div id="month-calendar" class="month-calendar" aria-label="Active days this month"></div>
+          <div class="calendar-legend" aria-hidden="true">
+            <span class="cal-leg cal-leg-active"></span><span>Active</span>
+            <span class="cal-leg cal-leg-today"></span><span>Today</span>
+            <span class="cal-leg cal-leg-empty"></span><span>No session</span>
+          </div>
         </section>
 
         <section class="panel">
@@ -572,6 +579,7 @@
       </nav>
     </main>
 
+    <div id="app-toast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
     <script type="module" src="./src/app.js"></script>
   </body>
 </html>

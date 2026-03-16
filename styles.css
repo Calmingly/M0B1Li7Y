@@ -437,6 +437,36 @@ h1 {
   transform: translateY(0);
 }
 
+/* ── Global Toast ────────────────────────────── */
+
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(5rem + max(0.75rem, env(safe-area-inset-bottom)));
+  transform: translateX(-50%) translateY(10px);
+  max-width: min(88vw, 360px);
+  padding: 0.52rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  background: color-mix(in srgb, var(--shell-surface-1) 96%, black);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 30;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+
+.app-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ── Today Hub ───────────────────────────────── */
 
 .today-hub {
@@ -1308,6 +1338,21 @@ h1 {
   overflow: hidden;
 }
 
+.coach-card-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms ease;
+}
+
+.coach-card-collapsible[open] .coach-card-body {
+  grid-template-rows: 1fr;
+}
+
+.coach-card-body > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .coach-summary {
   list-style: none;
   cursor: pointer;
@@ -1419,7 +1464,8 @@ h1 {
 
 .btn:disabled {
   cursor: not-allowed;
-  opacity: 0.4;
+  opacity: 0.45;
+  filter: saturate(0.4) brightness(0.85);
 }
 
 .btn-primary {
@@ -2512,9 +2558,50 @@ button:focus-visible,
 }
 
 .calendar-day.calendar-day-empty {
+  background: color-mix(in srgb, var(--surface-card) 35%, transparent);
+  border-color: color-mix(in srgb, var(--border) 45%, transparent);
+  color: color-mix(in srgb, var(--text-muted) 30%, transparent);
+}
+
+/* ── Calendar Legend ─────────────────────────── */
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.calendar-legend span + span {
+  margin-right: 0.5rem;
+}
+
+.cal-leg {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.cal-leg-active {
+  background: color-mix(in srgb, var(--accent-soft) 80%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+}
+
+.cal-leg-today {
   background: transparent;
-  border-color: transparent;
-  color: transparent;
+  border-color: color-mix(in srgb, var(--accent-strong) 70%, white);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong) 25%, transparent);
+}
+
+.cal-leg-empty {
+  background: color-mix(in srgb, var(--surface-card) 35%, transparent);
+  border-color: color-mix(in srgb, var(--border) 45%, transparent);
 }
 
 /* ── Section label shared ────────────────────── */

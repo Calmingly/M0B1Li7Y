@@ -1913,13 +1913,23 @@ function celebrateRoutineFinish() {
 }
 
 function showFeedbackBanner(message) {
-  if (!feedbackBanner) return;
-  feedbackBanner.textContent = message;
-  feedbackBanner.classList.add("show");
-  window.clearTimeout(showFeedbackBanner.hideTimeout);
-  showFeedbackBanner.hideTimeout = window.setTimeout(() => {
-    feedbackBanner.classList.remove("show");
-  }, 1100);
+  if (feedbackBanner) {
+    feedbackBanner.textContent = message;
+    feedbackBanner.classList.add("show");
+    window.clearTimeout(showFeedbackBanner.hideTimeout);
+    showFeedbackBanner.hideTimeout = window.setTimeout(() => {
+      feedbackBanner.classList.remove("show");
+    }, 1100);
+  }
+
+  const toast = document.getElementById("app-toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.clearTimeout(showFeedbackBanner.toastTimeout);
+  showFeedbackBanner.toastTimeout = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
 }
 
 function renderSummary() {
