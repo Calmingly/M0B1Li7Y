@@ -21,6 +21,12 @@ import {
   computeMonthlyChallenge as computeMonthlyChallengeUtil,
   computeWeeklyQuest as computeWeeklyQuestUtil
 } from "./modules/insights.js";
+import { addXP, getLevelInfo, XP_REWARDS } from "./modules/xp.js";
+import { filterMovements, BODY_FOCUS_OPTIONS } from "./modules/library.js";
+
+const BODY_FOCUS_KEY = "m0b1li7y.bodyFocus";
+const LIBRARY_MUSCLE_KEY = "m0b1li7y.libraryMuscle";
+const LIBRARY_PHASE_KEY = "m0b1li7y.libraryPhase";
 
 const SESSION_KEY = "m0b1li7y.sessionsCompleted";
 const SESSION_DAYS_KEY = "m0b1li7y.sessionDays";
@@ -193,6 +199,26 @@ const insightWhyPlan = document.getElementById("insight-why-plan");
 const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
 const views = Array.from(document.querySelectorAll(".view"));
 
+// New feature DOM refs
+const xpBarFill = document.getElementById("xp-bar-fill");
+const xpBarLabel = document.getElementById("xp-bar-label");
+const xpBarWrap = document.getElementById("xp-bar-wrap");
+const xpLevelName = document.getElementById("xp-level-name");
+const xpLevelNum = document.getElementById("xp-level-num");
+const dailyQuoteText = document.getElementById("daily-quote-text");
+const dailyQuoteAttr = document.getElementById("daily-quote-attr");
+const bodyFocusChips = document.getElementById("body-focus-chips");
+const bodyFocusMeta = document.getElementById("body-focus-meta");
+const libraryGrid = document.getElementById("library-grid");
+const libraryCount = document.getElementById("library-count");
+const libraryMuscleChips = document.getElementById("library-muscle-chips");
+const libraryPhaseChips = document.getElementById("library-phase-chips");
+const activityChart = document.getElementById("activity-chart");
+const monthCalendar = document.getElementById("month-calendar");
+const calendarTitle = document.getElementById("calendar-title");
+const focusModeBtn = document.getElementById("focus-mode-btn");
+const sessionCompleteXp = document.getElementById("session-complete-xp");
+
 const phaseOrder = ["Warmup", "Reset", "Strength", "Mobility", "Cooldown", "Finish"];
 
 const phaseAccentByName = {
@@ -247,6 +273,9 @@ const state = {
   voiceCuesEnabled: loadBoolean(VOICE_CUES_KEY, false),
   sessionPreset: "full",
   durationScale: 1,
+  bodyFocus: localStorage.getItem(BODY_FOCUS_KEY) || "full",
+  libraryMuscle: localStorage.getItem(LIBRARY_MUSCLE_KEY) || "All",
+  libraryPhase: localStorage.getItem(LIBRARY_PHASE_KEY) || "All",
   activeView: "today-view",
   sessionStartedAt: null,
   installPromptEvent: null,
@@ -286,6 +315,10 @@ function init() {
   renderSessionMetrics();
   renderHistoryView();
   renderInsights();
+  renderXPBar();
+  renderDailyQuote();
+  syncBodyFocusUI();
+  renderLibraryView();
   registerServiceWorker();
   scheduleReminderPolling();
   tabButtons.forEach((button) => {
@@ -423,6 +456,44 @@ function wireEvents() {
   });
 
   sessionCompleteActionBtn?.addEventListener("click", onSessionCompleteQuickAction);
+
+  // Body focus chips
+  bodyFocusChips?.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("button[data-focus]") : null;
+    if (!button) return;
+    const focusValue = button.dataset.focus;
+    if (!focusValue) return;
+    state.bodyFocus = focusValue;
+    localStorage.setItem(BODY_FOCUS_KEY, focusValue);
+    syncBodyFocusUI();
+  });
+
+  // Library muscle filter chips
+  libraryMuscleChips?.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("button[data-muscle]") : null;
+    if (!button) return;
+    state.libraryMuscle = button.dataset.muscle || "All";
+    localStorage.setItem(LIBRARY_MUSCLE_KEY, state.libraryMuscle);
+    renderLibraryView();
+    syncLibraryFilterUI();
+  });
+
+  // Library phase filter chips
+  libraryPhaseChips?.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("button[data-phase]") : null;
+    if (!button) return;
+    state.libraryPhase = button.dataset.phase || "All";
+    localStorage.setItem(LIBRARY_PHASE_KEY, state.libraryPhase);
+    renderLibraryView();
+    syncLibraryFilterUI();
+  });
+
+  // Focus mode toggle
+  focusModeBtn?.addEventListener("click", () => {
+    const shell = document.querySelector(".shell");
+    if (!shell) return;
+    shell.classList.toggle("focus-mode");
+  });
 
   historyDays?.addEventListener("input", (event) => {
     const target = event.target;
@@ -1081,6 +1152,8 @@ function saveSessionReflection() {
 
   state.reflectionLog = [entry, ...state.reflectionLog].slice(0, 30);
   saveReflectionLog(state.reflectionLog);
+  addXP(XP_REWARDS.REFLECTION_SAVE);
+  renderXPBar();
   markSave("Reflection");
 
   if (reflectionCoachTip) {
@@ -1164,6 +1237,8 @@ function saveReadinessCheckin() {
     state.remainingSec = getStepDurationSec(state.stepIndex);
   }
 
+  addXP(XP_REWARDS.CHECKIN_SAVE);
+  renderXPBar();
   saveReadiness(state.readiness);
   const readinessScoreValue = Math.round(((energy + mood + (6 - soreness)) / 15) * 100);
   state.readinessLog = [
@@ -1481,6 +1556,12 @@ function switchView(viewId) {
 
   if (viewId === "history-view") {
     renderHistoryView();
+    renderActivityChart();
+    renderCalendar();
+  }
+  if (viewId === "library-view") {
+    renderLibraryView();
+    syncLibraryFilterUI();
   }
 }
 
@@ -1603,6 +1684,19 @@ function completeRoutine() {
   rewardShieldMilestones();
   maybeUnlockBadges();
   saveSessionCount(state.sessionsCompleted);
+
+  // Award XP for session
+  const sessionMinutes = Math.max(1, Math.round(durationSec / 60));
+  const xpGained = XP_REWARDS.SESSION_COMPLETE + sessionMinutes * XP_REWARDS.SESSION_MINUTE;
+  addXP(xpGained);
+  renderXPBar();
+
+  if (sessionCompleteXp) {
+    sessionCompleteXp.textContent = `+${xpGained} XP earned`;
+    sessionCompleteXp.hidden = false;
+    window.setTimeout(() => { sessionCompleteXp.hidden = true; }, 4000);
+  }
+
   renderSessionMetrics();
   renderTodayDashboard();
   renderHistoryView();
@@ -2671,4 +2765,293 @@ function computeLast7DaysSessions(dayKeys) {
 
 function computeStreakDays(dayKeys) {
   return computeStreakDaysUtil(dayKeys);
+}
+
+// ── XP & Level Rendering ─────────────────────────
+
+function renderXPBar() {
+  const xp = getLevelInfo(
+    Math.max(0, parseInt(localStorage.getItem("m0b1li7y.xp") || "0", 10))
+  );
+
+  if (xpBarFill) {
+    xpBarFill.style.width = `${xp.progress}%`;
+  }
+  if (xpBarWrap) {
+    xpBarWrap.setAttribute("aria-valuenow", String(xp.progress));
+  }
+  if (xpBarLabel) {
+    xpBarLabel.textContent = `${xp.xp} XP`;
+  }
+  if (xpLevelName) {
+    xpLevelName.textContent = xp.name;
+  }
+  if (xpLevelNum) {
+    xpLevelNum.textContent = `Lv ${xp.level}`;
+  }
+}
+
+// ── Daily Quote ──────────────────────────────────
+
+const DAILY_QUOTES = [
+  { text: "Movement is medicine.", attr: "Ancient wisdom" },
+  { text: "Consistency beats intensity every single time.", attr: "Coach principle" },
+  { text: "Your body is listening. Give it good signals.", attr: "M0B1Li7Y Coach" },
+  { text: "A 5-minute session beats zero every day.", attr: "Habit research" },
+  { text: "Progress is earned in small, daily doses.", attr: "Athlete mindset" },
+  { text: "Flexibility is not a gift. It's a practice.", attr: "Movement science" },
+  { text: "The best workout is the one you actually do.", attr: "Training wisdom" },
+  { text: "Strength without mobility is fragility.", attr: "Performance coach" },
+  { text: "Every rep is a vote for the person you're becoming.", attr: "James Clear" },
+  { text: "Rest is part of the work.", attr: "Recovery science" },
+  { text: "Show up consistently and let the results surprise you.", attr: "M0B1Li7Y Coach" },
+  { text: "Good posture is a full-time job. Start now.", attr: "Physical therapy" },
+  { text: "Move well before you move fast.", attr: "Gray Cook" },
+  { text: "Warm up your body like you warm up your car.", attr: "Training wisdom" }
+];
+
+function renderDailyQuote() {
+  if (!dailyQuoteText) return;
+  const today = new Date();
+  const dayIndex = (today.getFullYear() * 365 + today.getMonth() * 31 + today.getDate()) % DAILY_QUOTES.length;
+  const quote = DAILY_QUOTES[dayIndex];
+  dailyQuoteText.textContent = quote.text;
+  if (dailyQuoteAttr) dailyQuoteAttr.textContent = `— ${quote.attr}`;
+}
+
+// ── Body Focus UI ────────────────────────────────
+
+function syncBodyFocusUI() {
+  if (!bodyFocusChips) return;
+  const chips = Array.from(bodyFocusChips.querySelectorAll("button[data-focus]"));
+  chips.forEach((chip) => {
+    chip.classList.toggle("active", chip.dataset.focus === state.bodyFocus);
+  });
+
+  if (bodyFocusMeta) {
+    const option = BODY_FOCUS_OPTIONS.find((o) => o.value === state.bodyFocus);
+    const label = option ? option.label : "Full Body";
+    bodyFocusMeta.textContent = `Targeting ${label.toLowerCase()} mobility.`;
+  }
+}
+
+// ── Library Rendering ─────────────────────────────
+
+function renderLibraryView() {
+  if (!libraryGrid) return;
+
+  const movements = filterMovements({
+    muscle: state.libraryMuscle,
+    phase: state.libraryPhase
+  });
+
+  if (libraryCount) {
+    libraryCount.textContent = `${movements.length} movement${movements.length === 1 ? "" : "s"}`;
+  }
+
+  libraryGrid.innerHTML = "";
+
+  if (movements.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "library-empty";
+    empty.textContent = "No movements match the selected filters.";
+    libraryGrid.append(empty);
+    return;
+  }
+
+  movements.forEach((movement) => {
+    const card = document.createElement("article");
+    card.className = "exercise-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", movement.name);
+
+    const img = document.createElement("img");
+    img.className = "exercise-card-img";
+    img.alt = `${movement.name} exercise`;
+    img.loading = "lazy";
+    img.decoding = "async";
+    try {
+      img.src = new URL(`../img/${movement.image}`, import.meta.url).href;
+    } catch {
+      img.src = `./img/${movement.image}`;
+    }
+    img.addEventListener("error", () => {
+      try { img.src = new URL("../img/armcircles.png", import.meta.url).href; } catch { img.src = "./img/armcircles.png"; }
+    });
+
+    const body = document.createElement("div");
+    body.className = "exercise-card-body";
+
+    const phase = document.createElement("span");
+    phase.className = "exercise-card-phase";
+    phase.textContent = movement.phase;
+
+    const name = document.createElement("h3");
+    name.className = "exercise-card-name";
+    name.textContent = movement.name;
+
+    const cue = document.createElement("p");
+    cue.className = "exercise-card-cue";
+    cue.textContent = movement.cue;
+
+    const muscles = document.createElement("div");
+    muscles.className = "exercise-card-muscles";
+    movement.muscles.forEach((muscle) => {
+      const tag = document.createElement("span");
+      tag.className = "muscle-tag";
+      tag.textContent = muscle;
+      muscles.append(tag);
+    });
+
+    const duration = document.createElement("p");
+    duration.className = "exercise-card-duration";
+    duration.textContent = movement.durationSec === null
+      ? "Reps based"
+      : `${movement.durationSec}s`;
+
+    body.append(phase, name, cue, muscles, duration);
+    card.append(img, body);
+
+    // Expand how-to on click
+    card.addEventListener("click", () => {
+      const existing = card.querySelector(".exercise-howto");
+      if (existing) {
+        existing.remove();
+        return;
+      }
+      const howto = document.createElement("p");
+      howto.className = "exercise-howto coach-tip";
+      howto.textContent = movement.howto;
+      body.append(howto);
+    });
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.click(); }
+    });
+
+    libraryGrid.append(card);
+  });
+}
+
+function syncLibraryFilterUI() {
+  if (libraryMuscleChips) {
+    Array.from(libraryMuscleChips.querySelectorAll("button[data-muscle]")).forEach((chip) => {
+      chip.classList.toggle("active", chip.dataset.muscle === state.libraryMuscle);
+    });
+  }
+  if (libraryPhaseChips) {
+    Array.from(libraryPhaseChips.querySelectorAll("button[data-phase]")).forEach((chip) => {
+      chip.classList.toggle("active", chip.dataset.phase === state.libraryPhase);
+    });
+  }
+}
+
+// ── Activity Chart (7-day bar chart) ─────────────
+
+function renderActivityChart() {
+  if (!activityChart) return;
+
+  activityChart.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const activeSet = new Set(activeDayKeys);
+
+  // Count sessions per day
+  const countByDay = new Map();
+  state.sessionLog.forEach((entry) => {
+    const dayKey = toDayKey(entry.completedAt);
+    countByDay.set(dayKey, (countByDay.get(dayKey) || 0) + 1);
+  });
+
+  const maxCount = Math.max(1, ...Array.from(countByDay.values()));
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push(d);
+  }
+
+  days.forEach((day) => {
+    const dayKey = toDayKey(day);
+    const isToday = dayKey === toDayKey(new Date());
+    const count = countByDay.get(dayKey) || (activeSet.has(dayKey) ? 1 : 0);
+    const pct = Math.round((count / maxCount) * 100);
+
+    const col = document.createElement("div");
+    col.className = "chart-col";
+
+    const barWrap = document.createElement("div");
+    barWrap.className = "chart-bar-wrap";
+
+    const bar = document.createElement("div");
+    bar.className = `chart-bar${isToday ? " chart-bar-today" : ""}${count === 0 ? " chart-bar-empty" : ""}`;
+    bar.style.height = `${Math.max(4, pct)}%`;
+    bar.title = `${count} session${count === 1 ? "" : "s"}`;
+    barWrap.append(bar);
+
+    const label = document.createElement("span");
+    label.className = `chart-label${isToday ? " chart-label-today" : ""}`;
+    label.textContent = day.toLocaleDateString(undefined, { weekday: "short" }).slice(0, 2);
+
+    col.append(barWrap, label);
+    activityChart.append(col);
+  });
+}
+
+// ── Monthly Calendar ──────────────────────────────
+
+function renderCalendar() {
+  if (!monthCalendar) return;
+
+  monthCalendar.innerHTML = "";
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  if (calendarTitle) {
+    calendarTitle.textContent = now.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  }
+
+  const activeDayKeys = computeActiveDayKeys(state.sessionDays, state.dayProgressEdits);
+  const activeSet = new Set(activeDayKeys);
+  const todayKey = toDayKey(new Date());
+
+  // Day headers
+  ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].forEach((d) => {
+    const header = document.createElement("div");
+    header.className = "calendar-day-header";
+    header.textContent = d;
+    monthCalendar.append(header);
+  });
+
+  const firstDay = new Date(year, month, 1);
+  // Convert Sunday=0 to Monday=0 offset
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Empty cells before first day
+  for (let i = 0; i < startOffset; i++) {
+    const empty = document.createElement("div");
+    empty.className = "calendar-day calendar-day-empty";
+    monthCalendar.append(empty);
+  }
+
+  // Day cells
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(year, month, d);
+    const dayKey = toDayKey(dateObj);
+    const isActive = activeSet.has(dayKey);
+    const isToday = dayKey === todayKey;
+
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
+    if (isActive) cell.classList.add("calendar-day-active");
+    if (isToday) cell.classList.add("calendar-day-today");
+    cell.textContent = String(d);
+    monthCalendar.append(cell);
+  }
 }
