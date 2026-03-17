@@ -2659,3 +2659,182 @@ button:focus-visible,
     height: 64px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Samsung Health visual layer
+   ─────────────────────────────────────────────────────
+   Color-coded cards · large metric numbers · pill nav ·
+   gradient motivational card · clean section headers
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Color tokens ──────────────────────────────────── */
+
+:root {
+  --sh-blue:   #4B96FF;
+  --sh-purple: #9B72FF;
+  --sh-green:  #3DB86E;
+  --sh-orange: #FF8C42;
+  --sh-red:    #E85D75;
+  --sh-teal:   #38BDB4;
+}
+
+/* ── Today stat cards: color-coded top accents ─────── */
+
+.today-stats .today-stat-card:nth-child(1) {
+  border-top-color: var(--sh-blue);
+}
+.today-stats .today-stat-card:nth-child(2) {
+  border-top-color: var(--sh-purple);
+}
+.today-stats .today-stat-card:nth-child(3) {
+  border-top-color: var(--sh-green);
+}
+.today-stats + .today-stats .today-stat-card:nth-child(1) {
+  border-top-color: var(--sh-orange);
+}
+.today-stats + .today-stats .today-stat-card:nth-child(2) {
+  border-top-color: var(--sh-teal);
+}
+.today-stats + .today-stats .today-stat-card:nth-child(3) {
+  border-top-color: var(--sh-red);
+}
+
+/* ── Larger bold metric numbers on stat cards ───────── */
+
+.today-stat-card .metric-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-top: 0.25rem;
+}
+
+/* ── History metric cards: Samsung big-number style ─── */
+
+.metrics-history {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.metrics-history .metric-card {
+  border-top: 3px solid var(--border);
+}
+.metrics-history .metric-card:nth-child(1) { border-top-color: var(--sh-blue); }
+.metrics-history .metric-card:nth-child(2) { border-top-color: var(--sh-green); }
+.metrics-history .metric-card:nth-child(3) { border-top-color: var(--sh-purple); }
+.metrics-history .metric-card:nth-child(4) { border-top-color: var(--sh-orange); }
+
+.metrics-history .metric-value {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-top: 0.45rem;
+}
+
+/* ── Tab bar: pill shape, Samsung-clean active state ── */
+
+.tabs {
+  border-radius: 999px;
+  padding: 0.36rem 0.4rem;
+}
+
+.tab-btn {
+  border-radius: 999px;
+  gap: 0.2rem;
+}
+
+.tab-btn.active {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--accent-soft) 100%, transparent);
+}
+
+/* ── Quote card: gradient motivational banner ───────── */
+
+.quote-card {
+  border-left-width: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-strong) 22%, var(--surface-card)) 0%,
+    color-mix(in srgb, var(--surface-card-2) 92%, var(--bg-3)) 100%
+  );
+}
+
+/* ── Today score: large Samsung badge ───────────────── */
+
+.today-score {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  border-radius: 14px;
+  min-width: 3.6rem;
+  padding: 0.28rem 0.6rem;
+  border-width: 2px;
+}
+
+/* ── Today hub: subtle Samsung Health card treatment ── */
+
+.today-hub {
+  border-radius: 20px;
+}
+
+/* ── Today title: bolder Samsung heading ────────────── */
+
+.today-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ── Panel section headers: clean white, no tint ───── */
+
+.panel h3 {
+  color: var(--text);
+  padding-left: 0;
+  border-left: none;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ── XP bar: thicker Samsung health-goal bar ────────── */
+
+.xp-bar-wrap {
+  height: 7px;
+}
+
+.xp-bar-fill {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent-strong) 62%, transparent);
+}
+
+/* ── Readiness sliders: thicker track ───────────────── */
+
+.readiness-row input[type="range"] {
+  height: 6px;
+}
+
+.readiness-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+}
+
+.readiness-row input[type="range"]::-moz-range-track {
+  height: 6px;
+}
+
+/* ── Chips: slightly more padding, stronger weight ──── */
+
+.body-chip,
+.length-chip,
+.filter-chip {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.body-chip {
+  padding: 0.35rem 0.8rem;
+}
+
+/* ── Exercise/library cards: Samsung Health card top accent ── */
+
+.exercise-card {
+  border-top: 2px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+}
