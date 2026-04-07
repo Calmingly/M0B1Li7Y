@@ -1,18 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap");
 
 :root {
-  --bg: #081617;
-  --bg-alt: #113437;
-  --mist: rgba(194, 255, 241, 0.2);
-  --mist-2: rgba(255, 174, 95, 0.16);
-  --panel: rgba(8, 30, 32, 0.7);
-  --panel-border: rgba(186, 238, 228, 0.22);
-  --text: #e8fff9;
-  --muted: #9ec4be;
-  --accent: #ffc970;
-  --accent-2: #53e8c0;
+  --bg: #0a1418;
+  --bg-alt: #101f25;
+  --mist: rgba(100, 214, 255, 0.16);
+  --mist-2: rgba(78, 255, 177, 0.1);
+  --panel: rgba(9, 19, 23, 0.84);
+  --panel-border: rgba(129, 173, 191, 0.24);
+  --text: #ebf6fb;
+  --muted: #93adba;
+  --accent: #72d8ff;
+  --accent-2: #59f3be;
   --danger: #ff956b;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.34);
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
 }
 
 * {
@@ -24,9 +24,9 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(circle at 8% -5%, var(--mist) 0%, transparent 45%),
-    radial-gradient(circle at 92% 0%, var(--mist-2) 0%, transparent 50%),
-    linear-gradient(160deg, #061011 0%, var(--bg) 45%, var(--bg-alt) 100%);
+    radial-gradient(circle at 8% -5%, var(--mist) 0%, transparent 48%),
+    radial-gradient(circle at 92% 0%, var(--mist-2) 0%, transparent 54%),
+    linear-gradient(170deg, #060f13 0%, var(--bg) 42%, var(--bg-alt) 100%);
   font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
   overflow-x: hidden;
 }
@@ -35,9 +35,11 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(125, 198, 225, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 198, 225, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.14;
   mask-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0.15));
 }
 
@@ -53,15 +55,15 @@ body {
 .panel {
   border: 1px solid var(--panel-border);
   background: var(--panel);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   box-shadow: var(--shadow);
-  border-radius: 24px;
+  border-radius: 18px;
 }
 
 .hero {
   grid-column: 1 / -1;
   padding: 1.5rem 1.8rem;
-  animation: rise 700ms ease both;
+  border-left: 4px solid var(--accent);
 }
 
 .kicker {
@@ -69,7 +71,7 @@ body {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--accent-2);
+  color: var(--accent);
 }
 
 h1,
@@ -83,17 +85,24 @@ h1 {
   font-family: "Syne", sans-serif;
   font-size: clamp(1.9rem, 4vw, 3rem);
   margin-top: 0.35rem;
+  letter-spacing: 0.02em;
 }
 
 .hero-copy {
   margin-top: 0.45rem;
   color: var(--muted);
-  max-width: 52ch;
+  max-width: 62ch;
 }
 
 .panel {
   padding: 1rem;
-  animation: rise 700ms ease both;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px) scale(0.99);
+  animation: stagger-reveal 520ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--reveal-order, 1) * 75ms);
 }
 
 .controls {
@@ -185,7 +194,7 @@ select {
 
 .chip {
   border: 1px solid var(--panel-border);
-  background: rgba(6, 24, 25, 0.65);
+  background: rgba(9, 24, 29, 0.8);
   color: var(--muted);
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
@@ -194,14 +203,14 @@ select {
 }
 
 .chip.active {
-  background: rgba(83, 232, 192, 0.15);
+  background: rgba(89, 243, 190, 0.12);
   color: var(--text);
   border-color: var(--accent-2);
 }
 
 .btn {
   border: 1px solid var(--panel-border);
-  background: rgba(8, 28, 29, 0.55);
+  background: rgba(11, 27, 34, 0.75);
   color: var(--text);
   border-radius: 12px;
   padding: 0.6rem 0.9rem;
@@ -210,11 +219,16 @@ select {
   cursor: pointer;
 }
 
+.btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--panel-border));
+  transform: translateY(-1px);
+}
+
 .btn-primary {
   width: 100%;
   margin-top: 1rem;
-  background: linear-gradient(125deg, rgba(83, 232, 192, 0.25), rgba(255, 201, 112, 0.35));
-  border-color: rgba(255, 223, 170, 0.5);
+  background: linear-gradient(120deg, rgba(114, 216, 255, 0.22), rgba(89, 243, 190, 0.2));
+  border-color: rgba(150, 225, 255, 0.45);
 }
 
 .btn-ghost {
@@ -255,7 +269,7 @@ select {
 .tag {
   border-radius: 999px;
   padding: 0.25rem 0.58rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.045);
   font-size: 0.78rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -279,8 +293,8 @@ select {
 .ritual-item,
 .history-item {
   border: 1px solid rgba(186, 238, 228, 0.18);
-  background: rgba(5, 20, 22, 0.68);
-  border-radius: 14px;
+  background: rgba(8, 18, 22, 0.78);
+  border-radius: 12px;
   padding: 0.7rem;
 }
 
@@ -289,6 +303,17 @@ select {
   grid-template-columns: 56px 1fr auto;
   gap: 0.7rem;
   align-items: center;
+  transition: transform 260ms ease, opacity 260ms ease;
+}
+
+.ritual-item.entering {
+  animation: ritual-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--item-index, 0) * 52ms);
+}
+
+.ritual-list.is-switching .ritual-item {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 .ritual-item img {
@@ -346,7 +371,7 @@ select {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  transition: width 250ms ease;
+  transition: width 360ms ease;
 }
 
 .history-list {
@@ -374,13 +399,38 @@ select {
   }
 }
 
-@keyframes rise {
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .ritual-item.entering {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ritual-list.is-switching .ritual-item {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes stagger-reveal {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(16px) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ritual-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }

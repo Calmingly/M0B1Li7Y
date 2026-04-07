@@ -176,13 +176,22 @@ function generate() {
   state.currentRitual = buildRitual(plan);
 
   renderRecommendation();
-  renderRitual();
+  animateRitualTransition();
 
   // Keep only the latest 8 snapshots for concise history.
   state.snapshots.unshift(snapshotFromPlan(plan));
   state.snapshots = state.snapshots.slice(0, 8);
   persistState();
   renderHistory();
+}
+
+function animateRitualTransition() {
+  el.ritualList.classList.add("is-switching");
+
+  window.setTimeout(() => {
+    renderRitual();
+    el.ritualList.classList.remove("is-switching");
+  }, 180);
 }
 
 function buildRitual(plan) {
@@ -230,9 +239,10 @@ function renderRitual() {
   el.ritualTotal.textContent = `${Math.max(1, Math.round(totalSec / 60))} min`;
   el.ritualList.innerHTML = "";
 
-  state.currentRitual.forEach((step) => {
+  state.currentRitual.forEach((step, index) => {
     const li = document.createElement("li");
-    li.className = "ritual-item";
+    li.className = "ritual-item entering";
+    li.style.setProperty("--item-index", String(index));
     li.innerHTML = `
       <img src="./img/${step.image}" alt="${step.name}" loading="lazy" decoding="async" />
       <div>

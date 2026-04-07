@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0f2a2f" />
-    <title>M0B1Li7Y | Motion Atelier</title>
+    <title>M0B1LI7Y</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
     <link rel="stylesheet" href="./styles.css" />
@@ -12,13 +12,13 @@
   <body>
     <div class="ambient" aria-hidden="true"></div>
     <main class="app-shell">
-      <header class="hero">
-        <p class="kicker">M0B1Li7Y</p>
-        <h1>Motion Atelier</h1>
-        <p class="hero-copy">A creative daily studio for tuning body readiness into a personalized flow.</p>
+      <header class="hero reveal" style="--reveal-order: 1">
+        <p class="kicker">M0B1LI7Y</p>
+        <h1>M0B1LI7Y</h1>
+        <p class="hero-copy">A sharp daily training cockpit for turning readiness into intelligent movement sessions.</p>
       </header>
 
-      <section class="panel controls" aria-label="Daily readiness studio">
+      <section class="panel controls reveal" style="--reveal-order: 2" aria-label="Daily readiness studio">
         <div class="panel-head">
           <h2>Readiness Mixer</h2>
           <p id="today-label">Today</p>
@@ -61,7 +61,7 @@
         <button id="generate-plan" class="btn btn-primary" type="button">Craft My Flow</button>
       </section>
 
-      <section class="panel output" aria-live="polite">
+      <section class="panel output reveal" style="--reveal-order: 3" aria-live="polite">
         <div class="panel-head">
           <h2>Coach Output</h2>
           <p id="score-pill" class="score-pill">Score --</p>
@@ -83,7 +83,7 @@
         </article>
       </section>
 
-      <section class="panel dashboard" aria-label="Progress dashboard">
+      <section class="panel dashboard reveal" style="--reveal-order: 4" aria-label="Progress dashboard">
         <article class="stat-card">
           <h3>Level</h3>
           <p id="level-name">Rookie</p>
@@ -108,7 +108,7 @@
         </article>
       </section>
 
-      <section class="panel history" aria-label="Recent snapshots">
+      <section class="panel history reveal" style="--reveal-order: 5" aria-label="Recent snapshots">
         <div class="panel-head compact">
           <h2>Recent Snapshots</h2>
           <button id="clear-history" class="btn btn-ghost" type="button">Reset</button>
