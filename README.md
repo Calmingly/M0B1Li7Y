@@ -1,4 +1,4 @@
-# M0B1Li7Y - Motion Atelier (main4 variant)
+# M0B1LI7Y (main4 variant)
 
 A full creative rebuild of the original mobility app with a fresh design language and a simpler flow.
 
